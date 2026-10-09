@@ -38,14 +38,16 @@ function start_battle_music()
     global.song_start = current_time;
 }
 
-function start_knight_battle_music()
+/// _fade_ms = 0 starts at full volume; anything higher fades in over that long
+function start_knight_battle_music(_fade_ms = 0)
 {
     if (variable_global_exists("song") && is_struct(global.song) && global.song.sound == sng_blackknife) exit;
     global.song = {
         sound: sng_blackknife,
         beats: 9999
     };
-    global.music = audio_play_sound(global.song.sound, 2, true, 1);
+    global.music = audio_play_sound(global.song.sound, 2, true, (_fade_ms > 0) ? 0 : 1);
+    if (_fade_ms > 0) audio_sound_gain(global.music, 1, _fade_ms);
     global.song_start = current_time;
 }
 

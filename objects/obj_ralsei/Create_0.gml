@@ -8,3 +8,7 @@ image_xscale = 2;
 image_yscale = 2;
 anim_loop = true;
 char_id = CharID.Ralsei;
+
+// battle sprites have hand-aligned origins, so swapping between them shouldn't re-anchor
+keep_feet_skip = [spr_ralsei_battle_intro, spr_ralsei_battle_idle, spr_ralsei_attack_ready,
+                  spr_ralsei_attack, spr_ralsei_shocked];

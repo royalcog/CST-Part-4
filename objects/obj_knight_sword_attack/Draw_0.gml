@@ -7,7 +7,7 @@ for (var i = 0; i < array_length(swords); i++)
 
     if (_s.state == "charge")
     {
-        var _k = clamp(_s.t / charge_frames, 0, 1);
+		var _k = clamp(_s.t / _s.charge, 0, 1);
         draw_sprite_ext(_spr, 0, _s.x, _s.y, sword_scale, sword_scale, _a, c_white, _s.alpha);
 
         // red builds up on top as a solid overlay (works even if the sword art is dark)

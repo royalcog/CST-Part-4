@@ -331,6 +331,7 @@ function scr_knight_damage(_amount, _color_top = c_white, _color_bottom = c_whit
 
 function scr_start_knight_attack1()
 {
+    start_knight_battle_music(1500); // fades back in if the sword draw cut it; does nothing if it's already playing
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_sword_attack);
 }
 
@@ -390,10 +391,15 @@ function scr_start_knight_battle()
                 { speaker: obj_susie,  text: "Then clearly your memory sucks." },
 
                 // Knight gets up and draws his sword
-                { run: function() {
+                      { run: function() {
+                      // music cuts out as he gets up to draw
+                      if (global.music != noone) audio_stop_sound(global.music);
+                      global.music = noone;
+                      global.song  = noone; // so start_knight_battle_music() can bring it back later
+
                       with (obj_knight)
                       {
-                          droop_up_stops_audio = false;
+                          droop_up_stops_audio = false; // only the music goes, not every sound
                           turn_sword_sound_played = false;
                           sprite_index = spr_roark_droop_up;
                           image_index = 0;

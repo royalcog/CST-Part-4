@@ -15,8 +15,12 @@ if (!_closing && spawned < sword_count)
         var _cy   = (_in.y1 + _in.y2) / 2;
         var _sx   = instance_exists(obj_soul) ? obj_soul.x : _cx;
         var _sy   = instance_exists(obj_soul) ? obj_soul.y : _cy;
+        // 0 on the first sword -> 1 on the last, everything speeds up along this
+        var _p    = spawned / max(sword_count - 1, 1);
         var _s    = { x: 0, y: 0, angle: 0, horizontal: true, state: "charge", t: 0, alpha: 0,
-                      vx: 0, vy: 0, trail: [], travelled: 0, travel_max: 0 };
+                      vx: 0, vy: 0, trail: [], travelled: 0, travel_max: 0,
+                      charge: round(lerp(charge_frames, charge_frames_end, _p)),
+                      track:  lerp(track_lerp, track_lerp_end, _p) };
 
         switch (irandom(3))
         {
@@ -31,7 +35,7 @@ if (!_closing && spawned < sword_count)
 
         array_push(swords, _s);
         spawned++;
-        timer = spawn_gap;
+        timer = round(lerp(spawn_gap, spawn_gap_end, _p));
     }
 }
 
@@ -53,13 +57,13 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
             _s.alpha = min(_s.alpha + 1 / fade_in_frames, 1);
 
             // slide along its side to line up with the soul, until it's nearly fully red
-            if (_s.t / charge_frames < track_stop && instance_exists(obj_soul))
+            if (_s.t / _s.charge < track_stop && instance_exists(obj_soul))
             {
-                if (_s.horizontal) _s.y = lerp(_s.y, clamp(obj_soul.y, _in.y1, _in.y2), track_lerp);
-                else               _s.x = lerp(_s.x, clamp(obj_soul.x, _in.x1, _in.x2), track_lerp);
+                if (_s.horizontal) _s.y = lerp(_s.y, clamp(obj_soul.y, _in.y1, _in.y2), _s.track);
+                else               _s.x = lerp(_s.x, clamp(obj_soul.x, _in.x1, _in.x2), _s.track);
             }
 
-            if (_s.t >= charge_frames)
+            if (_s.t >= _s.charge)
             {
                 _s.vx = lengthdir_x(launch_speed, _s.angle);
                 _s.vy = lengthdir_y(launch_speed, _s.angle);
