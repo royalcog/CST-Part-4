@@ -154,7 +154,7 @@ if (instance_exists(_gerson))
 */
 
 // 4. Room music
-// Lancer's song in the cafe
+/* Lancer's song in the cafe
 if (room == rm_zero && !audio_is_playing(sng_LCP))
 {
     // the room's opening fader would otherwise fade this out right away
