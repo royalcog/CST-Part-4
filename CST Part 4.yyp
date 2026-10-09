@@ -1,6 +1,6 @@
 {
   "$GMProject":"v1",
-  "%Name":"CST Part 3",
+  "%Name":"CST Part 4",
   "AudioGroups":[
     {"$GMAudioGroup":"v1","%Name":"audiogroup_default","exportDir":"","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
   ],
@@ -193,7 +193,7 @@
   "MetaData":{
     "IDEVersion":"2024.14.4.222",
   },
-  "name":"CST Part 3",
+  "name":"CST Part 4",
   "resources":[
     {"id":{"name":"fnt_determination","path":"fonts/fnt_determination/fnt_determination.yy",},},
     {"id":{"name":"fnt_greaterdetermination","path":"fonts/fnt_greaterdetermination/fnt_greaterdetermination.yy",},},
