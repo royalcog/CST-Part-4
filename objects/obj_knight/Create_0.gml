@@ -17,3 +17,6 @@ hit_offset_x = 58;
 hit_offset_y = 30;
 
 char_id = CharID.Knight;
+
+knight_hp = 3000;            // placeholder — tune once the fight's pacing is in
+droop_up_stops_audio = true; // the old cutscene cut all sound at droop_up; the battle turns this off

@@ -265,3 +265,149 @@ function scr_ralsei_battle_resume_talk()
 
     global.fight_seq_starting = false;
 }
+
+// ===================== SUSIE + RALSEI BATTLE (2-box layout) =====================
+
+/// UI with just Susie's and Ralsei's boxes, the pair centered on screen
+function scr_duo_ui_setup(_instant = false, _susie_hp = 290, _ralsei_hp = 210)
+{
+    with (obj_UI) instance_destroy();
+    instance_create_depth(0, 0, -100, obj_UI);
+
+    // same box offsets as the full-party layout, Queen's slot just isn't there
+    scr_party_init([
+    {
+        name: "Susie", hp: _susie_hp, max_hp: 290, body: obj_susie, body_hurt_sprite: spr_susie_hurt,
+        box_offset_x: -1, box_offset_y: -1,
+        sprite_frame: spr_susiebox_empty, hurt_frame: spr_susiebox_hurtempty,
+        frame_scale: 43 / 156, divider_y: 156,
+        bar_offset_x: 516, bar_offset_y: 88, bar_width: 304, bar_height: 36,
+        bar_fill_color: make_color_rgb(255, 0, 255),
+        hp_current_x: 642, hp_max_x: 701, hp_text_offset_y: 36,
+        hurt_flash_time: 20,
+        attack_frame: spr_susiebox_attack_empty,
+        icon_rect_x: 51, icon_rect_y: 36, icon_rect_w: 147, icon_rect_h: 102, hurt_icon_scale: 1
+    },
+    {
+        name: "Ralsei", hp: _ralsei_hp, max_hp: 210, body: obj_ralsei, body_hurt_sprite: spr_ralsei_shocked,
+        box_offset_x: 236, box_offset_y: 0,
+        sprite_frame: spr_ralseibox_empty, hurt_frame: spr_ralseibox_hurtempty,
+        frame_scale: 42 / 153, divider_y: 153,
+        bar_offset_x: 513, bar_offset_y: 85, bar_width: 304, bar_height: 36,
+        bar_fill_color: make_color_rgb(1, 255, 0),
+        hp_current_x: 639, hp_max_x: 698, hp_text_offset_y: 33,
+        hurt_flash_time: 20,
+        attack_frame: spr_ralseibox_attack_empty,
+        icon_rect_x: 36, icon_rect_y: 21, icon_rect_w: 137, icon_rect_h: 101, hurt_icon_scale: 0.95
+    }
+    ]);
+
+    // center the pair: midpoint between Susie's left edge and Ralsei's right edge
+    var _cam_cx   = camera_get_view_x(view_camera[0]) + camera_get_view_width(view_camera[0]) / 2;
+    var _left     = obj_UI.target_x + (-1)  + obj_UI.boxes_x_correction;
+    var _right    = obj_UI.target_x + 236   + obj_UI.boxes_x_correction
+                  + sprite_get_width(spr_ralseibox_empty) * (42 / 153);
+    var _ui_shift = _cam_cx - (_left + _right) / 2;
+    obj_UI.target_x   += _ui_shift;
+    obj_UI.onscreen_x += _ui_shift;
+
+    // panel stretched edge to edge so there's no gap where Queen's box was
+    obj_UI.panel_full_width = true;
+    obj_UI.depth = -10002;
+    with (obj_battle_ui_box) depth = -10003;
+
+    if (_instant) obj_UI.x = obj_UI.target_x;
+}
+
+// ===================== KNIGHT FIGHT =====================
+
+function scr_knight_damage(_amount, _color_top = c_white, _color_bottom = c_white)
+{
+    if (!instance_exists(obj_knight)) return noone;
+    obj_knight.knight_hp = max(obj_knight.knight_hp - _amount, 0);
+    audio_play_sound(snd_damagetaken, 1, false);
+    return scr_trigger_damage_popup(obj_knight, _amount, _color_top, _color_bottom, obj_knight.hit_offset_x, obj_knight.hit_offset_y);
+}
+
+function scr_start_knight_attack1()
+{
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_sword_attack);
+}
+
+/// music + turn sequencer for the Knight fight. Call right after scr_duo_ui_setup().
+function scr_start_knight_battle()
+{
+    start_knight_battle_music();
+
+    with (obj_king_turn_sequencer) instance_destroy();
+    var _seq = instance_create_depth(0, 0, 0, obj_king_turn_sequencer);
+    _seq.damage_func = scr_knight_damage;
+    _seq.king_box_x_nudge = 0; // the 2-box panel is centered, so the box is too
+
+    // only two party members this fight: rebuild the select order without Queen's empty slot
+    var _sb = noone, _rb = noone;
+    for (var i = 0; i < instance_number(obj_battle_ui_box); i++)
+    {
+        var _b = instance_find(obj_battle_ui_box, i);
+        if (_b.char_name == "Susie")  _sb = _b;
+        if (_b.char_name == "Ralsei") _rb = _b;
+    }
+    _seq.members = [_sb, _rb];
+
+    var _rk_cps = 0.15; // the Knight's slow talk speed
+
+    var _party = [
+        { box_name: "Susie",  damage: 115, color_top: make_color_rgb(255, 0, 255), color_bottom: make_color_rgb(255, 0, 255),
+          attacker: obj_susie, ready_sprite: spr_susie_attack_ready, attack_sprite: spr_susie_battle_intro, idle_sprite: spr_susie_battle_idle,
+          attack_sound: snd_attack },
+        { box_name: "Ralsei", damage: 80,  color_top: make_color_rgb(1, 255, 0),   color_bottom: make_color_rgb(1, 255, 0),
+          attacker: obj_ralsei, ready_sprite: spr_ralsei_attack_ready, attack_sprite: spr_ralsei_attack, idle_sprite: spr_ralsei_battle_idle,
+          attack_sound: snd_attack }
+    ];
+
+    _seq.rounds = [
+        // ROUND 1 — opening + Attack 1 (tracking swords)
+        {
+            attackers: _party,
+            dialogue_batch: [
+                { speaker: obj_susie,  text: "I hope you had time to heal yourself before we tear you to shreds again." },
+
+                // Knight turns around and droops
+                { run: function() {
+                      with (obj_knight)
+                      {
+                          sprite_index = spr_roark_faceaway_turning;
+                          image_index = 0;
+                          image_speed = 1;
+                          anim_loop = true;
+                          global.knight_turning = true;
+                      }
+                  },
+                  wait_until: function() { return !instance_exists(obj_knight) || obj_knight.sprite_index != spr_roark_faceaway_turning; },
+                  wait: 20 },
+
+                { speaker: obj_knight, text: "I recall... a different outcome...", cps: _rk_cps, snd: snd_knight_phone_call },
+                { speaker: obj_susie,  text: "Then clearly your memory sucks." },
+
+                // Knight gets up and draws his sword
+                { run: function() {
+                      with (obj_knight)
+                      {
+                          droop_up_stops_audio = false;
+                          turn_sword_sound_played = false;
+                          sprite_index = spr_roark_droop_up;
+                          image_index = 0;
+                          image_speed = 1;
+                          anim_loop = false;
+                      }
+                  },
+                  wait_until: function() { return !instance_exists(obj_knight) || (obj_knight.sprite_index == spr_roark_sword_appear_new && obj_knight.image_speed == 0); },
+                  wait: 20 },
+
+                { speaker: obj_knight, text: "...", cps: _rk_cps }
+            ],
+            king_box_attack: scr_start_knight_attack1
+        }
+        // rounds 2+ go here as they're built
+    ];
+}

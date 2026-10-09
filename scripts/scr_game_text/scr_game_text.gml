@@ -68,8 +68,9 @@ function scr_game_text(_text_id)
 				scr_custom_call_after_textbox_delayed(function()
 				{
 				    scr_set_battle_sprite(obj_susie, spr_susie_battle_intro, spr_susie_battle_idle, false);
-				    audio_play_sound(snd_slash, 1, false);
+				    audio_play_sound(snd_taking_out_sword, 1, false);
 				}, 0);
+		break;
 		
 		case "self_3":
 			scr_text("* Hell yeah it is.", "susie", 34);
@@ -88,37 +89,9 @@ function scr_game_text(_text_id)
 				            scr_set_battle_sprite(obj_susie,  spr_susie_battle_idle,  noone, true);
 				            scr_set_battle_sprite(obj_ralsei, spr_ralsei_battle_idle, noone, true);
 
-				            with (obj_UI) instance_destroy();
-				            instance_create_depth(0, 0, -100, obj_UI);
+				            scr_duo_ui_setup();
 
-				            scr_party_init([
-				                {
-				                    name: "Susie", hp: 290, max_hp: 290, body: obj_susie, body_hurt_sprite: spr_susie_hurt,
-				                    box_offset_x: -1, box_offset_y: -1,
-				                    sprite_frame: spr_susiebox_empty, hurt_frame: spr_susiebox_hurtempty,
-				                    frame_scale: 43 / 156, divider_y: 156,
-				                    bar_offset_x: 516, bar_offset_y: 88, bar_width: 304, bar_height: 36,
-				                    bar_fill_color: make_color_rgb(255, 0, 255),
-				                    hp_current_x: 642, hp_max_x: 701, hp_text_offset_y: 36,
-				                    hurt_flash_time: 20,
-				                    attack_frame: spr_susiebox_attack_empty,
-				                    icon_rect_x: 51, icon_rect_y: 36, icon_rect_w: 147, icon_rect_h: 102, hurt_icon_scale: 1
-				                },
-				                {
-				                    name: "Ralsei", hp: 210, max_hp: 210, body: obj_ralsei, body_hurt_sprite: spr_ralsei_shocked,
-				                    box_offset_x: 236, box_offset_y: 0,
-				                    sprite_frame: spr_ralseibox_empty, hurt_frame: spr_ralseibox_hurtempty,
-				                    frame_scale: 42 / 153, divider_y: 153,
-				                    bar_offset_x: 513, bar_offset_y: 85, bar_width: 304, bar_height: 36,
-				                    bar_fill_color: make_color_rgb(1, 255, 0),
-				                    hp_current_x: 639, hp_max_x: 698, hp_text_offset_y: 33,
-				                    hurt_flash_time: 20,
-				                    attack_frame: spr_ralseibox_attack_empty,
-				                    icon_rect_x: 36, icon_rect_y: 21, icon_rect_w: 137, icon_rect_h: 101, hurt_icon_scale: 0.95
-				                }
-				            ]);
-
-				            // TODO: Knight battle music + turn structure go here
+				            scr_start_knight_battle();
 				        }, 15);
 				    });
 				}, 0);

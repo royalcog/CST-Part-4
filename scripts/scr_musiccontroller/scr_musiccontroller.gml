@@ -38,6 +38,17 @@ function start_battle_music()
     global.song_start = current_time;
 }
 
+function start_knight_battle_music()
+{
+    if (variable_global_exists("song") && is_struct(global.song) && global.song.sound == sng_blackknife) exit;
+    global.song = {
+        sound: sng_blackknife,
+        beats: 9999
+    };
+    global.music = audio_play_sound(global.song.sound, 2, true, 1);
+    global.song_start = current_time;
+}
+
 function scr_ui_reverse(_resume_sound, _resume_pitch = 1, _sprite_obj = noone, _sprite = noone, _sprite_loop = false, _sprite_image = 0)
 {
     if (instance_exists(obj_UI))

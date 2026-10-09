@@ -70,3 +70,4 @@ target_alpha = 0.4;
 dim_speed = 0.02;
 batches = [];
 batch_index = 0;
+run_done = false;

@@ -171,7 +171,7 @@ switch (state)
 
     case "attacking_hit":
         var _atk = _round.attackers[attack_index];
-        attack_popup = scr_king_damage(_atk.damage,
+            attack_popup = damage_func(_atk.damage,
             variable_struct_exists(_atk, "color_top")    ? _atk.color_top    : c_white,
             variable_struct_exists(_atk, "color_bottom") ? _atk.color_bottom : c_white);
         timer = popup_clear_frames; // fallback in case the popup never spawned (e.g. King missing)

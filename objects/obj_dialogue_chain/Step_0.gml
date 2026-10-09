@@ -20,9 +20,17 @@ if (dim_phase == 2) // run dialogue
 
             if (variable_struct_exists(e, "run"))
             {
-                e.run();
+                // run once, then optionally hold here until wait_until() says go
+                if (!run_done)
+                {
+                    e.run();
+                    run_done = true;
+                }
+                if (variable_struct_exists(e, "wait_until") && !e.wait_until()) exit;
+
+                run_done = false;
                 index += 1;
-                next_delay = 0;
+                next_delay = variable_struct_exists(e, "wait") ? e.wait : 0;
             }
             else
             {

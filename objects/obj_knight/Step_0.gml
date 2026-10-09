@@ -131,6 +131,7 @@ if (sprite_index == spr_roark_faceaway_turning)
 // 2. When playing droop_up, cut it off after 6 frames (index 0 to 5) and switch to sword appear
 if (sprite_index == spr_roark_droop_up)
 {
+	if (droop_up_stops_audio) audio_stop_all();
 	audio_stop_all();
     if (image_index >= 5) // 5 is the 6th frame (0-indexed)
     {

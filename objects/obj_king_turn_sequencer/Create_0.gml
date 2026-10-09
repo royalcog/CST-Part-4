@@ -63,3 +63,5 @@ end_stop_battle    = false;
 end_revert         = [];  // [ { obj, sprite }, ... ] swapped in keeping the body planted
 stop_battle_frames = 45;  // how long the UI gets to slide off before everything's cleaned up
 stop_music_fade_ms = 600;
+
+damage_func = scr_king_damage; // who the party's hits land on — swap per fight (e.g. scr_knight_damage)
