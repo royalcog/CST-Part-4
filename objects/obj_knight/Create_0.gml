@@ -1,0 +1,19 @@
+image_xscale = 2;
+image_yscale = 2;
+depth = -1003;
+bob_angle = 0;
+start_y = y;
+ball_phase = 0;
+ball_target_x = 80;   // where the ball stops before turning into the Knight (overridable)
+ball_speed = 5;       // px per frame while flying in
+anim_loop = true;
+shadow_timer = 0;
+reverse_phase = 0;
+reverse_frame = 0;
+exit_dir = -1;        // which way he flies off when turning back into the ball (-1 left, 1 right) — set by scr_knight_fly_in to where he came from
+on_exit = undefined;  // optional function, runs once he's fully offscreen
+turn_sword_sound_played = false;
+hit_offset_x = 58;
+hit_offset_y = 30;
+
+char_id = CharID.Knight;

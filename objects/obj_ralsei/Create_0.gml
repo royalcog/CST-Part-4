@@ -1,0 +1,10 @@
+bob_offsets = [0, 0, -1, -1, 0, 0, 1, 1];
+bob_index = 0;
+bob_timer = 0;
+bob_speed = 1000000; //normal: 4.5
+start_y = y;
+depth = -3000;
+image_xscale = 2;
+image_yscale = 2;
+anim_loop = true;
+char_id = CharID.Ralsei;
