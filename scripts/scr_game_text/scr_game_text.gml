@@ -13,13 +13,115 @@ function scr_game_text(_text_id)
 	switch (_text_id)
 	{
 		case "self_1":
+			// both walk up together
 			scr_queue_movement_group_after_textbox([
-				   { obj: obj_susie, sprite: spr_susie_walk_up, loop: true, dx: 0, dy: -4, speed: .9, duration: 90 },
+				   { obj: obj_susie,  sprite: spr_susie_walk_up,  loop: true, dx: 0, dy: -4, speed: .9, duration: 90 },
 				   { obj: obj_ralsei, sprite: spr_ralsei_walk_up, loop: true, dx: 0, dy: -4, speed: .8, duration: 90 }
 			]);
-			scr_char_move_after_textbox(obj_ralsei, spr_ralsei_walk_left_neutral, true, -4, 0, .8, 75);
-			scr_obj_sprite_after_textbox_delayed(obj_susie, spr_susie_right_neutral, false, 90);
-			scr_obj_sprite_after_textbox_delayed(obj_ralsei, spr_ralsei_right_neutral, false, 165);
+			// once both are done: Susie turns right, Ralsei walks left
+			scr_queue_movement_group_after_textbox([
+				   { obj: obj_susie,  sprite: spr_susie_walk_right_upset,   loop: false, dx: 0,  dy: 0, speed: 0,  duration: 0 },
+				   { obj: obj_ralsei, sprite: spr_ralsei_walk_left_neutral, loop: true,  dx: -4, dy: 0, speed: .8, duration: 60 }
+			]);
+			// once Ralsei stops: he turns right
+			scr_queue_movement_group_after_textbox([
+				   { obj: obj_ralsei, sprite: spr_ralsei_right_neutral, loop: false, dx: 0, dy: 0, speed: 0, duration: 0 }
+			]);
+		break;
+		
+		
+		case "self_2":
+			scr_text("* Please...|* Don't do this...", "ralsei", 34);
+			scr_text("* There's no gain to any of this...", "ralsei", 35);
+			scr_text("* All you're doing is hurting everything and everyone, and...", "ralsei", 41);
+			scr_obj_sprite_on_page(obj_ralsei, spr_ralsei_head_down_sad, false);
+			scr_text("* What's it all for???", "susie", 39);
+			scr_text("* How do you live with yourself???", "susie", 37);
+			scr_text("* There is... no gain...", "knight");
+				scr_obj_sprite_on_page(obj_ralsei, spr_ralsei_right_neutral, false);
+				scr_text_slow(0.2);
+				scr_text_shake(1, 99);
+				scr_snd_on_page(snd_knight_phone_call, 1);
+			scr_text("* This is all... just...", "knight");
+				scr_text_slow(0.2);
+				scr_text_shake(1, 99);
+				scr_snd_on_page(snd_knight_phone_call, 1);
+			scr_text("* Just what, huh?", "susie", 32);
+			scr_text("* ...", "knight");
+				scr_text_slow(0.2);
+				scr_text_shake(1, 99);
+				scr_snd_on_page(snd_knight_phone_call, 1);
+			scr_text("* ...", "susie", 31);
+			scr_text("* Fine.", "susie", 31);
+			scr_text("* You want a chance at us?|* Again?", "susie", 32);
+			scr_text("* After we kicked your ass the last time?", "susie", 33);
+			scr_text("* Fine.", "susie", 31);
+			scr_text("* Fine fine fine.|* By all means.", "susie", 32);
+			scr_text("* Susie, I don't think...", "ralsei", 27);
+			scr_text("* Too late.|* Already made up my mind.", "susie", 33);
+			scr_text("* Is that... so...", "knight");
+				scr_text_slow(0.2);
+				scr_text_shake(1, 99);
+				scr_snd_on_page(snd_knight_phone_call, 1);
+
+				// Susie draws her weapon (plays once, holds the last frame)
+				scr_custom_call_after_textbox_delayed(function()
+				{
+				    scr_set_battle_sprite(obj_susie, spr_susie_battle_intro, spr_susie_battle_idle, false);
+				    audio_play_sound(snd_slash, 1, false);
+				}, 0);
+		
+		case "self_3":
+			scr_text("* Hell yeah it is.", "susie", 34);
+			scr_text("* ...", "ralsei", 45);
+
+				// Ralsei draws (Susie already did at the end of self_2), then the battle starts
+				scr_custom_call_after_textbox_delayed(function()
+				{
+				    scr_set_battle_sprite(obj_ralsei, spr_ralsei_battle_intro, spr_ralsei_battle_idle, false);
+				    audio_play_sound(snd_taking_out_sword, 1, false);
+
+				    scr_call_on_anim_frame(obj_ralsei, spr_ralsei_battle_intro, sprite_get_number(spr_ralsei_battle_intro) - 1, function()
+				    {
+				        scr_call_after_frames(function()
+				        {
+				            scr_set_battle_sprite(obj_susie,  spr_susie_battle_idle,  noone, true);
+				            scr_set_battle_sprite(obj_ralsei, spr_ralsei_battle_idle, noone, true);
+
+				            with (obj_UI) instance_destroy();
+				            instance_create_depth(0, 0, -100, obj_UI);
+
+				            scr_party_init([
+				                {
+				                    name: "Susie", hp: 290, max_hp: 290, body: obj_susie, body_hurt_sprite: spr_susie_hurt,
+				                    box_offset_x: -1, box_offset_y: -1,
+				                    sprite_frame: spr_susiebox_empty, hurt_frame: spr_susiebox_hurtempty,
+				                    frame_scale: 43 / 156, divider_y: 156,
+				                    bar_offset_x: 516, bar_offset_y: 88, bar_width: 304, bar_height: 36,
+				                    bar_fill_color: make_color_rgb(255, 0, 255),
+				                    hp_current_x: 642, hp_max_x: 701, hp_text_offset_y: 36,
+				                    hurt_flash_time: 20,
+				                    attack_frame: spr_susiebox_attack_empty,
+				                    icon_rect_x: 51, icon_rect_y: 36, icon_rect_w: 147, icon_rect_h: 102, hurt_icon_scale: 1
+				                },
+				                {
+				                    name: "Ralsei", hp: 210, max_hp: 210, body: obj_ralsei, body_hurt_sprite: spr_ralsei_shocked,
+				                    box_offset_x: 236, box_offset_y: 0,
+				                    sprite_frame: spr_ralseibox_empty, hurt_frame: spr_ralseibox_hurtempty,
+				                    frame_scale: 42 / 153, divider_y: 153,
+				                    bar_offset_x: 513, bar_offset_y: 85, bar_width: 304, bar_height: 36,
+				                    bar_fill_color: make_color_rgb(1, 255, 0),
+				                    hp_current_x: 639, hp_max_x: 698, hp_text_offset_y: 33,
+				                    hurt_flash_time: 20,
+				                    attack_frame: spr_ralseibox_attack_empty,
+				                    icon_rect_x: 36, icon_rect_y: 21, icon_rect_w: 137, icon_rect_h: 101, hurt_icon_scale: 0.95
+				                }
+				            ]);
+
+				            // TODO: Knight battle music + turn structure go here
+				        }, 15);
+				    });
+				}, 0);
 		break;
 		
 /*

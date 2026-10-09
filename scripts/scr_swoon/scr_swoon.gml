@@ -274,3 +274,27 @@ function scr_run_off_left(_runners, _px, _on_done = undefined)
 
     if (_on_done != undefined) scr_call_after_frames(_on_done, _longest + 2);
 }
+
+/// swap into a battle sprite without the body jumping.
+/// _ref = sprite whose visible body to line up with (use the battle idle).
+/// pass noone for _ref to swap in place (intro -> idle share the same body spot).
+function scr_set_battle_sprite(_obj, _sprite, _ref, _loop)
+{
+    if (!instance_exists(_obj)) exit;
+    with (_obj)
+    {
+        if (_ref != noone)
+        {
+            var _old = sprite_index;
+            var _fx = x + ((sprite_get_bbox_left(_old) + sprite_get_bbox_right(_old) + 1) / 2 - sprite_get_xoffset(_old)) * image_xscale;
+            var _fy = y + (sprite_get_bbox_bottom(_old) + 1 - sprite_get_yoffset(_old)) * image_yscale;
+            x = _fx - ((sprite_get_bbox_left(_ref) + sprite_get_bbox_right(_ref) + 1) / 2 - sprite_get_xoffset(_ref)) * image_xscale;
+            y = _fy - (sprite_get_bbox_bottom(_ref) + 1 - sprite_get_yoffset(_ref)) * image_yscale;
+        }
+        sprite_index = _sprite;
+        last_sprite  = _sprite; // already placed, stop scr_auto_keep_feet from re-anchoring
+        image_index  = 0;
+        image_speed  = 1;
+        anim_loop    = _loop;
+    }
+}
