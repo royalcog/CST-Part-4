@@ -756,6 +756,7 @@
     {"name":"spr_roark_slash_ralsei","order":8,"path":"sprites/spr_roark_slash_ralsei/spr_roark_slash_ralsei.yy",},
     {"name":"spr_roark_slash_susie_1","order":7,"path":"sprites/spr_roark_slash_susie_1/spr_roark_slash_susie_1.yy",},
     {"name":"spr_roark_slash_susie_2","order":12,"path":"sprites/spr_roark_slash_susie_2/spr_roark_slash_susie_2.yy",},
+    {"name":"spr_roark_starchild","order":13,"path":"sprites/spr_roark_starchild/spr_roark_starchild.yy",},
     {"name":"spr_roark_sword_appear_new","order":5,"path":"sprites/spr_roark_sword_appear_new/spr_roark_sword_appear_new.yy",},
     {"name":"spr_sanctuary_tiles","order":1,"path":"sprites/spr_sanctuary_tiles/spr_sanctuary_tiles.yy",},
     {"name":"spr_shelter_panel","order":16,"path":"sprites/spr_shelter_panel/spr_shelter_panel.yy",},
