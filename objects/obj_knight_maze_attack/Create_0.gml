@@ -392,11 +392,6 @@ break_box = function()
     scr_camera_shake(break_shake, 20);
     break_flash = 1;
     buster = undefined;
-
-    if (instance_exists(obj_susie))
-    {
-        with (obj_susie) { sprite_index = spr_susie_battle_idle; image_index = 0; image_speed = 1; anim_loop = true; }
-    }
     state = "broken";
 }
 
