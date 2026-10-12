@@ -122,14 +122,11 @@ if (chars_per_s > 0) {
                 }
             }
             
-            if (_cur_char == "#")
+            if (_cur_char == "#" && instance_exists(obj_noelle))
             {
                 var _next = string_char_at(_layout_text, char_index + 1);
-                if instance_exists(obj_noelle)
-                {
-                    obj_noelle.anim_pause_frame = real(_next);
-                    obj_noelle.anim_paused_for_talkbox = true;
-                }
+                obj_noelle.anim_pause_frame = real(_next);
+                obj_noelle.anim_paused_for_talkbox = true;
                 char_index = min(char_index + 1, total_len);
             }
 			

@@ -359,6 +359,28 @@ function scr_start_knight_attack3()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_starchild_attack);
 }
 
+function scr_start_knight_attack4()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_maze_attack);
+}
+
+/// the Knight ends the battle: music cuts, the UI slides off. everyone stays exactly where they are, HP and all
+function scr_knight_stop_battle()
+{
+    if (instance_exists(obj_UI)) obj_UI.target_x = obj_UI.offscreen_x;
+    if (global.music != noone) audio_stop_sound(global.music);
+    global.music = noone;
+    global.song  = noone; // so start_knight_battle_music() starts it fresh
+}
+
+/// Susie starts it right back up: same boxes, same HP
+function scr_knight_restart_battle()
+{
+    if (instance_exists(obj_UI)) obj_UI.target_x = obj_UI.onscreen_x;
+    start_knight_battle_music();
+}
+
 /// round 2: the Knight swoons Susie and she blocks it. she's in her defend pose the whole time
 /// it's up (so that's what you see when it clears), music pauses, then after a beat a "0" pops up on her
 function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _popup_delay = 60)
@@ -531,8 +553,27 @@ function scr_start_knight_battle()
                 { speaker: obj_susie,  text: "Nobody talks bad about Noelle and gets away with it." },
                 { speaker: obj_ralsei, text: "..." }
             ],
-            king_box_attack: scr_start_knight_attack3
+		king_box_attack: scr_start_knight_attack3
+        },
+
+        // ROUND 4 — the Knight stops the battle, Susie starts it again + the shifting maze
+        {
+            attackers: scr_party_round(_party, { Susie: 26, Ralsei: 19 }),
+            dialogue_batch: [
+                { speaker: obj_knight, text: "This... is pointless...", cps: _rk_cps, snd: snd_knight_phone_call },
+
+                { run: scr_knight_stop_battle, wait: 60 },
+
+                { speaker: obj_susie,  text: "Hell NO you don't." },
+
+                { run: scr_knight_restart_battle, wait: 40 },
+
+                { speaker: obj_knight, text: "What...", cps: _rk_cps },
+                { speaker: obj_susie,  text: "If you can stop them, I can start them." },
+                { speaker: obj_susie,  text: "You're outmatched." }
+            ],
+            king_box_attack: scr_start_knight_attack4
         }
-        // rounds 4+ go here as they're built
+        // rounds 5+ go here as they're built
     ];
 }

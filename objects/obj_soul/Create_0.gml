@@ -9,3 +9,5 @@ hdir = 0;
 vdir = 0;
 
 split_controlled = false; // true while the split-box attack is moving/drawing the soul itself
+
+external_move = false; // true while an attack moves the soul itself (still drawn normally)

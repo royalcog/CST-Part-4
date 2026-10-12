@@ -72,14 +72,17 @@ draw_set_color(text_color);
 var base_text = _layout_text;
 var shown = (chars_per_s > 0) ? string_copy(base_text, 1, char_index) : base_text;
 shown = string_replace_all(shown, "@", "");
-shown = string_replace_all(shown, "$", "");
+if (instance_exists(obj_tenna)) shown = string_replace_all(shown, "$", "");
 shown = string_replace_all(shown, "^", "");
 shown = string_replace_all(shown, "`", "");
 shown = string_replace_all(shown, "~", "");
 shown = string_replace_all(shown, "+", "");
-for (var i = 0; i <= 9; i++)
+if (instance_exists(obj_noelle))
 {
-    shown = string_replace_all(shown, "#" + string(i), "");
+    for (var i = 0; i <= 9; i++)
+    {
+        shown = string_replace_all(shown, "#" + string(i), "");
+    }
 }
 draw_text_ext(x1, y1, shown, line_sep, wrap_w);
 
