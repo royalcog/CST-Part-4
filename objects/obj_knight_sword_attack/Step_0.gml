@@ -5,7 +5,7 @@ var _closing = (obj_battlebox.state == "closing");
 var _half    = sprite_get_width(spr_roaringknight_sword) * sword_scale / 2;
 
 // --- spawn ---
-if (!_closing && spawned < sword_count)
+if (!_closing && spawned < sword_count && scr_box_scale_settled())
 {
     timer--;
     if (timer <= 0)
@@ -79,13 +79,7 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
             _s.t++;
             _s.alpha = min(_s.alpha + 1 / fade_in_frames, 1);
 
-            // slide along its side to line up with the soul, until it's nearly fully red
-            if (_s.t / _s.charge < track_stop && instance_exists(obj_soul))
-            {
-                if (_s.horizontal) _s.y = lerp(_s.y, clamp(obj_soul.y, _in.y1, _in.y2), _s.track);
-                else               _s.x = lerp(_s.x, clamp(obj_soul.x, _in.x1, _in.x2), _s.track);
-            }
-
+            // slide to line up with the soul, until it's nearly fully red
             if (_s.t / _s.charge < track_stop && instance_exists(obj_soul))
             {
                 if (_s.diagonal)
@@ -100,6 +94,14 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
                 }
                 else if (_s.horizontal) _s.y = lerp(_s.y, clamp(obj_soul.y, _in.y1, _in.y2), _s.track);
                 else                    _s.x = lerp(_s.x, clamp(obj_soul.x, _in.x1, _in.x2), _s.track);
+            }
+
+            if (_s.t >= _s.charge)
+            {
+                _s.vx = lengthdir_x(launch_speed, _s.angle);
+                _s.vy = lengthdir_y(launch_speed, _s.angle);
+                _s.state = "fly";
+                audio_play_sound(snd_knight_cut, 1, false);
             }
         }
     }
