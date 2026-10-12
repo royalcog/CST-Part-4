@@ -20,3 +20,7 @@ char_id = CharID.Knight;
 
 knight_hp = 3000;            // placeholder — tune once the fight's pacing is in
 droop_up_stops_audio = true; // the old cutscene cut all sound at droop_up; the battle turns this off
+
+hit_offset_x = 58;
+hit_offset_y = 30;
+popup_nudge_x = 20; // extra push right for his damage numbers only (doesn't move where attacks land)

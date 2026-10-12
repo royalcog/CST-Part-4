@@ -326,8 +326,9 @@ function scr_knight_damage(_amount, _color_top = c_white, _color_bottom = c_whit
     if (!instance_exists(obj_knight)) return noone;
     obj_knight.knight_hp = max(obj_knight.knight_hp - _amount, 0);
     audio_play_sound(snd_damagetaken, 1, false);
-    return scr_trigger_damage_popup(obj_knight, _amount, _color_top, _color_bottom, obj_knight.hit_offset_x, obj_knight.hit_offset_y);
+    return scr_trigger_damage_popup(obj_knight, _amount, _color_top, _color_bottom, obj_knight.hit_offset_x + obj_knight.popup_nudge_x, obj_knight.hit_offset_y);
 }
+
 
 function scr_start_knight_attack1()
 {
