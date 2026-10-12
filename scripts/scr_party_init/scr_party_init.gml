@@ -339,14 +339,22 @@ function scr_start_knight_attack1()
 function scr_start_knight_attack2()
 {
     start_knight_battle_music(1500);
+
+    // drops her guard once the attack starts
+    if (instance_exists(obj_susie) && (obj_susie.sprite_index == spr_susie_defend || obj_susie.sprite_index == spr_susie_defend_peek))
+    {
+        scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true);
+    }
+
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_split_attack);
 }
 
 /// round 2: the Knight swoons Susie and she blocks it. she's in her defend pose the whole time
-/// it's up (so that's what you see when it clears), music pauses, then a "0" pops up on her
-function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2)
+/// it's up (so that's what you see when it clears), music pauses, then after a beat a "0" pops up on her
+function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _popup_delay = 60)
 {
     global.knight_swoon_done = false;
+    global.knight_swoon_popup_delay = _popup_delay;
     if (global.music != noone) audio_pause_sound(global.music);
 
     // feet stay planted: line up the bottom of her visible body, not the canvas
@@ -356,15 +364,19 @@ function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2)
     {
         if (global.music != noone) audio_resume_sound(global.music);
 
-        if (instance_exists(obj_susie))
+        // holds the block for a second, then shows it did nothing
+        scr_call_after_frames(function()
         {
-            // over the middle of her body, not her sprite's origin
-            var _b   = scr_get_body(obj_susie);
-            var _h   = (sprite_get_bbox_bottom(obj_susie.sprite_index) - sprite_get_bbox_top(obj_susie.sprite_index)) * obj_susie.image_yscale;
-            var _col = make_color_rgb(255, 0, 255);
-            scr_trigger_damage_popup(obj_susie, 0, _col, _col, _b.x - obj_susie.x, _b.y - obj_susie.y - _h * 0.6);
-        }
-        global.knight_swoon_done = true;
+            if (instance_exists(obj_susie))
+            {
+                // over the middle of her body, not her sprite's origin
+                var _b   = scr_get_body(obj_susie);
+                var _h   = (sprite_get_bbox_bottom(obj_susie.sprite_index) - sprite_get_bbox_top(obj_susie.sprite_index)) * obj_susie.image_yscale;
+                var _col = make_color_rgb(255, 0, 255);
+                scr_trigger_damage_popup(obj_susie, 0, _col, _col, _b.x - obj_susie.x, _b.y - obj_susie.y - _h * 0.6);
+            }
+            global.knight_swoon_done = true;
+        }, global.knight_swoon_popup_delay);
     });
 }
 
@@ -459,16 +471,14 @@ function scr_start_knight_battle()
                 { speaker: obj_susie,  text: "How could I?" },
                 { speaker: obj_susie,  text: "It's not like they can", instant_cutoff: true },
 
-                { run: scr_knight_swoon_block_susie,
+				{ run: scr_knight_swoon_block_susie,
                   wait_until: function() { return global.knight_swoon_done; },
-                  wait: 30 },
+                  wait: 60 },
+
+                { speaker: obj_susie,  text: "..." },
 
                 // peeks out from behind her guard
                 { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_defend_peek, spr_susie_defend_peek, false); } },
-                { speaker: obj_susie,  text: "..." },
-
-                // drops the guard
-                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true); } },
                 { speaker: obj_susie,  text: "You're not screwing with us that easily." }
             ],
             king_box_attack: scr_start_knight_attack2
