@@ -353,6 +353,12 @@ function scr_start_knight_attack2()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_split_attack);
 }
 
+function scr_start_knight_attack3()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_starchild_attack);
+}
+
 /// round 2: the Knight swoons Susie and she blocks it. she's in her defend pose the whole time
 /// it's up (so that's what you see when it clears), music pauses, then after a beat a "0" pops up on her
 function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _popup_delay = 60)
@@ -511,8 +517,22 @@ function scr_start_knight_battle()
                 { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_defend_peek, spr_susie_defend_peek, false); } },
                 { speaker: obj_susie,  text: "You're not screwing with us that easily." }
             ],
-            king_box_attack: scr_start_knight_attack2
+                       king_box_attack: scr_start_knight_attack2
+        },
+
+        // ROUND 3 — Starchild
+        {
+            attackers: scr_party_round(_party, { Susie: 25, Ralsei: 18 }),
+            dialogue_batch: [
+                { speaker: obj_susie,  text: "Here comes the originality." },
+                { speaker: obj_ralsei, text: "Susie, why are you being so hateful?" },
+                { speaker: obj_ralsei, text: "I get we don't like them, but..." },
+                { speaker: obj_susie,  text: "..." },
+                { speaker: obj_susie,  text: "Nobody talks bad about Noelle and gets away with it." },
+                { speaker: obj_ralsei, text: "..." }
+            ],
+            king_box_attack: scr_start_knight_attack3
         }
-        // rounds 3+ go here as they're built
+        // rounds 4+ go here as they're built
     ];
 }

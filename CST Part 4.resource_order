@@ -53,6 +53,7 @@
     {"name":"Objects","order":1,"path":"folders/Battle System/Objects/Attacks/Knight/Objects.yy",},
     {"name":"Attack 1","order":1,"path":"folders/Battle System/Objects/Attacks/Knight/Objects/Attack 1.yy",},
     {"name":"Attack 2","order":2,"path":"folders/Battle System/Objects/Attacks/Knight/Objects/Attack 2.yy",},
+    {"name":"Attack 3","order":3,"path":"folders/Battle System/Objects/Attacks/Knight/Objects/Attack 3.yy",},
     {"name":"Scripts","order":2,"path":"folders/Battle System/Objects/Attacks/Knight/Scripts.yy",},
     {"name":"Sound Of Justice","order":5,"path":"folders/Battle System/Objects/Attacks/Sound Of Justice.yy",},
     {"name":"Giant Hammer Attack","order":1,"path":"folders/Battle System/Objects/Attacks/Sound Of Justice/Giant Hammer Attack.yy",},
