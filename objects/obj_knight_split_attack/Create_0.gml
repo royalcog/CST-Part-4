@@ -7,6 +7,7 @@ tip_angle_offset = 0;     // same as attack 1
 fade_in_frames   = 10;
 hit_radius       = 6;
 damage           = 45;
+wave_damage      = 51;  // each wave of light
 hit_color_top    = c_white;
 hit_color_bottom = c_white;
 

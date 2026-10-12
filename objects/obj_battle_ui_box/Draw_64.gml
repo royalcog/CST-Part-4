@@ -98,5 +98,7 @@ var _dw   = hp_digit_w   * _scale_x;
 var _dh   = hp_digit_h   * _scale_y;
 var _dgap = hp_digit_gap * _scale_x;
 
+draw_set_color(hp_display < 0 ? c_red : c_white);
 scr_draw_pixel_number(_cx, _cy, string(round(hp_display)), fa_right, _dw, _dh, _dgap, hp_font_native_w, hp_font_native_h);
+draw_set_color(c_white);
 scr_draw_pixel_number(_mx, _cy, string(max_hp), fa_left, _dw, _dh, _dgap, hp_font_native_w, hp_font_native_h);

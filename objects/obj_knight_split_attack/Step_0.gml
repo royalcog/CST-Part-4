@@ -252,9 +252,9 @@ for (var i = array_length(waves) - 1; i >= 0; i--)
     _w.y += lengthdir_y(_w.spd, _w.dir);
     _w.travelled += _w.spd;
 
-    if (instance_exists(obj_soul) && !obj_soul.invulnerable && wave_touches_soul(_w))
+	if (instance_exists(obj_soul) && !obj_soul.invulnerable && wave_touches_soul(_w))
     {
-        scr_soul_take_hit(damage, hit_color_top, hit_color_bottom);
+        scr_soul_take_hit(wave_damage, hit_color_top, hit_color_bottom);
     }
 
     if (_w.travelled >= _w.travel_max) array_delete(waves, i, 1);

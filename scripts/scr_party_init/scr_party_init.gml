@@ -38,6 +38,8 @@ function scr_party_init(_members)
 		_box.attack_frame     = variable_struct_exists(_m, "attack_frame") ? _m.attack_frame : _m.sprite_frame;
 		_box.body             = variable_struct_exists(_m, "body") ? _m.body : noone;
 		_box.body_hurt_sprite = variable_struct_exists(_m, "body_hurt_sprite") ? _m.body_hurt_sprite : -1;
+		_box.body_down_sprite = variable_struct_exists(_m, "body_down_sprite") ? _m.body_down_sprite : -1;
+		_box.body_idle_sprite = variable_struct_exists(_m, "body_idle_sprite") ? _m.body_idle_sprite : -1;
 		
 		if (i == 0) obj_UI.active_box = _box;
     }
@@ -278,6 +280,7 @@ function scr_duo_ui_setup(_instant = false, _susie_hp = 290, _ralsei_hp = 210)
     scr_party_init([
     {
         name: "Susie", hp: _susie_hp, max_hp: 290, body: obj_susie, body_hurt_sprite: spr_susie_hurt,
+        body_down_sprite: spr_susie_fell, body_idle_sprite: spr_susie_battle_idle,
         box_offset_x: -1, box_offset_y: -1,
         sprite_frame: spr_susiebox_empty, hurt_frame: spr_susiebox_hurtempty,
         frame_scale: 43 / 156, divider_y: 156,
@@ -290,6 +293,7 @@ function scr_duo_ui_setup(_instant = false, _susie_hp = 290, _ralsei_hp = 210)
     },
     {
         name: "Ralsei", hp: _ralsei_hp, max_hp: 210, body: obj_ralsei, body_hurt_sprite: spr_ralsei_shocked,
+        body_down_sprite: spr_ralsei_defeat, body_idle_sprite: spr_ralsei_battle_idle,
         box_offset_x: 236, box_offset_y: 0,
         sprite_frame: spr_ralseibox_empty, hurt_frame: spr_ralseibox_hurtempty,
         frame_scale: 42 / 153, divider_y: 153,
@@ -380,6 +384,31 @@ function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _
     });
 }
 
+/// copy of a party list with this round's damage swapped in.
+/// _damage: { Susie: 120, Ralsei: 90 } — anyone left out keeps the damage they already have
+function scr_party_round(_party, _damage)
+{
+    var _out = [];
+    for (var i = 0; i < array_length(_party); i++)
+    {
+        // copy each member so one round's numbers don't leak into the others
+        var _src  = _party[i];
+        var _copy = {};
+        var _keys = variable_struct_get_names(_src);
+        for (var k = 0; k < array_length(_keys); k++)
+        {
+            variable_struct_set(_copy, _keys[k], variable_struct_get(_src, _keys[k]));
+        }
+
+        if (variable_struct_exists(_damage, _src.box_name))
+        {
+            _copy.damage = variable_struct_get(_damage, _src.box_name);
+        }
+        array_push(_out, _copy);
+    }
+    return _out;
+}
+
 /// music + turn sequencer for the Knight fight. Call right after scr_duo_ui_setup().
 function scr_start_knight_battle()
 {
@@ -389,6 +418,7 @@ function scr_start_knight_battle()
     var _seq = instance_create_depth(0, 0, 0, obj_king_turn_sequencer);
     _seq.damage_func = scr_knight_damage;
 	_seq.hide_ui_during_box_attack = true;
+    _seq.swoon_kills = true; // the Knight's killing hits swoon to -999 instead of a normal down
     _seq.king_box_x_nudge = 0; // the 2-box panel is centered, so the box is too
 
     // only two party members this fight: rebuild the select order without Queen's empty slot
@@ -415,7 +445,7 @@ function scr_start_knight_battle()
     _seq.rounds = [
         // ROUND 1 — opening + Attack 1 (tracking swords)
         {
-            attackers: _party,
+			attackers: scr_party_round(_party, { Susie: 23, Ralsei: 16 }),
             dialogue_batch: [
                 { speaker: obj_susie,  text: "I hope you had time to heal yourself before we tear you to shreds again." },
 
@@ -461,9 +491,9 @@ function scr_start_knight_battle()
             king_box_attack: scr_start_knight_attack1
         },
 
-        // ROUND 2 — Susie blocks the swoon + Attack 2 (split box)
+        // ROUND 2
         {
-            attackers: _party,
+            attackers: scr_party_round(_party, { Susie: 24, Ralsei: 17 }),
             dialogue_batch: [
                 { speaker: obj_susie,  text: "So you're reusing attacks now?" },
                 { speaker: obj_susie,  text: "You must really love getting your ass kicked." },

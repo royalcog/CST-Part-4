@@ -67,3 +67,18 @@ stop_music_fade_ms = 600;
 damage_func = scr_king_damage; // who the party's hits land on — swap per fight (e.g. scr_knight_damage)
 
 hide_ui_during_box_attack = false; // Knight fight turns this on: party UI slides away while the box is up
+
+swoon_kills = false; // Knight fight: killing hits set HP to -999 and say SWOON
+
+member_down = function(_i)
+{
+    return _i < array_length(members) && members[_i] != noone && members[_i].hp <= 0;
+}
+
+/// first member from _from onward who can still act
+next_alive = function(_from)
+{
+    var _i = _from;
+    while (_i < array_length(members) && member_down(_i)) _i++;
+    return _i;
+}

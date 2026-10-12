@@ -1,8 +1,8 @@
-function scr_trigger_damage_popup(_target, _amount = 0, _color_top = c_white, _color_bottom = c_white, _x_offset = 0, _y_offset = -20)
+function scr_trigger_damage_popup(_target, _amount = 0, _color_top = c_white, _color_bottom = c_white, _x_offset = 0, _y_offset = -20, _sound = snd_hurt)
 {
     if (!instance_exists(_target)) return noone;
 
-    audio_play_sound(snd_hurt, 5, false);
+    if (_sound != noone) audio_play_sound(_sound, 5, false);
 
     // spawn one depth-step in front of whatever it's attached to, so
     // it's always visible in front of that target specifically —

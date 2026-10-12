@@ -34,13 +34,23 @@ switch (state)
             selected_attack = false;
         }
 
-        select_index = 0;
-        if (array_length(members) > 0 && members[select_index] != noone)
+        // downed members recover a bit each turn (and get back up once above 0)
+        scr_party_turn_recover();
+
+        select_index = next_alive(0);
+        if (select_index < array_length(members))
         {
-            obj_UI.active_box = members[select_index];
+            if (members[select_index] != noone) obj_UI.active_box = members[select_index];
+            timer = select_hold_frames;
+            state = "select_active";
         }
-        timer = select_hold_frames;
-        state = "select_active";
+        else
+        {
+            // nobody can act this turn
+            obj_UI.active_box = noone;
+            attack_index = 0;
+            state = "attacking_start";
+        }
     break;
 
     // Susie's box turns from normal -> attack, then Ralsei's, then Queen's — one at a time.
@@ -87,7 +97,7 @@ switch (state)
         timer--;
         if (timer <= 0)
         {
-            select_index++;
+            select_index = next_alive(select_index + 1); // skips anyone who's down
 
             if (select_index < array_length(members))
             {
@@ -110,6 +120,13 @@ switch (state)
         {
             state = (_round != noone && variable_struct_exists(_round, "is_final") && _round.is_final)
                 ? "final_dialogue_start" : "talk_start";
+            break;
+        }
+		
+		// swooned members don't attack
+        if (member_down(attack_index))
+        {
+            attack_index++;
             break;
         }
 

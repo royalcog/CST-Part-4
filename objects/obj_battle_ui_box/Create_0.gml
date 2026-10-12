@@ -40,6 +40,8 @@ active_raise_offset = 8; // how far up the active box lifts compared to resting 
 // character hurt pose (the actual Susie/Ralsei/Queen object, not the box art)
 body = noone;
 body_hurt_sprite = -1;
+body_down_sprite = -1; // swooned pose when HP drops to 0 or below
+body_idle_sprite = -1; // what they go back to when they revive
 body_inst = noone;
 body_saved = undefined;
 body_hurt_time = 30;    // how long the hurt pose holds
