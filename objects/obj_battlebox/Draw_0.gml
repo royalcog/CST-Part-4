@@ -1,3 +1,9 @@
+if (split_axis != "none")
+{
+    scr_draw_box_split(sprite_index, image_index, x, y, image_xscale, image_yscale, split_axis, split_off_a, split_off_b, image_blend, image_alpha);
+    exit;
+}
+
 // obj_battlebox's origin is top-left, but box_angle needs to rotate the
 // sprite around its CENTER (like it's being spun in place), not its corner.
 // So instead of just setting image_angle (which would rotate around the

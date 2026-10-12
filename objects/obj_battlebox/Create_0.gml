@@ -28,3 +28,8 @@ prev_target_scale_y = target_scale_y;
 // cache those separately once here.
 raw_width  = sprite_get_width(sprite_index);
 raw_height = sprite_get_height(sprite_index);
+
+// split-box attack: "h" = cut left-right, "v" = cut up-down; each half shifted by its offset
+split_axis  = "none";
+split_off_a = 0;
+split_off_b = 0;

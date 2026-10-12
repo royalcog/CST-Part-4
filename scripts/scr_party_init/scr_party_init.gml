@@ -336,6 +336,34 @@ function scr_start_knight_attack1()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_sword_attack);
 }
 
+function scr_start_knight_attack2()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_split_attack);
+}
+
+/// round 2: the Knight swoons Susie and she blocks it. music pauses while the swoon is up, then a "0" pops up on her
+function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2)
+{
+    global.knight_swoon_done = false;
+    if (global.music != noone) audio_pause_sound(global.music);
+
+    scr_swoon(_swoon_sprite, 180, function()
+    {
+        if (global.music != noone) audio_resume_sound(global.music);
+
+        if (instance_exists(obj_susie))
+        {
+            // over the middle of her body, not her sprite's origin
+            var _b   = scr_get_body(obj_susie);
+            var _h   = (sprite_get_bbox_bottom(obj_susie.sprite_index) - sprite_get_bbox_top(obj_susie.sprite_index)) * obj_susie.image_yscale;
+            var _col = make_color_rgb(255, 0, 255);
+            scr_trigger_damage_popup(obj_susie, 0, _col, _col, _b.x - obj_susie.x, _b.y - obj_susie.y - _h * 0.6);
+        }
+        global.knight_swoon_done = true;
+    });
+}
+
 /// music + turn sequencer for the Knight fight. Call right after scr_duo_ui_setup().
 function scr_start_knight_battle()
 {
@@ -415,7 +443,27 @@ function scr_start_knight_battle()
                 { speaker: obj_knight, text: "...", cps: _rk_cps }
             ],
             king_box_attack: scr_start_knight_attack1
+        },
+
+        // ROUND 2 — Susie blocks the swoon + Attack 2 (split box)
+        {
+            attackers: _party,
+            dialogue_batch: [
+                { speaker: obj_susie,  text: "So you're reusing attacks now?" },
+                { speaker: obj_susie,  text: "You must really love getting your ass kicked, then." },
+                { speaker: obj_ralsei, text: "Susie, don't prompt them otherwise..." },
+                { speaker: obj_susie,  text: "Or what?" },
+                { speaker: obj_susie,  text: "It's not like they can", instant_cutoff: true },
+
+                { run: scr_knight_swoon_block_susie,
+                  wait_until: function() { return global.knight_swoon_done; },
+                  wait: 30 },
+
+                { speaker: obj_susie,  text: "..." },
+                { speaker: obj_susie,  text: "You're not screwing with us that easily." }
+            ],
+            king_box_attack: scr_start_knight_attack2
         }
-        // rounds 2+ go here as they're built
+        // rounds 3+ go here as they're built
     ];
 }

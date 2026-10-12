@@ -7,3 +7,5 @@ flash_timer = 0;
 flash_interval = 6; // frames between flash toggles — faster flicker, same total invuln window
 hdir = 0;
 vdir = 0;
+
+split_controlled = false; // true while the split-box attack is moving/drawing the soul itself

@@ -77,7 +77,16 @@ if (instance_exists(obj_battlebox) && obj_battlebox.visible)
         // this cutout lined up with the box no matter what the camera is
         // doing, the same way the box itself always stays lined up with it
         var _p = scr_room_to_gui(_draw_x, _draw_y);
-        draw_sprite_ext(sprite_index, image_index, _p.x, _p.y, image_xscale * _p.sx, image_yscale * _p.sy, box_angle + _p.angle, c_white, 1);
+                var _p = scr_room_to_gui(_draw_x, _draw_y);
+        if (split_axis != "none")
+        {
+            var _k = (split_axis == "h") ? _p.sx : _p.sy;
+            scr_draw_box_split(sprite_index, image_index, _p.x, _p.y, image_xscale * _p.sx, image_yscale * _p.sy, split_axis, split_off_a * _k, split_off_b * _k, c_white, 1);
+        }
+        else
+        {
+            draw_sprite_ext(sprite_index, image_index, _p.x, _p.y, image_xscale * _p.sx, image_yscale * _p.sy, box_angle + _p.angle, c_white, 1);
+        }
     }
 }
 

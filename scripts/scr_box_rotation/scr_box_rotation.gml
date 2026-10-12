@@ -46,3 +46,25 @@ function scr_box_local_to_world(_lx, _ly)
     var _rel = scr_rotate_point(_lx - _c.x, _ly - _c.y, _angle);
     return { x: _c.x + _rel.x, y: _c.y + _rel.y };
 }
+
+/// draws a box sprite cut in half through its center, each half shifted along the cut by its own offset.
+/// "h" = top/bottom halves shifted sideways, "v" = left/right halves shifted up/down.
+/// (_dx, _dy) = where the whole sprite's top-left would be drawn
+function scr_draw_box_split(_spr, _img, _dx, _dy, _sx, _sy, _axis, _off_a, _off_b, _col, _alpha)
+{
+    var _w = sprite_get_width(_spr);
+    var _h = sprite_get_height(_spr);
+
+    if (_axis == "h")
+    {
+        var _r = floor(_h / 2);
+        draw_sprite_part_ext(_spr, _img, 0, 0,  _w, _r,      _dx + _off_a, _dy,            _sx, _sy, _col, _alpha);
+        draw_sprite_part_ext(_spr, _img, 0, _r, _w, _h - _r, _dx + _off_b, _dy + _r * _sy, _sx, _sy, _col, _alpha);
+    }
+    else
+    {
+        var _c = floor(_w / 2);
+        draw_sprite_part_ext(_spr, _img, 0,  0, _c,      _h, _dx,            _dy + _off_a, _sx, _sy, _col, _alpha);
+        draw_sprite_part_ext(_spr, _img, _c, 0, _w - _c, _h, _dx + _c * _sx, _dy + _off_b, _sx, _sy, _col, _alpha);
+    }
+}
