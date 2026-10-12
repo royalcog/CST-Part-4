@@ -33,7 +33,7 @@ if ball_phase == 3
         _s.angle = image_angle;
         _s.alpha = .75;
         _s.depth = depth + 1;
-        _s.drift_x = -2;
+        _s.drift_x = shadow_drift_x;
 		_s.drift_y = 0;
     }
 }
@@ -156,3 +156,8 @@ if (sprite_index == spr_roark_sword_appear_new)
         image_index = image_number - 1;
     }
 }
+
+// shift his TALKbox while drooped, back to normal once he's up
+var _drooped = (sprite_index == spr_roark_droop || sprite_index == spr_roark_faceaway_turning);
+talk_nudge_x = _drooped ? droop_talk_nudge_x : 0;
+talk_nudge_y = _drooped ? droop_talk_nudge_y : 0;

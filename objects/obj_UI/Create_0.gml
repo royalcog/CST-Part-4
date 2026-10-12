@@ -21,3 +21,7 @@ boxes_x_correction = -90; // pulls just the boxes back left, independent of obj_
 boxes_y_correction = 3; // pushes just the boxes down, independent of obj_UI's own anchor — tune this, not box_offset_y
 
 panel_full_width = false; // party-box mode: draw this panel stretched edge to edge behind the boxes
+
+ui_hidden   = false; // true = panel + party boxes slide down off the bottom
+hide_y      = 0;
+hide_drop   = 200;   // how far down it slides when hidden

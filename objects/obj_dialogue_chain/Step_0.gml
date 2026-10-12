@@ -49,8 +49,8 @@ if (dim_phase == 2) // run dialogue
 
                 var ww = (variable_struct_exists(e, "wrap") ? e.wrap : default_wrap);
 				var cid = sp.char_id;
-				var ox  = offx[cid];
-				var oy  = offy[cid];
+				var ox  = offx[cid] + (variable_instance_exists(sp, "talk_nudge_x") ? sp.talk_nudge_x : 0);
+				var oy  = offy[cid] + (variable_instance_exists(sp, "talk_nudge_y") ? sp.talk_nudge_y : 0);
 				var fp  = flip[cid];
 				var cps = variable_struct_exists(e, "cps") ? e.cps : default_cps;
 				var _keep_anim = !(variable_struct_exists(e, "keep_animating") && !e.keep_animating);

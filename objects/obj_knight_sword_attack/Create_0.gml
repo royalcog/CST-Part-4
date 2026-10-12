@@ -21,3 +21,5 @@ tip_angle_offset = 0;  // spr_roaringknight_sword assumed to point right; set to
 swords  = [];
 spawned = 0;
 timer   = start_delay;
+
+diagonal_chance = 0.35; // chance each sword comes in diagonally from a corner instead of straight from a side

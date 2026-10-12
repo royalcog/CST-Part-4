@@ -305,7 +305,7 @@
     {"name":"scr_clip_segment_to_box","order":1,"path":"scripts/scr_clip_segment_to_box/scr_clip_segment_to_box.yy",},
     {"name":"scr_dimming","order":13,"path":"scripts/scr_dimming/scr_dimming.yy",},
     {"name":"scr_doki_bar_visibility","order":6,"path":"scripts/scr_doki_bar_visibility/scr_doki_bar_visibility.yy",},
-    {"name":"scr_draw_pixel_number","order":3,"path":"scripts/scr_draw_pixel_number/scr_draw_pixel_number.yy",},
+    {"name":"scr_draw_pixel_number","order":16,"path":"scripts/scr_draw_pixel_number/scr_draw_pixel_number.yy",},
     {"name":"scr_ease","order":16,"path":"scripts/scr_ease/scr_ease.yy",},
     {"name":"scr_enums","order":2,"path":"scripts/scr_enums/scr_enums.yy",},
     {"name":"scr_extend_bg_left","order":2,"path":"scripts/scr_extend_bg_left/scr_extend_bg_left.yy",},

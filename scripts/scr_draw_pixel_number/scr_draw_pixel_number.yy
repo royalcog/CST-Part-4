@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"scr_draw_pixel_number",
   "parent":{
-    "name":"Party",
-    "path":"folders/Battle System/Scripts/Party.yy",
+    "name":"Scripts",
+    "path":"folders/Battle System/Scripts.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

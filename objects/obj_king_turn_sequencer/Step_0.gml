@@ -331,8 +331,9 @@ switch (state)
 	// spawns the real barrage if this round has one configured; otherwise
 	// falls back to the old fixed-length placeholder gap
 		case "king_attack_start":
-		    if (_round != noone && variable_struct_exists(_round, "king_box_attack"))
+			if (_round != noone && variable_struct_exists(_round, "king_box_attack"))
 		    {
+		        if (hide_ui_during_box_attack) scr_ui_slide_down();
 		        with (obj_soul) instance_destroy();
 		        with (obj_battlebox) instance_destroy();
 		        box_inst = scr_spawn_battlebox(king_box_x_nudge);
@@ -373,6 +374,7 @@ switch (state)
 		case "king_box_close_wait":
 		    if (!instance_exists(box_inst))
 		    {
+		        if (hide_ui_during_box_attack) scr_ui_slide_up();
 		        timer = king_attack_end_pause_frames;
 		        state = "king_attack_wait"; // existing countdown, then advance_round
 		    }

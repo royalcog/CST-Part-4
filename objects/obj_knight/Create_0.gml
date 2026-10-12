@@ -24,3 +24,11 @@ droop_up_stops_audio = true; // the old cutscene cut all sound at droop_up; the 
 hit_offset_x = 58;
 hit_offset_y = 30;
 popup_nudge_x = 20; // extra push right for his damage numbers only (doesn't move where attacks land)
+
+// extra TALKbox shift while he's drooped (added on top of offx/offy[CharID.Knight])
+talk_nudge_x = 0;
+talk_nudge_y = 0;
+droop_talk_nudge_x = -40; // negative = left
+droop_talk_nudge_y = 25;  // positive = down
+
+shadow_drift_x = 2; // hover-shadow drift direction: positive = right, negative = left

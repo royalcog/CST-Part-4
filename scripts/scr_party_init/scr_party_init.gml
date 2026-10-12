@@ -344,6 +344,7 @@ function scr_start_knight_battle()
     with (obj_king_turn_sequencer) instance_destroy();
     var _seq = instance_create_depth(0, 0, 0, obj_king_turn_sequencer);
     _seq.damage_func = scr_knight_damage;
+	_seq.hide_ui_during_box_attack = true;
     _seq.king_box_x_nudge = 0; // the 2-box panel is centered, so the box is too
 
     // only two party members this fight: rebuild the select order without Queen's empty slot

@@ -65,3 +65,5 @@ stop_battle_frames = 45;  // how long the UI gets to slide off before everything
 stop_music_fade_ms = 600;
 
 damage_func = scr_king_damage; // who the party's hits land on — swap per fight (e.g. scr_knight_damage)
+
+hide_ui_during_box_attack = false; // Knight fight turns this on: party UI slides away while the box is up

@@ -15,3 +15,13 @@ function scr_ui_hide()
         obj_UI.target_x = obj_UI.offscreen_x;
     }
 }
+
+function scr_ui_slide_down()
+{
+    if (instance_exists(obj_UI)) obj_UI.ui_hidden = true;
+}
+
+function scr_ui_slide_up()
+{
+    if (instance_exists(obj_UI)) obj_UI.ui_hidden = false;
+}
