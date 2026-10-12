@@ -23,19 +23,15 @@ what_at        = 900;   // 15s: "What the..."
 cheater_at     = 1800;  // 30s: "You little cheater..."
 
 // --- rude buster ---
-buster_sprite     = spr_susie_battle_intro; // her swing
-buster_fire_frame = 2;
-buster_speed      = 14;
-buster_radius     = 28;
-buster_spin       = 18;
-buster_color      = make_color_rgb(255, 0, 255);
-buster_trail_len  = 6;
-launch_sound      = snd_boost;
-break_sounds      = [snd_glassbreak, snd_impact];
-break_shake       = 6;
-chunks_x          = 6;  // how many pieces the box breaks into
-chunks_y          = 5;
-debris_gravity    = 0.35;
+buster_sprite      = spr_susie_rudebuster;
+buster_fire_frame  = 7;     // the projectile leaves her swing on this frame
+buster_projectile  = spr_rudebuster_projectile;
+buster_scale       = 2;     // Susie's drawn at 2x, so the blast matches
+buster_anim_speed  = 10 / 60; // the projectile's own 10fps color cycle
+buster_spawn_x     = 38;    // where it leaves the swing, in her sprite's px from her origin (her scale gets applied)
+buster_spawn_y     = -41;
+buster_speed       = 14;
+buster_trail_len   = 6;
 
 // --- after the break ---
 free_margin    = 8;
@@ -314,17 +310,28 @@ start_buster = function()
     warn_timer = 0;
     if (instance_exists(obj_susie))
     {
-        with (obj_susie) { sprite_index = other.buster_sprite; image_index = 0; image_speed = 1; anim_loop = false; }
+        with (obj_susie)
+        {
+            sprite_index = other.buster_sprite;
+            last_sprite  = sprite_index; // origins already line up, End Step shouldn't re-anchor her
+            image_index  = 0;
+            image_speed  = 1;
+            anim_loop    = false;
+        }
     }
     state = "buster_windup";
 }
 
 launch_buster = function()
 {
-    var _sx = instance_exists(obj_susie) ? (obj_susie.bbox_left + obj_susie.bbox_right) / 2 : ox;
-    var _sy = instance_exists(obj_susie) ? (obj_susie.bbox_top + obj_susie.bbox_bottom) / 2 : oy;
-    var _c  = scr_box_center();
-    buster = { x: _sx, y: _sy, tx: _c.x, ty: _c.y, dir: point_direction(_sx, _sy, _c.x, _c.y), ang: 0, trail: [] };
+    var _sx = ox, _sy = oy;
+    if (instance_exists(obj_susie))
+    {
+        _sx = obj_susie.x + buster_spawn_x * obj_susie.image_xscale;
+        _sy = obj_susie.y + buster_spawn_y * obj_susie.image_yscale;
+    }
+    var _c = scr_box_center();
+    buster = { x: _sx, y: _sy, tx: _c.x, ty: _c.y, dir: point_direction(_sx, _sy, _c.x, _c.y), frame: 0, trail: [] };
     if (launch_sound != noone) audio_play_sound(launch_sound, 1, false);
     state = "buster_fly";
 }
@@ -420,7 +427,6 @@ draw_wall = function(_now, _next, _r, _blink)
     draw_rectangle(_r.x1, _r.y1, _r.x2 - 1, _r.y2 - 1, false);
 }
 
-draw_crescent = function(_x, _y, _ang, _r, _thick, _col, _alpha)
 {
     var _n = 10, _span = 100;
     draw_set_color(_col);

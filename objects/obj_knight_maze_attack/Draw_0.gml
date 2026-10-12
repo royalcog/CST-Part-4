@@ -25,17 +25,16 @@ if (maze != undefined && cols > 0)
 // rude buster
 if (buster != undefined)
 {
-    gpu_set_blendmode(bm_add);
     var _n = array_length(buster.trail);
+    gpu_set_blendmode(bm_add);
     for (var j = _n - 1; j >= 0; j--)
     {
         var _tr = buster.trail[j];
-        draw_crescent(_tr.x, _tr.y, _tr.ang, buster_radius, 8, buster_color, 0.4 * (1 - (j + 1) / (_n + 1)));
+        draw_sprite_ext(buster_projectile, _tr.frame, _tr.x, _tr.y, buster_scale, buster_scale, buster.dir, c_white,
+            0.35 * (1 - (j + 1) / (_n + 1)));
     }
-    draw_crescent(buster.x, buster.y, buster.ang, buster_radius, 20, buster_color, 0.35); // glow
     gpu_set_blendmode(bm_normal);
-    draw_crescent(buster.x, buster.y, buster.ang, buster_radius, 8, buster_color, 1);
-    draw_crescent(buster.x, buster.y, buster.ang, buster_radius * 0.8, 3, c_white, 1);
+    draw_sprite_ext(buster_projectile, buster.frame, buster.x, buster.y, buster_scale, buster_scale, buster.dir, c_white, 1);
 }
 
 // falling pieces

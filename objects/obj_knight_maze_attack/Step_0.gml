@@ -15,6 +15,19 @@ for (var i = array_length(debris) - 1; i >= 0; i--)
 }
 break_flash = max(break_flash - 0.05, 0);
 
+// Susie goes back to idle once her Rude Buster swing has fully played out
+if (instance_exists(obj_susie) && obj_susie.sprite_index == buster_sprite && obj_susie.image_speed == 0)
+{
+    with (obj_susie)
+    {
+        sprite_index = spr_susie_battle_idle;
+        last_sprite  = sprite_index;
+        image_index  = 0;
+        image_speed  = 1;
+        anim_loop    = true;
+    }
+}
+
 switch (state)
 {
     case "grow":
@@ -86,10 +99,10 @@ switch (state)
         }
         else if (state == "buster_fly")
         {
-            array_insert(buster.trail, 0, { x: buster.x, y: buster.y, ang: buster.ang });
+            array_insert(buster.trail, 0, { x: buster.x, y: buster.y, frame: buster.frame });
             if (array_length(buster.trail) > buster_trail_len) array_pop(buster.trail);
 
-            buster.ang += buster_spin;
+            buster.frame += buster_anim_speed;
             if (point_distance(buster.x, buster.y, buster.tx, buster.ty) <= buster_speed)
             {
                 break_box();
