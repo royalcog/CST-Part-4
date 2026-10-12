@@ -342,11 +342,15 @@ function scr_start_knight_attack2()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_split_attack);
 }
 
-/// round 2: the Knight swoons Susie and she blocks it. music pauses while the swoon is up, then a "0" pops up on her
+/// round 2: the Knight swoons Susie and she blocks it. she's in her defend pose the whole time
+/// it's up (so that's what you see when it clears), music pauses, then a "0" pops up on her
 function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2)
 {
     global.knight_swoon_done = false;
     if (global.music != noone) audio_pause_sound(global.music);
+
+    // feet stay planted: line up the bottom of her visible body, not the canvas
+    scr_set_battle_sprite(obj_susie, spr_susie_defend, spr_susie_defend, false);
 
     scr_swoon(_swoon_sprite, 180, function()
     {
@@ -450,16 +454,21 @@ function scr_start_knight_battle()
             attackers: _party,
             dialogue_batch: [
                 { speaker: obj_susie,  text: "So you're reusing attacks now?" },
-                { speaker: obj_susie,  text: "You must really love getting your ass kicked, then." },
-                { speaker: obj_ralsei, text: "Susie, don't prompt them otherwise..." },
-                { speaker: obj_susie,  text: "Or what?" },
+                { speaker: obj_susie,  text: "You must really love getting your ass kicked." },
+                { speaker: obj_ralsei, text: "Susie, please don't make this worse..." },
+                { speaker: obj_susie,  text: "How could I?" },
                 { speaker: obj_susie,  text: "It's not like they can", instant_cutoff: true },
 
                 { run: scr_knight_swoon_block_susie,
                   wait_until: function() { return global.knight_swoon_done; },
                   wait: 30 },
 
+                // peeks out from behind her guard
+                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_defend_peek, spr_susie_defend_peek, false); } },
                 { speaker: obj_susie,  text: "..." },
+
+                // drops the guard
+                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true); } },
                 { speaker: obj_susie,  text: "You're not screwing with us that easily." }
             ],
             king_box_attack: scr_start_knight_attack2
