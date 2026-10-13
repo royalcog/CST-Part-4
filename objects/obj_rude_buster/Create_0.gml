@@ -14,6 +14,10 @@ break_shake     = 6;
 chunks_x        = 6;
 chunks_y        = 5;
 debris_gravity  = 0.35;
+target_x     = undefined; // set both to aim somewhere other than the box's center
+target_y     = undefined;
+break_on_hit = true;      // false: it just lands (sets landed) and the box stays
+landed       = false;
 
 // --- state ---
 state      = "windup"; // windup -> fly -> broken
@@ -48,7 +52,8 @@ launch = function()
     var _sx = instance_exists(obj_susie) ? obj_susie.x + spawn_x * obj_susie.image_xscale : 0;
     var _sy = instance_exists(obj_susie) ? obj_susie.y + spawn_y * obj_susie.image_yscale : 0;
     var _tx, _ty;
-    if (instance_exists(obj_battlebox)) { var _c = scr_box_center(); _tx = _c.x; _ty = _c.y; }
+    if (!is_undefined(target_x)) { _tx = target_x; _ty = target_y; }
+    else if (instance_exists(obj_battlebox)) { var _c = scr_box_center(); _tx = _c.x; _ty = _c.y; }
     else { var _v = view_rect(); _tx = (_v.x1 + _v.x2) / 2; _ty = (_v.y1 + _v.y2) / 2; }
 
     proj = { x: _sx, y: _sy, tx: _tx, ty: _ty, dir: point_direction(_sx, _sy, _tx, _ty), frame: 0, trail: [] };
@@ -87,5 +92,6 @@ break_box = function()
     flash  = 1;
     proj   = undefined;
     broken = true;
+	landed = true;
     state  = "broken";
 }

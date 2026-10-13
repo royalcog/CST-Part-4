@@ -377,6 +377,18 @@ function scr_start_knight_attack5()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_lightblue_attack);
 }
 
+function scr_start_knight_attack6()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_gridturn_attack);
+}
+
+function scr_start_knight_attack7()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_susiewall_attack);
+}
+
 /// the Knight ends the battle: music cuts, the UI slides off. everyone stays exactly where they are, HP and all
 function scr_knight_stop_battle()
 {
@@ -630,8 +642,26 @@ function scr_start_knight_battle()
                 { speaker: obj_ralsei, text: "Keep doing it, Susie." },
                 { speaker: obj_susie,  text: "Hell. Yeah." }
             ],
-            king_box_attack: scr_start_knight_attack5
+        king_box_attack: scr_start_knight_attack5
+        },
+
+        // ROUND 6 — the grid turns
+        {
+            attackers: scr_party_round(_party, { Susie: 28, Ralsei: 21 }),
+            dialogue_batch: [
+                // dialogue goes here
+            ],
+            king_box_attack: scr_start_knight_attack6
+        },
+
+        // ROUND 7 — Susie's wall
+        {
+            attackers: scr_party_round(_party, { Susie: 29, Ralsei: 22 }),
+            dialogue_batch: [
+                // dialogue goes here
+            ],
+            king_box_attack: scr_start_knight_attack7
         }
-        // rounds 6+ go here as they're built
+        // rounds 8+ go here as they're built
     ];
 }

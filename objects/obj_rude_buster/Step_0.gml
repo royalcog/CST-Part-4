@@ -43,7 +43,16 @@ switch (state)
         if (array_length(proj.trail) > trail_len) array_pop(proj.trail);
         proj.frame += proj_anim_speed;
 
-        if (point_distance(proj.x, proj.y, proj.tx, proj.ty) <= proj_speed) break_box();
+        if (point_distance(proj.x, proj.y, proj.tx, proj.ty) <= proj_speed)
+        {
+            if (break_on_hit) break_box();
+            else
+            {
+                landed = true;
+                proj = undefined;
+                state = "broken"; // nothing broke, it just cleans itself up once Susie's done
+            }
+        }
         else
         {
             proj.x += lengthdir_x(proj_speed, proj.dir);

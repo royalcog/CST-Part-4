@@ -28,6 +28,7 @@ function scr_soul_grid_step()
     var _ch = (_b.y2 - _b.y1) / 3;
 
     // newest press wins, and a press mid-move is saved for when it arrives
+    // (0 right, 1 up, 2 left, 3 down — on screen)
     if (keyboard_check_pressed(vk_right)) grid_buffer = 0;
     if (keyboard_check_pressed(vk_up))    grid_buffer = 1;
     if (keyboard_check_pressed(vk_left))  grid_buffer = 2;
@@ -50,6 +51,11 @@ function scr_soul_grid_step()
 
         if (_dir != -1)
         {
+            // the box may be turned: convert the screen direction into the grid's own
+            var _turns = 0;
+            if (instance_exists(obj_battlebox)) _turns = ((round(obj_battlebox.box_angle / 90) mod 4) + 4) mod 4;
+            _dir = ((_dir - _turns) mod 4 + 4) mod 4;
+
             grid_c = clamp(grid_c + (_dir == 0) - (_dir == 2), 0, 2);
             grid_r = clamp(grid_r + (_dir == 3) - (_dir == 1), 0, 2);
             _t = scr_soul_grid_target(_b, _cw, _ch);
