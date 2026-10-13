@@ -7,6 +7,12 @@ for (var i = array_length(slashes) - 1; i >= 0; i--)
     var _sl = slashes[i];
     _sl.t++;
 
+    if (_sl.state == "warn" && !_sl.swung && _sl.t >= _sl.charge - knight_swing_lead)
+    {
+        _sl.swung = true;
+        knight_swing();
+    }
+
     if (_sl.state == "warn" && _sl.t >= _sl.charge)
     {
         _sl.state = "cut";
@@ -25,6 +31,17 @@ for (var i = array_length(slashes) - 1; i >= 0; i--)
             scr_soul_take_hit(slash_damage, hit_color_top, hit_color_bottom);
         }
         if (_sl.t >= cut_frames) array_delete(slashes, i, 1);
+    }
+}
+
+// the Knight goes back to normal a bit after his last swing finishes
+if (!is_undefined(knight_saved))
+{
+    var _swing_done = !instance_exists(obj_knight) || obj_knight.sprite_index != knight_attack_sprite || obj_knight.image_speed == 0;
+    if (_swing_done)
+    {
+        knight_return_t--;
+        if (knight_return_t <= 0) knight_restore();
     }
 }
 
