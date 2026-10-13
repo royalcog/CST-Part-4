@@ -689,11 +689,12 @@ function scr_start_knight_battle()
         {
             attackers: scr_party_round(_party, {
                 Susie: 29,
-                Ralsei: {
+				Ralsei: {
                     damage: "MISS",
                     ready_sprite:  spr_ralsei_spellready,
                     attack_sprite: spr_ralsei_spell,
-                    attack_sound:  snd_boost,
+                    attack_sound:  snd_spell_pacify,
+                    attack_frame:  spr_ralseibox_spell_empty,
                     pre_talk: [ { speaker: obj_ralsei, text: "Let's try this..." } ]
                 }
             }),

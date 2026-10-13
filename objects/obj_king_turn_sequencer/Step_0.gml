@@ -55,38 +55,43 @@ switch (state)
 
     // Susie's box turns from normal -> attack, then Ralsei's, then Queen's — one at a time.
     // The highlighted pose shows while that box is still active, so it's actually visible.
-        case "select_active":
+    case "select_active":
         timer--;
         if (timer <= 0)
         {
             if (select_index < array_length(members) && members[select_index] != noone)
             {
-                members[select_index].selected_attack = true;
+                var _box = members[select_index];
+
+                // hold Susie/Ralsei in their "ready" stance until their attack turn actually comes up.
+                // normally this data comes from _round.attackers, but a round with no real attacks
+                // (e.g. the final round, cut off by Lancer) can supply ready_poses instead so the
+                // party still visibly readies up even though nothing actually attacks.
+                var _pose_list = (_round != noone && variable_struct_exists(_round, "ready_poses"))
+                    ? _round.ready_poses
+                    : (_round != noone ? _round.attackers : []);
+                var _picked = (select_index < array_length(_pose_list)) ? _pose_list[select_index] : undefined;
+
+                // box art for what they picked: the round can swap it (e.g. SPELL), otherwise their normal FIGHT art
+                if (!variable_instance_exists(_box, "base_attack_frame")) _box.base_attack_frame = _box.attack_frame;
+                _box.attack_frame = (_picked != undefined && variable_struct_exists(_picked, "attack_frame"))
+                    ? _picked.attack_frame
+                    : _box.base_attack_frame;
+
+                _box.selected_attack = true;
                 audio_play_sound(snd_select, 1, false);
 
-                  // hold Susie/Ralsei in their "ready" stance until their attack turn actually comes up.
-				   // normally this data comes from _round.attackers, but a round with no real attacks
-				   // (e.g. the final round, cut off by Lancer) can supply ready_poses instead so the
-				   // party still visibly readies up even though nothing actually attacks.
-				   var _pose_list = (_round != noone && variable_struct_exists(_round, "ready_poses"))
-				       ? _round.ready_poses
-				       : (_round != noone ? _round.attackers : []);
-
-				   if (select_index < array_length(_pose_list))
-				   {
-				       var _picked = _pose_list[select_index];
-				       if (variable_struct_exists(_picked, "attacker") && variable_struct_exists(_picked, "ready_sprite") && instance_exists(_picked.attacker))
-				       {
-				           var _hold = variable_struct_exists(_picked, "ready_hold") && _picked.ready_hold;
-				           with (_picked.attacker)
-				           {
-				               sprite_index = _picked.ready_sprite;
-				               image_index = 0;
-				               image_speed = _hold ? 0 : 1;
-				               anim_loop = true;
-				           }
-				       }
-				   }
+                if (_picked != undefined && variable_struct_exists(_picked, "attacker") && variable_struct_exists(_picked, "ready_sprite") && instance_exists(_picked.attacker))
+                {
+                    var _hold = variable_struct_exists(_picked, "ready_hold") && _picked.ready_hold;
+                    with (_picked.attacker)
+                    {
+                        sprite_index = _picked.ready_sprite;
+                        image_index = 0;
+                        image_speed = _hold ? 0 : 1;
+                        anim_loop = true;
+                    }
+                }
             }
             timer = select_confirm_frames;
             state = "select_confirm";
