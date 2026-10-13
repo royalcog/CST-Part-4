@@ -63,8 +63,18 @@ switch (state)
             flash_y = shake_y;
             scr_camera_shake(2, 8);
 
-            scr_set_battle_sprite(obj_susie,  spr_susie_shocked,  spr_susie_shocked,  false);
-            scr_set_battle_sprite(obj_ralsei, spr_ralsei_shocked, spr_ralsei_shocked, false);
+            // only whoever's still standing reacts
+            shocked = [];
+            if (scr_party_is_up(obj_susie))
+            {
+                scr_set_battle_sprite(obj_susie, spr_susie_shocked, spr_susie_shocked, false);
+                array_push(shocked, { obj: obj_susie, idle: spr_susie_battle_idle });
+            }
+            if (scr_party_is_up(obj_ralsei))
+            {
+                scr_set_battle_sprite(obj_ralsei, spr_ralsei_shocked, spr_ralsei_shocked, false);
+                array_push(shocked, { obj: obj_ralsei, idle: spr_ralsei_battle_idle });
+            }
 
             timer = reaction_hold;
             state = "react_hold";
@@ -75,9 +85,19 @@ switch (state)
         timer--;
         if (timer <= 0)
         {
-            var _lines = [ { run: function() { scr_set_battle_sprite(obj_ralsei, spr_ralsei_battle_idle, spr_ralsei_battle_idle, true); } } ];
+            var _lines = [];
             for (var i = 0; i < array_length(susie_react); i++) array_push(_lines, susie_react[i]);
-            array_push(_lines, { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true); } });
+
+            // everyone who got shocked goes back together once Susie's done talking
+            array_push(_lines, { run: method(self, function()
+            {
+                for (var k = 0; k < array_length(shocked); k++)
+                {
+                    var _s = shocked[k];
+                    if (scr_party_is_up(_s.obj)) scr_set_battle_sprite(_s.obj, _s.idle, _s.idle, true);
+                }
+            }) });
+
             chain = talk(_lines);
             state = "react";
         }

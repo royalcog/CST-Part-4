@@ -23,3 +23,8 @@ grid_r = 1;
 grid_buffer = -1;
 soul_mode = "red";
 scr_soul_set_mode(id, variable_global_exists("soul_mode") ? global.soul_mode : "red");
+
+grid_alpha        = 0;
+grid_alpha_moving = 0.3;  // while gliding to another sector
+grid_alpha_idle   = 0.1;  // sitting still (0 = only shows while moving)
+grid_line_w       = 2;

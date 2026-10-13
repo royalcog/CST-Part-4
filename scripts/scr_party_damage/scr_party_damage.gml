@@ -104,9 +104,10 @@ function scr_party_revive(_box)
 }
 
 /// start of every party turn: anyone down gets 1/8 of their max back, and revives once that puts them above 0.
-/// each heal pops up green over their head with snd_heal
+/// each heal pops up green over their head; snd_heal plays once no matter how many healed
 function scr_party_turn_recover(_color = make_color_rgb(0, 255, 0))
 {
+    var _healed = false;
     with (obj_battle_ui_box)
     {
         if (hp > 0) continue;
@@ -115,8 +116,10 @@ function scr_party_turn_recover(_color = make_color_rgb(0, 255, 0))
         hp += _heal;
         if (hp > 0) _heal = scr_party_revive(id); // swaps to idle first, so the number sits over their standing head
 
-        scr_party_head_popup(id, _heal, _color, snd_heal);
+        scr_party_head_popup(id, _heal, _color, noone);
+        _healed = true;
     }
+    if (_healed) audio_play_sound(snd_heal, 5, false);
 }
 
 /// a popup (number or text) just above the top of a party member's head
@@ -139,4 +142,15 @@ function scr_party_head_popup(_box, _text, _color, _sound = snd_hurt, _life = 30
 function scr_party_swoon_popup(_box, _color = c_red)
 {
     return scr_party_head_popup(_box, "SWOON", _color, snd_hurt, 60);
+}
+
+/// true unless this character is swooned (also true if they're not in the party at all)
+function scr_party_is_up(_obj)
+{
+    var _up = true;
+    with (obj_battle_ui_box)
+    {
+        if (body == _obj && hp <= 0) _up = false;
+    }
+    return _up;
 }

@@ -29,6 +29,7 @@ shake_snd  = -1;
 flash_t    = 0;
 flash_x    = 0;
 flash_y    = 0;
+shocked    = []; // who actually went shocked (only they get stood back up)
 
 talk = function(_lines)
 {

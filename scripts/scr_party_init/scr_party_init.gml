@@ -350,6 +350,12 @@ function scr_start_knight_attack2()
         scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true);
     }
 
+    // Ralsei snaps out of it too
+    if (instance_exists(obj_ralsei) && obj_ralsei.sprite_index == spr_ralsei_shocked && scr_party_is_up(obj_ralsei))
+    {
+        scr_set_battle_sprite(obj_ralsei, spr_ralsei_battle_idle, spr_ralsei_battle_idle, true);
+    }
+
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_split_attack);
 }
 
@@ -412,6 +418,11 @@ function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _
                 var _h   = (sprite_get_bbox_bottom(obj_susie.sprite_index) - sprite_get_bbox_top(obj_susie.sprite_index)) * obj_susie.image_yscale;
                 var _col = make_color_rgb(255, 0, 255);
                 scr_trigger_damage_popup(obj_susie, 0, _col, _col, _b.x - obj_susie.x, _b.y - obj_susie.y - _h * 0.6);
+            }
+            // Ralsei's shocked she actually blocked it
+            if (scr_party_is_up(obj_ralsei))
+            {
+                scr_set_battle_sprite(obj_ralsei, spr_ralsei_shocked, spr_ralsei_shocked, false);
             }
             global.knight_swoon_done = true;
         }, global.knight_swoon_popup_delay);

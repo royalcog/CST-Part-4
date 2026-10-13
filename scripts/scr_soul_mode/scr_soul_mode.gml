@@ -58,5 +58,10 @@ function scr_soul_grid_step()
 
     x = lerp(x, _t.x, grid_lerp);
     y = lerp(y, _t.y, grid_lerp);
-    if (point_distance(x, y, _t.x, _t.y) < 0.5) { x = _t.x; y = _t.y; }
+
+    // grid brightens while it's moving, fades back down when it settles
+    var _moving = point_distance(x, y, _t.x, _t.y) > 0.5;
+    grid_alpha = lerp(grid_alpha, _moving ? grid_alpha_moving : grid_alpha_idle, 0.15);
+
+    if (!_moving) { x = _t.x; y = _t.y; }
 }
