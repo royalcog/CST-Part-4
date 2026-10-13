@@ -74,7 +74,7 @@ switch (state)
                 if (warn_timer <= 0) swap_maze();
             }
         }
-
+        if (!swords_started && state == "maze" && t >= swords_at) start_swords();
         if (!said_what && t >= what_at)
         {
             said_what = true;
@@ -137,19 +137,20 @@ switch (state)
     break;
 
     case "absorbing":
-        // soul settles into the middle of Susie while she glows
-        if (instance_exists(obj_soul) && instance_exists(obj_susie))
+        // soul settles into the middle of Susie while she glows, then it's gone
+        if (instance_exists(obj_soul) && obj_soul.visible && instance_exists(obj_susie))
         {
             var _cx = (obj_susie.bbox_left + obj_susie.bbox_right) / 2;
             var _cy = (obj_susie.bbox_top + obj_susie.bbox_bottom) / 2;
             obj_soul.x = lerp(obj_soul.x, _cx, 0.25);
             obj_soul.y = lerp(obj_soul.y, _cy, 0.25);
+            if (point_distance(obj_soul.x, obj_soul.y, _cx, _cy) < 1) obj_soul.visible = false;
         }
 
         if (!instance_exists(flash_inst))
         {
             if (instance_exists(obj_soul)) obj_soul.visible = false; // taken in once the glow ends
-            chain = talk([
+                chain = talk([
                 { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_backlash, spr_susie_backlash, false); } },
                 { speaker: obj_susie, text: "What the..." },
                 { speaker: obj_susie, text: "..." },
@@ -158,8 +159,11 @@ switch (state)
                 { speaker: obj_susie, text: "I..." },
                 { speaker: obj_susie, text: "I feel..." },
 
-                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true); } },
-                { speaker: obj_susie, text: "Like you're about to have a really $#&* time." }
+                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_battle_idle_dark, spr_susie_battle_idle_dark, true); } },
+                { speaker: obj_susie, text: "Like you're about to have a really $#&* time." },
+
+                // back to normal once the line's done
+                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true); } }
             ]);
             state = "final_talk";
         }

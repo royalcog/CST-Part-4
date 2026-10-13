@@ -17,10 +17,20 @@ shuffle_sound  = snd_impact;
 cheat_warn     = 12;    // reaching the goal: the Knight swaps the maze almost instantly
 goal_color     = c_yellow;
 goal_min_dist  = 0.5;   // goal is at least this fraction of the grid away from the soul
+goal_reach_margin = 1.25; // the goal is always at least this many times too far to walk to before the next swap
 
 // --- story beats (frames since the maze appeared) ---
 what_at        = 900;   // 15s: "What the..."
 cheater_at     = 1800;  // 30s: "You little cheater..."
+
+// --- swords (attack 1's, slower) ---
+swords_at          = 900;  // ~halfway to the Rude Buster
+sword_total        = 12;   // roughly how many fit before Susie steps in (the ramp below is spread over these)
+sword_spawn_gap    = 90;   // frames between swords at first...
+sword_spawn_gap_end = 60;  // ...and by the end
+sword_charge       = 75;   // longer charge than attack 1 so there's time to get out of line in the maze
+sword_charge_end   = 50;
+sword_first_delay  = 30;
 
 // --- rude buster ---
 buster_sprite      = spr_susie_rudebuster;
@@ -67,6 +77,7 @@ debris      = [];
 break_flash = 0;
 arrow_timer = 0;
 flash_inst  = noone;
+swords_started = false;
 
 // ===================== helpers =====================
 
@@ -150,23 +161,23 @@ gen_maze = function(_sc, _sr)
     return { v: _v, h: _h };
 }
 
-/// shortest route from (sc, sr) to (gc, gr), as a string (so two routes can be compared)
-solve = function(_m, _sc, _sr, _gc, _gr)
+/// walking distance (in cells) from (sc, sr) to every cell, plus the route back
+bfs = function(_m, _sc, _sr)
 {
-    var _prev = array_create(cols * rows, -2);
+    var _n    = cols * rows;
+    var _dist = array_create(_n, -1);
+    var _prev = array_create(_n, -1);
     var _start = _sc * rows + _sr;
-    var _goal  = _gc * rows + _gr;
     var _q = [_start];
     var _qi = 0;
-    _prev[_start] = -1;
+    _dist[_start] = 0;
 
     while (_qi < array_length(_q))
     {
         var _id = _q[_qi];
         _qi++;
-        if (_id == _goal) break;
-
         var _c = _id div rows, _r = _id mod rows;
+
         var _nb = [];
         if (_c > 0        && !_m.v[_c - 1][_r]) array_push(_nb, _id - rows);
         if (_c < cols - 1 && !_m.v[_c][_r])     array_push(_nb, _id + rows);
@@ -175,44 +186,79 @@ solve = function(_m, _sc, _sr, _gc, _gr)
 
         for (var k = 0; k < array_length(_nb); k++)
         {
-            if (_prev[_nb[k]] == -2) { _prev[_nb[k]] = _id; array_push(_q, _nb[k]); }
+            if (_dist[_nb[k]] == -1)
+            {
+                _dist[_nb[k]] = _dist[_id] + 1;
+                _prev[_nb[k]] = _id;
+                array_push(_q, _nb[k]);
+            }
         }
     }
+    return { dist: _dist, prev: _prev };
+}
 
-    if (_prev[_goal] == -2) return "";
+/// the route to a cell as a string (so two solutions can be compared)
+path_string = function(_prev, _goal)
+{
     var _path = "";
     var _at = _goal;
     while (_at != -1) { _path = string(_at) + "," + _path; _at = _prev[_at]; }
     return _path;
 }
 
-/// somewhere far from the soul, never the last goal
-pick_goal = function(_sc, _sr)
-{
-    var _min = max(cols, rows) * goal_min_dist;
-    repeat (50)
-    {
-        var _gc = irandom(cols - 1), _gr = irandom(rows - 1);
-        if (_gc == goal_c && _gr == goal_r) continue;
-        if (abs(_gc - _sc) + abs(_gr - _sr) < _min) continue;
-        return [_gc, _gr];
-    }
-    return [(_sc < cols / 2) ? cols - 1 : 0, (_sr < rows / 2) ? rows - 1 : 0];
-}
-
-/// a new maze whose solution isn't the same as the last one's
+/// a new maze whose goal is too far to walk to before the next swap,
+/// never the same spot as last time, and not the same solution as before
 build_next = function(_sc, _sr)
 {
+    var _cell = (cw + ch) / 2;
+    var _spd  = instance_exists(obj_soul) ? obj_soul.move_speed : 2;
+    var _need = ceil(shuffle_every * _spd * goal_reach_margin / _cell); // steps the soul can't cover in time
+    var _last = (goal_c >= 0) ? goal_c * rows + goal_r : -1;
     var _best = undefined;
-    repeat (10)
+
+    repeat (12)
     {
-        var _g = pick_goal(_sc, _sr);
         var _m = gen_maze(_sc, _sr);
-        var _p = solve(_m, _sc, _sr, _g[0], _g[1]);
-        _best = { m: _m, gc: _g[0], gr: _g[1], path: _p };
-        if (_p != last_path) break;
+        var _b = bfs(_m, _sc, _sr);
+
+        var _far = [];
+        var _max = -1, _max_id = -1;
+        for (var k = 0; k < cols * rows; k++)
+        {
+            var _d = _b.dist[k];
+            if (_d < 0 || k == _last) continue;
+            if (_d > _max) { _max = _d; _max_id = k; }
+            if (_d >= _need) array_push(_far, k);
+        }
+
+        var _gid  = (array_length(_far) > 0) ? _far[irandom(array_length(_far) - 1)] : _max_id;
+        var _cand = { m: _m, gc: _gid div rows, gr: _gid mod rows,
+                      path: path_string(_b.prev, _gid), steps: _b.dist[_gid] };
+
+        if (array_length(_far) > 0 && _cand.path != last_path) return _cand;
+        if (_best == undefined || _cand.steps > _best.steps) _best = _cand; // fallback: the farthest one found
     }
     return _best;
+}
+
+start_swords = function()
+{
+    swords_started = true;
+    var _sw = instance_create_depth(0, 0, depth, obj_knight_sword_attack);
+
+    // attack 1's Create shrinks the box — put ours back before the box notices
+    obj_battlebox.target_scale_x = grow_scale_x;
+    obj_battlebox.target_scale_y = grow_scale_y;
+
+    with (_sw)
+    {
+        sword_count       = other.sword_total;
+        spawn_gap         = other.sword_spawn_gap;
+        spawn_gap_end     = other.sword_spawn_gap_end;
+        charge_frames     = other.sword_charge;
+        charge_frames_end = other.sword_charge_end;
+        timer             = other.sword_first_delay;
+    }
 }
 
 near_range = function(_x, _y, _half)
@@ -314,6 +360,10 @@ start_buster = function()
 {
     pending = undefined;
     warn_timer = 0;
+
+    // no new swords once Susie steps in (ones already out finish, or vanish with the box)
+    with (obj_knight_sword_attack) spawned = sword_count;
+
     if (instance_exists(obj_susie))
     {
         with (obj_susie)
