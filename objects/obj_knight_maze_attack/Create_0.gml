@@ -32,6 +32,12 @@ buster_spawn_x     = 38;    // where it leaves the swing, in her sprite's px fro
 buster_spawn_y     = -41;
 buster_speed       = 14;
 buster_trail_len   = 6;
+launch_sound       = snd_boost;
+break_sounds       = [snd_glassbreak, snd_impact];
+break_shake        = 6;
+chunks_x           = 6;     // how many pieces the box breaks into
+chunks_y           = 5;
+debris_gravity     = 0.35;
 
 // --- after the break ---
 free_margin    = 8;
@@ -420,23 +426,6 @@ draw_wall = function(_now, _next, _r, _blink)
     if (_a <= 0) return;
     draw_set_alpha(_a * wall_alpha);
     draw_rectangle(_r.x1, _r.y1, _r.x2 - 1, _r.y2 - 1, false);
-}
-
-{
-    var _n = 10, _span = 100;
-    draw_set_color(_col);
-    draw_set_alpha(_alpha);
-    var _px = _x + lengthdir_x(_r, _ang - _span);
-    var _py = _y + lengthdir_y(_r, _ang - _span);
-    for (var k = 1; k <= _n; k++)
-    {
-        var _a  = _ang - _span + (2 * _span) * (k / _n);
-        var _nx = _x + lengthdir_x(_r, _a);
-        var _ny = _y + lengthdir_y(_r, _a);
-        draw_line_width(_px, _py, _nx, _ny, _thick * (0.25 + 0.75 * sin(pi * (k - 0.5) / _n)));
-        _px = _nx;
-        _py = _ny;
-    }
 }
 
 // ===================== setup =====================

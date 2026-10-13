@@ -12,20 +12,21 @@ function scr_game_text(_text_id)
 {
 	switch (_text_id)
 	{
-		case "self_1":
+			case "self_1":
 			// both walk up together
 			scr_queue_movement_group_after_textbox([
 				   { obj: obj_susie,  sprite: spr_susie_walk_up,  loop: true, dx: 0, dy: -4, speed: .9, duration: 90 },
 				   { obj: obj_ralsei, sprite: spr_ralsei_walk_up, loop: true, dx: 0, dy: -4, speed: .8, duration: 90 }
 			]);
-			// once both are done: Susie turns right, Ralsei walks left
+			// once both are done: both walk left
 			scr_queue_movement_group_after_textbox([
-				   { obj: obj_susie,  sprite: spr_susie_walk_right_upset,   loop: false, dx: 0,  dy: 0, speed: 0,  duration: 0 },
-				   { obj: obj_ralsei, sprite: spr_ralsei_walk_left_neutral, loop: true,  dx: -4, dy: 0, speed: .8, duration: 60 }
+				   { obj: obj_susie,  sprite: spr_susie_walk_left_upset,    loop: true, dx: -4, dy: 0, speed: .9, duration: 40 },
+				   { obj: obj_ralsei, sprite: spr_ralsei_walk_left_neutral, loop: true, dx: -4, dy: 0, speed: .8, duration: 60 }
 			]);
-			// once Ralsei stops: he turns right
+			// once they stop: both turn right
 			scr_queue_movement_group_after_textbox([
-				   { obj: obj_ralsei, sprite: spr_ralsei_right_neutral, loop: false, dx: 0, dy: 0, speed: 0, duration: 0 }
+				   { obj: obj_susie,  sprite: spr_susie_walk_right_upset, loop: false, dx: 0, dy: 0, speed: 0, duration: 0 },
+				   { obj: obj_ralsei, sprite: spr_ralsei_right_neutral,   loop: false, dx: 0, dy: 0, speed: 0, duration: 0 }
 			]);
 		break;
 		

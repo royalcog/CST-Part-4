@@ -788,6 +788,7 @@
     {"name":"spr_speakblock","order":1,"path":"sprites/spr_speakblock/spr_speakblock.yy",},
     {"name":"spr_susie_angry","order":1,"path":"sprites/spr_susie_angry/spr_susie_angry.yy",},
     {"name":"spr_susie_attack_ready","order":2,"path":"sprites/spr_susie_attack_ready/spr_susie_attack_ready.yy",},
+    {"name":"spr_susie_backlash","order":35,"path":"sprites/spr_susie_backlash/spr_susie_backlash.yy",},
     {"name":"spr_susie_battle_idle_lookback","order":4,"path":"sprites/spr_susie_battle_idle_lookback/spr_susie_battle_idle_lookback.yy",},
     {"name":"spr_susie_battle_idle","order":3,"path":"sprites/spr_susie_battle_idle/spr_susie_battle_idle.yy",},
     {"name":"spr_susie_battle_intro","order":5,"path":"sprites/spr_susie_battle_intro/spr_susie_battle_intro.yy",},

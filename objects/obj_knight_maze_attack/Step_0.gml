@@ -126,7 +126,6 @@ switch (state)
         if (instance_exists(obj_susie)
             && point_in_rectangle(obj_soul.x, obj_soul.y, obj_susie.bbox_left, obj_susie.bbox_top, obj_susie.bbox_right, obj_susie.bbox_bottom))
         {
-            obj_soul.visible = false;
             if (absorb_sound != noone) audio_play_sound(absorb_sound, 1, false);
 
             flash_inst = instance_create_depth(0, 0, obj_susie.depth - 1, obj_heal_flash);
@@ -138,11 +137,23 @@ switch (state)
     break;
 
     case "absorbing":
+        // soul settles into the middle of Susie while she glows
+        if (instance_exists(obj_soul) && instance_exists(obj_susie))
+        {
+            var _cx = (obj_susie.bbox_left + obj_susie.bbox_right) / 2;
+            var _cy = (obj_susie.bbox_top + obj_susie.bbox_bottom) / 2;
+            obj_soul.x = lerp(obj_soul.x, _cx, 0.25);
+            obj_soul.y = lerp(obj_soul.y, _cy, 0.25);
+        }
+
         if (!instance_exists(flash_inst))
         {
+            if (instance_exists(obj_soul)) obj_soul.visible = false; // taken in once the glow ends
             chain = talk([
-                { speaker: obj_susie, text: "I..." },
-                { speaker: obj_susie, text: "I feel..." },
+                { speaker: obj_susie, text: "What the..." },
+                { speaker: obj_susie, text: "..." },
+				{ speaker: obj_susie, text: "I..." },
+				{ speaker: obj_susie, text: "I feel..." },
                 { speaker: obj_susie, text: "Like you're about to have a really $#&* time." }
             ]);
             state = "final_talk";
