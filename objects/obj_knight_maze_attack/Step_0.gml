@@ -150,10 +150,15 @@ switch (state)
         {
             if (instance_exists(obj_soul)) obj_soul.visible = false; // taken in once the glow ends
             chain = talk([
+                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_backlash, spr_susie_backlash, false); } },
                 { speaker: obj_susie, text: "What the..." },
                 { speaker: obj_susie, text: "..." },
-				{ speaker: obj_susie, text: "I..." },
-				{ speaker: obj_susie, text: "I feel..." },
+
+                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_hurt, spr_susie_hurt, false); } },
+                { speaker: obj_susie, text: "I..." },
+                { speaker: obj_susie, text: "I feel..." },
+
+                { run: function() { scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, spr_susie_battle_idle, true); } },
                 { speaker: obj_susie, text: "Like you're about to have a really $#&* time." }
             ]);
             state = "final_talk";

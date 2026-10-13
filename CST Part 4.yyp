@@ -944,6 +944,7 @@
     {"id":{"name":"spr_susie_angry","path":"sprites/spr_susie_angry/spr_susie_angry.yy",},},
     {"id":{"name":"spr_susie_attack_ready","path":"sprites/spr_susie_attack_ready/spr_susie_attack_ready.yy",},},
     {"id":{"name":"spr_susie_backlash","path":"sprites/spr_susie_backlash/spr_susie_backlash.yy",},},
+    {"id":{"name":"spr_susie_battle_idle_dark","path":"sprites/spr_susie_battle_idle_dark/spr_susie_battle_idle_dark.yy",},},
     {"id":{"name":"spr_susie_battle_idle_lookback","path":"sprites/spr_susie_battle_idle_lookback/spr_susie_battle_idle_lookback.yy",},},
     {"id":{"name":"spr_susie_battle_idle","path":"sprites/spr_susie_battle_idle/spr_susie_battle_idle.yy",},},
     {"id":{"name":"spr_susie_battle_intro","path":"sprites/spr_susie_battle_intro/spr_susie_battle_intro.yy",},},
