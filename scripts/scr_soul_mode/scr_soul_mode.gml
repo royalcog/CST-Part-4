@@ -56,8 +56,9 @@ function scr_soul_grid_step()
             if (instance_exists(obj_battlebox)) _turns = ((round(obj_battlebox.box_angle / 90) mod 4) + 4) mod 4;
             _dir = ((_dir - _turns) mod 4 + 4) mod 4;
 
-            grid_c = clamp(grid_c + (_dir == 0) - (_dir == 2), 0, 2);
-            grid_r = clamp(grid_r + (_dir == 3) - (_dir == 1), 0, 2);
+            var _nc = clamp(grid_c + (_dir == 0) - (_dir == 2), 0, 2);
+            var _nr = clamp(grid_r + (_dir == 3) - (_dir == 1), 0, 2);
+            if (!grid_blocked[_nc + _nr * 3]) { grid_c = _nc; grid_r = _nr; } // can't go into a broken sector
             _t = scr_soul_grid_target(_b, _cw, _ch);
         }
     }
@@ -70,4 +71,21 @@ function scr_soul_grid_step()
     grid_alpha = lerp(grid_alpha, _moving ? grid_alpha_moving : grid_alpha_idle, 0.15);
 
     if (!_moving) { x = _t.x; y = _t.y; }
+}
+
+/// green movement (runs inside obj_soul): stays in the middle of the box, arrow keys turn the shield
+function scr_soul_green_step()
+{
+    var _c = scr_box_center();
+    x = _c.x;
+    y = _c.y;
+
+    // newest press wins (0 right, 1 up, 2 left, 3 down)
+    if (keyboard_check_pressed(vk_right)) shield_dir = 0;
+    if (keyboard_check_pressed(vk_up))    shield_dir = 1;
+    if (keyboard_check_pressed(vk_left))  shield_dir = 2;
+    if (keyboard_check_pressed(vk_down))  shield_dir = 3;
+
+    shield_angle += angle_difference(shield_dir * 90, shield_angle) * shield_turn;
+    if (shield_on) shield_pop = min(shield_pop + 0.1, 1);
 }

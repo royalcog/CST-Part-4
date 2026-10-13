@@ -405,6 +405,18 @@ function scr_start_knight_attack8()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_switch_attack);
 }
 
+function scr_start_knight_attack9()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_shatter_attack);
+}
+
+function scr_start_knight_attack10()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_shield_attack);
+}
+
 /// the Knight ends the battle: music cuts, the UI slides off. everyone stays exactly where they are, HP and all
 function scr_knight_stop_battle()
 {
@@ -719,10 +731,39 @@ function scr_start_knight_battle()
         {
             attackers: scr_party_round(_party, { Susie: 30, Ralsei: 22 }),
             dialogue_batch: [
-                { speaker: obj_susie, text: "..." } // placeholder
+                { speaker: obj_knight, text: "You will tire... eventually...", cps: _rk_cps, snd: snd_knight_phone_call },
+                { speaker: obj_ralsei, text: "That would be an incorrect assumption." },
+                { speaker: obj_susie,  text: "Good luck cutting us down." }
             ],
             king_box_attack: scr_start_knight_attack8
+        },
+
+        // ROUND 9 — the grid shatters, Susie fixes it
+        {
+            attackers: scr_party_round(_party, { Susie: 31, Ralsei: 23 }),
+            dialogue_batch: [
+                { speaker: obj_susie, text: "Can't do your attacks, huh?" },
+                { speaker: obj_susie, text: "Sorry for breaking the rules a little bit..." },
+                { speaker: obj_susie, text: "...not." }
+            ],
+            king_box_attack: scr_start_knight_attack9
+        },
+
+        // ROUND 10 — Ralsei's shield (green soul)
+        {
+            attackers: scr_party_round(_party, { Susie: 32, Ralsei: 24 }),
+            dialogue_batch: [
+                { speaker: obj_ralsei, text: "Susie, do you remember the shield Gerson gave you?" },
+                { speaker: obj_susie,  text: "Yeah?" },
+                { speaker: obj_ralsei, text: "Watch this:" },
+
+                // readies his spell and holds it until the box is up (the attack casts it)
+                { run: function() {
+                      if (scr_party_is_up(obj_ralsei)) scr_set_battle_sprite(obj_ralsei, spr_ralsei_spellready, noone, true);
+                  } }
+            ],
+            king_box_attack: scr_start_knight_attack10
         }
-        // rounds 9+ go here as they're built
+        // rounds 11+ go here as they're built
     ];
 }

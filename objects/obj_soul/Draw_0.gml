@@ -19,10 +19,38 @@ if (soul_mode == "lightblue" && !external_move && grid_alpha > 0.01 && instance_
     draw_set_color(c_white);
 }
 
-if (soul_mode == "lightblue" && lightblue_sprite == -1)
+// green: the ring and the shield
+if (soul_mode == "green")
 {
-    // no light blue sprite yet: the normal soul, flat-tinted
-    gpu_set_fog(true, lightblue_color, 0, 1);
+    draw_set_color(green_color);
+    draw_set_alpha(ring_alpha * shield_pop);
+    draw_circle(round(x), round(y), shield_r, true);
+
+    if (shield_on)
+    {
+        var _r = shield_r * (0.6 + 0.4 * shield_pop);
+        var _arc = shield_arc * shield_pop;
+        draw_set_color(shield_color);
+        draw_set_alpha(shield_pop);
+        var _steps = 6;
+        for (var i = 0; i < _steps; i++)
+        {
+            var _a1 = shield_angle - _arc + (2 * _arc) * (i / _steps);
+            var _a2 = shield_angle - _arc + (2 * _arc) * ((i + 1) / _steps);
+            draw_line_width(x + lengthdir_x(_r, _a1), y + lengthdir_y(_r, _a1), x + lengthdir_x(_r, _a2), y + lengthdir_y(_r, _a2), shield_w);
+        }
+    }
+    draw_set_alpha(1);
+    draw_set_color(c_white);
+}
+
+var _tint = -1; // no sprite for this colour yet: the normal soul, flat-tinted
+if (soul_mode == "lightblue" && lightblue_sprite == -1) _tint = lightblue_color;
+if (soul_mode == "green"     && green_sprite     == -1) _tint = green_color;
+
+if (_tint != -1)
+{
+    gpu_set_fog(true, _tint, 0, 1);
     draw_sprite_ext(sprite_index, image_index, round(x), round(y), image_xscale, image_yscale, image_angle, c_white, image_alpha);
     gpu_set_fog(false, c_black, 0, 0);
 }

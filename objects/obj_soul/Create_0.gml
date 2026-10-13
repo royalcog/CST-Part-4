@@ -21,6 +21,21 @@ grid_ready_dist  = 3;    // how close it has to be before the next move goes thr
 grid_c = 1;
 grid_r = 1;
 grid_buffer = -1;
+grid_blocked = array_create(9, false); // sectors the soul can't move into (Knight attack 9 breaks them)
+
+// green mode (Ralsei's shield): stays put in the middle, arrow keys turn the shield
+green_sprite = asset_get_index("spr_soul_green"); // -1 until it exists; drawn tinted until then
+green_color  = make_color_rgb(0, 255, 64);
+shield_on    = false;
+shield_dir   = 1;    // 0 right, 1 up, 2 left, 3 down
+shield_angle = 90;
+shield_r     = 20;   // how far out the shield sits (swords are blocked/hit at this distance)
+shield_arc   = 50;   // degrees either side of where it faces
+shield_w     = 3;
+shield_turn  = 0.45; // how quickly it swings to the new side
+shield_pop   = 1;    // 0 -> 1 as it appears
+shield_color = make_color_rgb(170, 255, 190);
+ring_alpha   = 0.35; // faint circle the shield moves around
 soul_mode = "red";
 scr_soul_set_mode(id, variable_global_exists("soul_mode") ? global.soul_mode : "red");
 

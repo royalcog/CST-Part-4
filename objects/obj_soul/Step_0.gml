@@ -3,9 +3,13 @@ vdir = keyboard_check(vk_down) - keyboard_check(vk_up);
 
 if (!split_controlled && !external_move)
 {
-    if (soul_mode == "lightblue")
+        if (soul_mode == "lightblue")
     {
         scr_soul_grid_step();
+    }
+    else if (soul_mode == "green")
+    {
+        scr_soul_green_step();
     }
     else
     {
