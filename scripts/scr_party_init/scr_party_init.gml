@@ -522,6 +522,8 @@ function scr_start_knight_battle()
     _seq.damage_func = scr_knight_damage;
 	_seq.hide_ui_during_box_attack = true;
     _seq.swoon_kills = true; // the Knight's killing hits swoon to -999 instead of a normal down
+    _seq.end_on_party_wipe = true;
+    _seq.on_party_wipe     = scr_knight_party_wiped; // the scene after a party wipe
     _seq.king_box_x_nudge = 0; // the 2-box panel is centered, so the box is too
 
     // only two party members this fight: rebuild the select order without Queen's empty slot

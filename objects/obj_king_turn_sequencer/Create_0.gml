@@ -86,3 +86,8 @@ next_alive = function(_from)
 // an attacker can say something right before their attack plays (pre_talk on the attacker struct)
 pre_talk_done  = false;
 pre_talk_chain = noone;
+
+// whole party swooned: stop everything and hand off to on_party_wipe
+end_on_party_wipe = false;
+on_party_wipe     = noone;
+wipe_hold         = 60;  // beat after the last swoon before handing off (0 = instantly)

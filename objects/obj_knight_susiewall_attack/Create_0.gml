@@ -8,7 +8,7 @@ big_charge    = 170; // every lane, both ways at once — only the barrier saves
 buster_delay  = 25;  // frames into the big charge before Susie swings
 barrier_hold  = 120; // how long the barrier lasts after the big volley fires
 end_delay     = 40;
-susie_line    = [ { speaker: obj_susie, text: "Get behind this!" } ]; // placeholder
+susie_line    = [ { speaker: obj_susie, text: "Take this!" } ]; // placeholder
 
 // --- state ---
 state       = "intro";

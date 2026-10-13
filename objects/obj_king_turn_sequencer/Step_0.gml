@@ -1,3 +1,11 @@
+// both party members down: end the battle right here, whatever's happening
+if (end_on_party_wipe && state != "party_wiped" && scr_party_all_down())
+{
+    scr_battle_wipe_cleanup();
+    timer = wipe_hold;
+    state = "party_wiped";
+}
+
 var _round = (round_index >= 0 && round_index < array_length(rounds)) ? rounds[round_index] : noone;
 
 switch (state)
@@ -116,6 +124,18 @@ switch (state)
                 attack_index = 0;
                 state = "attacking_start";
             }
+        }
+    break;
+	
+	case "party_wiped":
+        timer--;
+        if (timer <= 0)
+        {
+            if (global.music != noone) audio_stop_sound(global.music);
+            global.music = noone;
+            global.song  = noone;
+            if (on_party_wipe != noone) on_party_wipe();
+            instance_destroy();
         }
     break;
 

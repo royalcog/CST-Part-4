@@ -428,6 +428,7 @@
     {"id":{"name":"scr_other_functions_and_things","path":"scripts/scr_other_functions_and_things/scr_other_functions_and_things.yy",},},
     {"id":{"name":"scr_party_damage","path":"scripts/scr_party_damage/scr_party_damage.yy",},},
     {"id":{"name":"scr_party_init","path":"scripts/scr_party_init/scr_party_init.yy",},},
+    {"id":{"name":"scr_party_wipe","path":"scripts/scr_party_wipe/scr_party_wipe.yy",},},
     {"id":{"name":"scr_pick_target_soul_or_random","path":"scripts/scr_pick_target_soul_or_random/scr_pick_target_soul_or_random.yy",},},
     {"id":{"name":"scr_point_segment_distance","path":"scripts/scr_point_segment_distance/scr_point_segment_distance.yy",},},
     {"id":{"name":"scr_queue_movement_group","path":"scripts/scr_queue_movement_group/scr_queue_movement_group.yy",},},
