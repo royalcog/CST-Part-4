@@ -365,6 +365,12 @@ function scr_start_knight_attack4()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_maze_attack);
 }
 
+function scr_start_knight_attack5()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_lightblue_attack);
+}
+
 /// the Knight ends the battle: music cuts, the UI slides off. everyone stays exactly where they are, HP and all
 function scr_knight_stop_battle()
 {
@@ -572,8 +578,24 @@ function scr_start_knight_battle()
                 { speaker: obj_susie,  text: "If you can stop them, I can start them." },
                 { speaker: obj_susie,  text: "You're outmatched." }
             ],
-            king_box_attack: scr_start_knight_attack4
+        king_box_attack: scr_start_knight_attack4
+        },
+
+        // ROUND 5 — Rude Buster again, the soul turns light blue + a test run
+        {
+            attackers: scr_party_round(_party, { Susie: 27, Ralsei: 20 }),
+            dialogue_batch: [
+                { speaker: obj_ralsei, text: "Susie, what did you just..." },
+                { speaker: obj_susie,  text: "Flowery told me about this stuff, remember?" },
+                { speaker: obj_ralsei, text: "You know you can't do that when Kris is around, right...?" },
+                { speaker: obj_knight, text: "As expected... you are useless...", cps: _rk_cps, snd: snd_knight_phone_call },
+                { speaker: obj_ralsei, text: "..." },
+                { speaker: obj_ralsei, text: "You know what?" },
+                { speaker: obj_ralsei, text: "Keep doing it, Susie." },
+                { speaker: obj_susie,  text: "Hell. Yeah." }
+            ],
+            king_box_attack: scr_start_knight_attack5
         }
-        // rounds 5+ go here as they're built
+        // rounds 6+ go here as they're built
     ];
 }

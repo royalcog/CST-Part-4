@@ -11,3 +11,15 @@ vdir = 0;
 split_controlled = false; // true while the split-box attack is moving/drawing the soul itself
 
 external_move = false; // true while an attack moves the soul itself (still drawn normally)
+
+// light blue mode (from the Knight's 5th attack on): 3x3 grid, 4 directions
+base_sprite      = sprite_index;
+lightblue_sprite = asset_get_index("spr_soul_lightblue"); // -1 until it exists; drawn tinted until then
+lightblue_color  = make_color_rgb(66, 252, 255);
+grid_lerp        = 0.35; // how quickly it glides to the next sector
+grid_ready_dist  = 3;    // how close it has to be before the next move goes through
+grid_c = 1;
+grid_r = 1;
+grid_buffer = -1;
+soul_mode = "red";
+scr_soul_set_mode(id, variable_global_exists("soul_mode") ? global.soul_mode : "red");
