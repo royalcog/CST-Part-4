@@ -6,6 +6,7 @@ shake_frames        = 50;
 shake_amount        = 3;   // px at full strength (a jolt is about 1-2)
 shake_sound         = snd_charge;
 change_sound        = snd_sparklegem;
+change_gain         = 1.5;  // a bit louder than normal
 change_flash_frames = 20;
 change_flash_radius = 40;
 reaction_hold       = 90;  // everyone stays shocked this long before Susie talks

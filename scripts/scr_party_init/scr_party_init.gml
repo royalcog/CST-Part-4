@@ -386,11 +386,33 @@ function scr_knight_stop_battle()
     global.song  = noone; // so start_knight_battle_music() starts it fresh
 }
 
-/// Susie starts it right back up: same boxes, same HP
+/// Susie starts it right back up: draws her weapon like the battle intro,
+/// then the same boxes/HP slide back in and the music kicks in
 function scr_knight_restart_battle()
 {
-    if (instance_exists(obj_UI)) obj_UI.target_x = obj_UI.onscreen_x;
-    start_knight_battle_music();
+    global.knight_restart_done = false;
+
+    if (!instance_exists(obj_susie))
+    {
+        if (instance_exists(obj_UI)) obj_UI.target_x = obj_UI.onscreen_x;
+        start_knight_battle_music();
+        global.knight_restart_done = true;
+        exit;
+    }
+
+    scr_set_battle_sprite(obj_susie, spr_susie_battle_intro, spr_susie_battle_idle, false);
+    audio_play_sound(snd_taking_out_sword, 1, false);
+
+    scr_call_on_anim_frame(obj_susie, spr_susie_battle_intro, sprite_get_number(spr_susie_battle_intro) - 1, function()
+    {
+        scr_call_after_frames(function()
+        {
+            scr_set_battle_sprite(obj_susie, spr_susie_battle_idle, noone, true);
+            if (instance_exists(obj_UI)) obj_UI.target_x = obj_UI.onscreen_x;
+            start_knight_battle_music();
+            global.knight_restart_done = true;
+        }, 15);
+    });
 }
 
 /// round 2: the Knight swoons Susie and she blocks it. she's in her defend pose the whole time
@@ -408,6 +430,12 @@ function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _
     {
         if (global.music != noone) audio_resume_sound(global.music);
 
+        // Ralsei's shocked the moment the swoon clears
+        if (scr_party_is_up(obj_ralsei))
+        {
+            scr_set_battle_sprite(obj_ralsei, spr_ralsei_shocked, spr_ralsei_shocked, false);
+        }
+
         // holds the block for a second, then shows it did nothing
         scr_call_after_frames(function()
         {
@@ -418,11 +446,6 @@ function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _
                 var _h   = (sprite_get_bbox_bottom(obj_susie.sprite_index) - sprite_get_bbox_top(obj_susie.sprite_index)) * obj_susie.image_yscale;
                 var _col = make_color_rgb(255, 0, 255);
                 scr_trigger_damage_popup(obj_susie, 0, _col, _col, _b.x - obj_susie.x, _b.y - obj_susie.y - _h * 0.6);
-            }
-            // Ralsei's shocked she actually blocked it
-            if (scr_party_is_up(obj_ralsei))
-            {
-                scr_set_battle_sprite(obj_ralsei, spr_ralsei_shocked, spr_ralsei_shocked, false);
             }
             global.knight_swoon_done = true;
         }, global.knight_swoon_popup_delay);
@@ -583,7 +606,9 @@ function scr_start_knight_battle()
 
                 { speaker: obj_susie,  text: "Hell NO you don't." },
 
-                { run: scr_knight_restart_battle, wait: 40 },
+                { run: scr_knight_restart_battle,
+                  wait_until: function() { return global.knight_restart_done; },
+                  wait: 30 },
 
                 { speaker: obj_knight, text: "What...", cps: _rk_cps },
                 { speaker: obj_susie,  text: "If you can stop them, I can start them." },

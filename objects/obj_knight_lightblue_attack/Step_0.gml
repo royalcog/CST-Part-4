@@ -57,7 +57,7 @@ switch (state)
 
             global.soul_mode = "lightblue"; // every soul from here on
             scr_soul_set_mode(soul, "lightblue");
-            if (change_sound != noone) audio_play_sound(change_sound, 1, false);
+            if (change_sound != noone) audio_play_sound(change_sound, 1, false, change_gain);
             flash_t = change_flash_frames;
             flash_x = shake_x;
             flash_y = shake_y;
