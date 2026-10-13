@@ -325,12 +325,22 @@ function scr_duo_ui_setup(_instant = false, _susie_hp = 290, _ralsei_hp = 210)
 
 // ===================== KNIGHT FIGHT =====================
 
+/// _amount can be a number, or text like "MISS" (no damage, no hit sound)
 function scr_knight_damage(_amount, _color_top = c_white, _color_bottom = c_white)
 {
     if (!instance_exists(obj_knight)) return noone;
+
+    var _ox = obj_knight.hit_offset_x + obj_knight.popup_nudge_x;
+    var _oy = obj_knight.hit_offset_y;
+
+    if (is_string(_amount))
+    {
+        return scr_trigger_damage_popup(obj_knight, _amount, _color_top, _color_bottom, _ox, _oy, noone);
+    }
+
     obj_knight.knight_hp = max(obj_knight.knight_hp - _amount, 0);
     audio_play_sound(snd_damagetaken, 1, false);
-    return scr_trigger_damage_popup(obj_knight, _amount, _color_top, _color_bottom, obj_knight.hit_offset_x + obj_knight.popup_nudge_x, obj_knight.hit_offset_y);
+    return scr_trigger_damage_popup(obj_knight, _amount, _color_top, _color_bottom, _ox, _oy);
 }
 
 
@@ -464,14 +474,15 @@ function scr_knight_swoon_block_susie(_swoon_sprite = spr_roark_slash_susie_2, _
     });
 }
 
-/// copy of a party list with this round's damage swapped in.
-/// _damage: { Susie: 120, Ralsei: 90 } — anyone left out keeps the damage they already have
-function scr_party_round(_party, _damage)
+/// copy of a party list with this round's changes swapped in.
+/// _changes: { Susie: 120, Ralsei: 90 } sets damage, or give a struct to change anything on that
+/// member for this round, e.g. Ralsei: { damage: "MISS", attack_sprite: spr_ralsei_spell, pre_talk: [...] }
+function scr_party_round(_party, _changes)
 {
     var _out = [];
     for (var i = 0; i < array_length(_party); i++)
     {
-        // copy each member so one round's numbers don't leak into the others
+        // copy each member so one round's changes don't leak into the others
         var _src  = _party[i];
         var _copy = {};
         var _keys = variable_struct_get_names(_src);
@@ -480,9 +491,21 @@ function scr_party_round(_party, _damage)
             variable_struct_set(_copy, _keys[k], variable_struct_get(_src, _keys[k]));
         }
 
-        if (variable_struct_exists(_damage, _src.box_name))
+        if (variable_struct_exists(_changes, _src.box_name))
         {
-            _copy.damage = variable_struct_get(_damage, _src.box_name);
+            var _c = variable_struct_get(_changes, _src.box_name);
+            if (is_struct(_c))
+            {
+                var _ck = variable_struct_get_names(_c);
+                for (var k = 0; k < array_length(_ck); k++)
+                {
+                    variable_struct_set(_copy, _ck[k], variable_struct_get(_c, _ck[k]));
+                }
+            }
+            else
+            {
+                _copy.damage = _c;
+            }
         }
         array_push(_out, _copy);
     }
@@ -649,16 +672,36 @@ function scr_start_knight_battle()
         {
             attackers: scr_party_round(_party, { Susie: 28, Ralsei: 21 }),
             dialogue_batch: [
-                // dialogue goes here
+                { speaker: obj_susie,  text: "You better tell us what you and King are planning." },
+                { speaker: obj_knight, text: "Or what...", cps: _rk_cps, snd: snd_knight_phone_call },
+                { speaker: obj_susie,  text: "Or..." },
+                { speaker: obj_susie,  text: "..." },
+                { speaker: obj_susie,  text: "(Ralsei, can we pacify this thing?)" },
+                { speaker: obj_ralsei, text: "(I don't... think so?)" },
+                { speaker: obj_susie,  text: "(...)" },
+                { speaker: obj_susie,  text: "(Can we try?)" },
+                { speaker: obj_ralsei, text: "(...)" }
             ],
             king_box_attack: scr_start_knight_attack6
         },
 
-        // ROUND 7 — Susie's wall
+        // ROUND 7 — Ralsei tries to pacify it (MISS) + Susie's wall
         {
-            attackers: scr_party_round(_party, { Susie: 29, Ralsei: 22 }),
+            attackers: scr_party_round(_party, {
+                Susie: 29,
+                Ralsei: {
+                    damage: "MISS",
+                    ready_sprite:  spr_ralsei_spellready,
+                    attack_sprite: spr_ralsei_spell,
+                    attack_sound:  snd_boost,
+                    pre_talk: [ { speaker: obj_ralsei, text: "Let's try this..." } ]
+                }
+            }),
             dialogue_batch: [
-                // dialogue goes here
+                { speaker: obj_knight, text: "Good... try...", cps: _rk_cps, snd: snd_knight_phone_call },
+                { speaker: obj_susie,  text: "Damn it!" },
+                { speaker: obj_susie,  text: "Now what?" },
+                { speaker: obj_ralsei, text: "I... I'm not sure..." }
             ],
             king_box_attack: scr_start_knight_attack7
         }

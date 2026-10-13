@@ -131,6 +131,16 @@ switch (state)
         }
 
         var _atk = _round.attackers[attack_index];
+        // a line before this attacker goes (e.g. Ralsei: "Let's try this...")
+        if (variable_struct_exists(_atk, "pre_talk") && !pre_talk_done)
+        {
+            pre_talk_done  = true;
+            pre_talk_chain = instance_create_depth(0, 0, 0, obj_dialogue_chain);
+            pre_talk_chain.batches = [ _atk.pre_talk ];
+            state = "attacking_pre_talk";
+            break;
+        }
+        pre_talk_done = false;
         attack_sound_played = false;
 
         var _has_anim = variable_struct_exists(_atk, "attacker") && variable_struct_exists(_atk, "attack_sprite")
@@ -164,6 +174,10 @@ switch (state)
             }
             state = "attacking_hit";
         }
+    break;
+	
+	case "attacking_pre_talk":
+        if (!instance_exists(pre_talk_chain)) state = "attacking_start";
     break;
 
     case "attacking_anim_wait":

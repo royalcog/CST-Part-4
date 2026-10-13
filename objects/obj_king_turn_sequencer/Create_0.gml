@@ -82,3 +82,7 @@ next_alive = function(_from)
     while (_i < array_length(members) && member_down(_i)) _i++;
     return _i;
 }
+
+// an attacker can say something right before their attack plays (pre_talk on the attacker struct)
+pre_talk_done  = false;
+pre_talk_chain = noone;
