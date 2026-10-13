@@ -1,6 +1,16 @@
 /// where the 3 rows and 3 columns are on screen right now (box turned in 90° steps)
 function scr_knight_lanes()
 {
+    // no box (Susie broke it): the whole screen is the grid
+    if (!instance_exists(obj_battlebox) || !obj_battlebox.visible)
+    {
+        var _b  = scr_get_attack_bounds();
+        var _sw = _b.x2 - _b.x1, _sh = _b.y2 - _b.y1;
+        var _cx = (_b.x1 + _b.x2) / 2, _cy = (_b.y1 + _b.y2) / 2;
+        return { cx: _cx, cy: _cy, hx: _sw / 2, hy: _sh / 2,
+                 xs: [_cx - _sw / 3, _cx, _cx + _sw / 3],
+                 ys: [_cy - _sh / 3, _cy, _cy + _sh / 3] };
+    }
     var _in  = scr_get_box_interior();
     var _c   = scr_box_center();
     var _iw  = _in.x2 - _in.x1, _ih = _in.y2 - _in.y1;
@@ -24,7 +34,8 @@ function scr_knight_lane_index(_vals, _v)
 function scr_spawn_lane_sword(_side, _lane, _charge)
 {
     var _L = scr_knight_lanes();
-    var _s = instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_lane_sword);
+    var _d = instance_exists(obj_battlebox) ? obj_battlebox.depth - 1 : (instance_exists(obj_soul) ? obj_soul.depth + 1 : -5001);
+    var _s = instance_create_depth(0, 0, _d, obj_knight_lane_sword);
     var _off = _s.half + _s.side_gap;
 
     switch (_side)

@@ -13,7 +13,7 @@ function scr_battle_wipe_cleanup(_music_fade_ms = 600)
     var _objs = [
         obj_knight_sword_attack, obj_knight_split_attack, obj_knight_starchild_attack,
         obj_knight_maze_attack, obj_knight_lightblue_attack, obj_knight_gridturn_attack,
-        obj_knight_susiewall_attack, obj_knight_lane_sword, obj_susie_barrier, obj_rude_buster,
+        obj_knight_susiewall_attack, obj_knight_switch_attack, obj_knight_lane_sword, obj_susie_barrier, obj_rude_buster,
         obj_dialogue_chain, obj_talkbox
     ];
     for (var i = 0; i < array_length(_objs); i++)

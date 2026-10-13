@@ -1,4 +1,4 @@
-if (!instance_exists(obj_battlebox) || obj_battlebox.state == "closing")
+if (needs_box && (!instance_exists(obj_battlebox) || obj_battlebox.state == "closing"))
 {
     alpha -= 0.1;
     if (alpha <= 0) instance_destroy();

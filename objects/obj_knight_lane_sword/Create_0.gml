@@ -29,6 +29,7 @@ shatter_t  = 0;
 shatter_x  = 0;
 shatter_y  = 0;
 half       = sprite_get_width(spr_roaringknight_sword) * sword_scale / 2;
+needs_box  = instance_exists(obj_battlebox) && obj_battlebox.visible; // false = screen-wide (box was broken)
 
 // a volley firing together shouldn't stack the same sound a dozen times
 if (!variable_global_exists("lane_sword_snd_time")) global.lane_sword_snd_time = 0;

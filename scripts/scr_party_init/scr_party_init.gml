@@ -399,6 +399,12 @@ function scr_start_knight_attack7()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_susiewall_attack);
 }
 
+function scr_start_knight_attack8()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_switch_attack);
+}
+
 /// the Knight ends the battle: music cuts, the UI slides off. everyone stays exactly where they are, HP and all
 function scr_knight_stop_battle()
 {
@@ -706,8 +712,17 @@ function scr_start_knight_battle()
                 { speaker: obj_susie,  text: "Now what?" },
                 { speaker: obj_ralsei, text: "I... I'm not sure..." }
             ],
-            king_box_attack: scr_start_knight_attack7
+        king_box_attack: scr_start_knight_attack7
+        },
+
+        // ROUND 8 — red in the box, Susie breaks it, the whole screen goes light blue
+        {
+            attackers: scr_party_round(_party, { Susie: 30, Ralsei: 22 }),
+            dialogue_batch: [
+                { speaker: obj_susie, text: "..." } // placeholder
+            ],
+            king_box_attack: scr_start_knight_attack8
         }
-        // rounds 8+ go here as they're built
+        // rounds 9+ go here as they're built
     ];
 }
