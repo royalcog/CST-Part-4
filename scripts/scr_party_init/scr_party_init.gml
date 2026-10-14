@@ -742,7 +742,7 @@ function scr_start_knight_battle()
         {
             attackers: scr_party_round(_party, { Susie: 31, Ralsei: 23 }),
             dialogue_batch: [
-                { speaker: obj_susie, text: "Can't do your attacks, huh?" },
+                { speaker: obj_susie, text: "Can't land your attacks, huh?" },
                 { speaker: obj_susie, text: "Sorry for breaking the rules a little bit..." },
                 { speaker: obj_susie, text: "...not." }
             ],
@@ -755,7 +755,7 @@ function scr_start_knight_battle()
             dialogue_batch: [
                 { speaker: obj_ralsei, text: "Susie, do you remember the shield Gerson gave you?" },
                 { speaker: obj_susie,  text: "Yeah?" },
-                { speaker: obj_ralsei, text: "Watch this:" },
+                { speaker: obj_ralsei, text: "Watch this." },
 
                 // readies his spell and holds it until the box is up (the attack casts it)
                 { run: function() {

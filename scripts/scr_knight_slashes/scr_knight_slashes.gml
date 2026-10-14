@@ -6,12 +6,39 @@
 function scr_knight_swing_init()
 {
     knight_attack_sprite = spr_knight_attack;
-    knight_swing_lead    = 0;   // start the swing this many frames before a cut lands (to line up his hit frame)
+    knight_hit_frame     = 3;   // frame of the swing where the cut lands (3 = the 4th frame, the big slash arc)
     knight_return_delay  = 60;  // after the swing finishes, how long until he goes back to normal (if nothing else swings)
-    knight_nudge_x       = 0;   // fine-tune where the swing sprite sits relative to his normal pose
+
+    // where his feet are, in each sprite's own pixels (the swing's frame 0 matches his normal stance)
+    knight_attack_feet_x = 65;
+    knight_attack_feet_y = 95;
+    knight_feet = [
+        { spr: spr_roark_sword_appear_new, x: 48, y: 102 }
+    ];
+    knight_nudge_x       = 0;   // fine-tune on top of that
     knight_nudge_y       = 0;
+
+    // how many steps it takes the swing to reach knight_hit_frame, so it can start that early
+    var _spd = sprite_get_speed(knight_attack_sprite);
+    var _per_step = (sprite_get_speed_type(knight_attack_sprite) == spritespeed_framespersecond)
+                    ? _spd / game_get_speed(gamespeed_fps) : _spd;
+    knight_swing_lead = (_per_step > 0) ? round(knight_hit_frame / _per_step) : 0;
+
     knight_saved         = undefined;
     knight_return_t      = 0;
+}
+
+/// where the Knight's feet are in sprite _spr's pixels (relative to its origin). falls back to bottom-center
+function scr_knight_feet(_spr)
+{
+    if (_spr == knight_attack_sprite)
+        return { x: knight_attack_feet_x - sprite_get_xoffset(_spr), y: knight_attack_feet_y - sprite_get_yoffset(_spr) };
+    for (var i = 0; i < array_length(knight_feet); i++)
+    {
+        if (knight_feet[i].spr == _spr)
+            return { x: knight_feet[i].x - sprite_get_xoffset(_spr), y: knight_feet[i].y - sprite_get_yoffset(_spr) };
+    }
+    return { x: sprite_get_width(_spr) / 2 - sprite_get_xoffset(_spr), y: sprite_get_height(_spr) - sprite_get_yoffset(_spr) };
 }
 
 /// the Knight plays his attack sprite. mid-swing it just keeps going (so close cuts read as one swing)
@@ -25,18 +52,16 @@ function scr_knight_swing()
         knight_saved = { spr: _k.sprite_index, img: _k.image_index, spd: _k.image_speed, loop: _k.anim_loop, x: _k.x, y: _k.y };
 
         // the two sprites have different sizes/origins: line the swing up bottom-center to bottom-center
-        var _a = knight_attack_sprite, _o = _k.sprite_index;
-        var _old_cx = (sprite_get_width(_o) / 2 - sprite_get_xoffset(_o)) * _k.image_xscale;
-        var _old_by = (sprite_get_height(_o)     - sprite_get_yoffset(_o)) * _k.image_yscale;
-        var _new_cx = (sprite_get_width(_a) / 2 - sprite_get_xoffset(_a)) * _k.image_xscale;
-        var _new_by = (sprite_get_height(_a)     - sprite_get_yoffset(_a)) * _k.image_yscale;
-        _k.x = knight_saved.x + (_old_cx - _new_cx) + knight_nudge_x;
-        _k.y = knight_saved.y + (_old_by - _new_by) + knight_nudge_y;
+        // keep his feet where they were
+        var _old = scr_knight_feet(_k.sprite_index);
+        var _new = scr_knight_feet(knight_attack_sprite);
+        _k.x = knight_saved.x + (_old.x - _new.x) * _k.image_xscale + knight_nudge_x;
+        _k.y = knight_saved.y + (_old.y - _new.y) * _k.image_yscale + knight_nudge_y;
     }
 
     with (_k)
     {
-        if (sprite_index != other.knight_attack_sprite || image_speed == 0)
+        if (sprite_index != other.knight_attack_sprite || image_speed == 0 || image_index > other.knight_hit_frame)
         {
             sprite_index = other.knight_attack_sprite;
             image_index  = 0;

@@ -22,12 +22,8 @@ hit_half_width   = 6;    // how close to the line counts as a hit
 warn_color       = c_red;
 warn_blink       = 14;   // last frames of the warning blink
 
-// the Knight swings with every cut
-knight_attack_sprite = spr_knight_attack;
-knight_swing_lead    = 0;   // start the swing this many frames before the cut lands (to line up his hit frame)
-knight_return_delay  = 60;  // after the swing finishes, how long until he goes back to normal (if nothing else cuts)
-knight_nudge_x       = 0;   // fine-tune where the swing sprite sits relative to his normal pose
-knight_nudge_y       = 0;
+// the Knight swings with every cut (settings in scr_knight_swing_init)
+scr_knight_swing_init();
 
 // RED (in the box): the Knight's cuts cross the box through the soul
 red_patterns    = ["single", "single", "cross", "parallel", "cross", "fan"];
@@ -83,57 +79,8 @@ last_cut_snd = 0;
 knight_saved    = undefined; // his normal look while he's swinging
 knight_return_t = 0;
 
-/// the Knight plays his attack sprite. mid-swing it just keeps going (so a cross/fan reads as one swing)
-knight_swing = function()
-{
-    if (!instance_exists(obj_knight) || !sprite_exists(knight_attack_sprite)) return;
-    var _k = obj_knight;
-
-    if (is_undefined(knight_saved))
-    {
-        knight_saved = { spr: _k.sprite_index, img: _k.image_index, spd: _k.image_speed, loop: _k.anim_loop, x: _k.x, y: _k.y };
-
-        // the two sprites have different sizes/origins: line the swing up bottom-center to bottom-center
-        var _a = knight_attack_sprite, _o = _k.sprite_index;
-        var _old_cx = (sprite_get_width(_o) / 2 - sprite_get_xoffset(_o)) * _k.image_xscale;
-        var _old_by = (sprite_get_height(_o)     - sprite_get_yoffset(_o)) * _k.image_yscale;
-        var _new_cx = (sprite_get_width(_a) / 2 - sprite_get_xoffset(_a)) * _k.image_xscale;
-        var _new_by = (sprite_get_height(_a)     - sprite_get_yoffset(_a)) * _k.image_yscale;
-        _k.x = knight_saved.x + (_old_cx - _new_cx) + knight_nudge_x;
-        _k.y = knight_saved.y + (_old_by - _new_by) + knight_nudge_y;
-    }
-
-    with (_k)
-    {
-        if (sprite_index != other.knight_attack_sprite || image_speed == 0)
-        {
-            sprite_index = other.knight_attack_sprite;
-            image_index  = 0;
-            image_speed  = 1;
-            anim_loop    = false; // obj_knight freezes it on the last frame
-        }
-    }
-    knight_return_t = knight_return_delay;
-}
-
-/// back to exactly how he looked before the first swing
-knight_restore = function()
-{
-    if (is_undefined(knight_saved)) return;
-    var _sv = knight_saved;
-    knight_saved = undefined;
-    if (!instance_exists(obj_knight)) return;
-    with (obj_knight)
-    {
-        if (sprite_index != other.knight_attack_sprite) break; // something else already changed him
-        sprite_index = _sv.spr;
-        image_index  = _sv.img;
-        image_speed  = _sv.spd;
-        anim_loop    = _sv.loop;
-        x = _sv.x;
-        y = _sv.y;
-    }
-}
+knight_swing   = function() { scr_knight_swing(); }
+knight_restore = function() { scr_knight_swing_restore(); }
 
 get_soul = function() { return instance_exists(obj_soul) ? instance_find(obj_soul, 0) : noone; }
 
