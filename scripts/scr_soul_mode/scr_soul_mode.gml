@@ -1,10 +1,12 @@
-/// switches a soul between "red" (normal) and "lightblue" (3x3 grid movement)
+/// switches a soul between "red" (normal), "lightblue" (3x3 grid movement) and "green" (shield)
 function scr_soul_set_mode(_soul, _mode)
 {
     with (_soul)
     {
         soul_mode = _mode;
-        sprite_index = (_mode == "lightblue" && lightblue_sprite != -1) ? lightblue_sprite : base_sprite;
+        sprite_index = base_sprite;
+        if (_mode == "lightblue" && lightblue_sprite != -1) sprite_index = lightblue_sprite;
+        if (_mode == "green"     && green_sprite     != -1) sprite_index = green_sprite;
         grid_c = 1;
         grid_r = 1;
         grid_buffer = -1;

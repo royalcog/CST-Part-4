@@ -72,6 +72,27 @@ switch (state)
             state = "shrink";
         }
     break;
+	
+	case "shrink":
+        if (instance_exists(soul))
+        {
+            soul.x = lerp(soul.x, _c.x, glide_lerp);
+            soul.y = lerp(soul.y, _c.y, glide_lerp);
+        }
+        if (scr_box_scale_settled())
+        {
+            if (ralsei_up())
+            {
+                scr_set_battle_sprite(obj_ralsei, ralsei_cast_sprite, noone, false);
+                ralsei_cast = true;
+                if (cast_sound != noone) audio_play_sound(cast_sound, 1, false);
+            }
+            shake_x = _c.x;
+            shake_y = _c.y;
+            timer = shake_frames;
+            state = "cast";
+        }
+    break;
 
     // the soul shakes while he casts, and turns green the moment his spell goes off (cast_frame)
     case "cast":
@@ -88,32 +109,6 @@ switch (state)
         var _fired = _casting ? (floor(obj_ralsei.image_index) >= cast_frame) : (timer <= 0);
 
         if (_fired)
-        {
-            soul.x = shake_x;
-            soul.y = shake_y;
-            scr_soul_set_mode(soul, "green");
-            soul.external_move = false;
-            soul.shield_on  = true;
-            soul.shield_pop = 0;
-            if (change_sound != noone) audio_play_sound(change_sound, 1, false, change_gain);
-            flash_t = flash_frames;
-            flash_x = shake_x;
-            flash_y = shake_y;
-            scr_camera_shake(2, 8);
-            timer = learn_delay;
-            state = "learn";
-        }
-    break;
-
-    // the soul shakes, then turns green and gets the shield
-    case "change":
-        if (!instance_exists(soul)) { instance_destroy(); exit; }
-        timer--;
-        var _k = 0.4 + 0.6 * (1 - timer / shake_frames);
-        soul.x = shake_x + random_range(-shake_amount, shake_amount) * _k;
-        soul.y = shake_y + random_range(-shake_amount, shake_amount) * _k;
-
-        if (timer <= 0)
         {
             soul.x = shake_x;
             soul.y = shake_y;
