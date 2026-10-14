@@ -18,6 +18,7 @@ function scr_soul_swap_init()
     sw_flash_radius  = 40;
     sw_green_glide   = 10;   // frames the soul takes to slide to the middle when it turns green
     sw_cap           = 150;  // never wait longer than this for a cast
+    sw_grace         = 20;   // frames the soul can't be hit right after a change lands (green adds its slide to the middle on top)
 
     sw_col_red       = c_red;
     sw_col_blue      = make_color_rgb(66, 252, 255);
@@ -146,6 +147,9 @@ function scr_soul_swap_land()
 
     global.soul_mode = sw_next;
     scr_soul_set_mode(_s, sw_next); // light blue also puts it back on the middle sector
+	
+    // a moment to get your bearings: nothing can hit it while it's being moved/slid into place
+    _s.swap_grace = sw_grace + ((sw_next == "green") ? sw_green_glide : 0);
 
     if (sw_next == "green")
     {

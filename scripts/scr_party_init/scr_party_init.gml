@@ -819,4 +819,26 @@ function scr_start_knight_battle()
             dialogue_batch: scr_knight_finale_batch(_rk_cps)
         }
     ];
+	
+	// testing: jump ahead to a later round (set global.knight_start_round in obj_bootstrap)
+    var _start = variable_global_exists("knight_start_round") ? global.knight_start_round : 1;
+    if (_start > 1)
+    {
+        _start = min(_start, array_length(_seq.rounds));
+        _seq.round_index = _start - 2; // advance_round adds 1 before it plays the round
+
+        // what the skipped rounds would have set up
+        global.susie_soul = (_start > 4);                     // round 4: she absorbs the soul
+        global.soul_mode  = (_start > 5) ? "lightblue" : "red"; // round 5: the soul turns light blue
+
+        // the Knight with his sword out (round 1's dialogue normally does this)
+        with (obj_knight)
+        {
+            sprite_index = spr_roark_sword_appear_new;
+            image_index  = image_number - 1;
+            image_speed  = 0;
+            anim_loop    = false;
+            turn_sword_sound_played = true;
+        }
+    }
 }

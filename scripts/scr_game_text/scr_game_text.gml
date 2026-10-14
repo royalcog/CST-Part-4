@@ -98,6 +98,29 @@ function scr_game_text(_text_id)
 				}, 0);
 		break;
 		
+		// ---------------- Knight fight finale (obj_knight_finale opens these)
+		case "rk_finale_1":
+			scr_text("* Nice try, as", "susie", 34);
+				scr_text_cutoff_skip(14); // cut off the moment it's typed
+		break;
+
+		case "rk_finale_2":
+			scr_text("* Enough.", "knight");
+				scr_text_slow(0.2);
+				scr_text_shake(1, 99);
+				scr_snd_on_page(snd_knight_phone_call, 1);
+		break;
+
+		case "rk_finale_3":
+			scr_text("* I admire your cleverness, heroes.", "king", 0);
+			scr_text("* But your defense is nothing for our strategy.", "king", 4);
+			scr_text("* C-Crap...", "susie", 31);
+		break;
+
+		case "rk_finale_4":
+			scr_text("* Come on!", "susie", 32);
+		break;
+		
 /*
 
 */

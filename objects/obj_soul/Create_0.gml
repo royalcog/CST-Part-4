@@ -1,5 +1,6 @@
 move_speed = 2;
 invulnerable = false;
+swap_grace = 0; // frames of protection right after a soul colour change lands (no flashing)
 invuln_timer = 0;
 invuln_duration = 90; // ~1.5 seconds at 60fps — a bit more breathing room after getting hit
 flash_visible = true;

@@ -1,11 +1,11 @@
 // ===================================================================
-// The end of the Knight fight. The cutscene itself is round 14's
-// dialogue (scr_knight_finale_batch); this object does the parts
-// dialogue can't: the swoon barrage, Ralsei's barrier, King's spades,
-// the Knight leaving, Susie's counter + heal beam, running to the door.
-// Each part is an "action": play("name") starts it, busy goes false when it's done.
+// The end of the Knight fight. Round 14 just starts this object; it
+// runs the whole scene from the `steps` list at the bottom: actions
+// (the swoon barrage, Ralsei's barrier, King, the Knight leaving, Susie's
+// counter + heal beam, running to the door) and normal textboxes
+// (scr_game_text cases "rk_finale_1" to "rk_finale_4"), one after another.
 // ===================================================================
-depth = -3500; // in front of everyone, behind the TALKbox
+depth = -3500; // in front of everyone, behind the textbox
 
 // --- tuning ---
 swoon_gain    = 5;
@@ -31,12 +31,18 @@ barrage_count = 20;
 barrage_int_a = 26;  barrage_int_b = 5;  // frames between swoons, first -> last
 barrage_hold  = 40;  // after the last hit
 
-// King comes over and throws. he isn't in this room, so he walks in from offscreen right
-king_spawn_pad  = 60;   // how far past the right edge of the screen he starts
-king_stop_gap   = 230;  // he stops this far right of whoever's further forward
-king_ground_nudge = -10; // his feet vs. theirs (negative = a little further back/up)
-king_walk_speed = 3;
-king_wind       = 20;   // frames he holds before throwing
+// King comes over and throws. he isn't in this room, so he walks up from below the screen
+king_walk_sprite  = spr_king_walk_left;
+king_spawn_pad    = 40;   // how far below the bottom of the screen he starts
+king_stop_gap     = 230;  // he stops this far right of whoever's further forward...
+king_edge_margin  = 30;   // ...but always this far inside the right edge (even after he's knocked back)
+king_ground_nudge = -10;  // his feet vs. theirs (negative = a little further back/up)
+king_walk_speed   = 2.5;
+king_wind         = 20;   // frames he holds before throwing
+
+// his cape flying onto him first (the dark screen), straight into his battle pose. no laugh
+cape_spawn_pad  = 40;   // starts this far past the right edge of the screen
+cape_sound      = snd_wing;
 king_hand_x     = -22;  // where the spade leaves from, from the middle of his body
 king_hand_y     = -8;
 spade_speed     = 18;
@@ -50,9 +56,10 @@ door_x           = 420;
 door_y           = 50;
 leave_frames     = 100;  // the Knight's ball flying there (fades out over the second half)
 
-// Susie gets up
+// Susie gets up: right a bit, then down a bit (room for the heal beam later)
 struggle_frames  = 50;
-getup_walk_dist  = 48;
+getup_walk_dist  = 90;
+getup_down_dist  = 30;
 getup_walk_speed = 1;
 
 // King throws at Susie, she blocks and Rude Busters him
@@ -60,10 +67,12 @@ counter_spade_speed = 13;
 defend_at_dist      = 90;  // she snaps into her guard when the spade's this close
 buster_delay        = 25;
 push_dist           = 30;
-push_frames         = 14;
-king_fall_delay     = 60;  // in his hurt pose this long, then he drops to his knees
+push_frames         = 14;  // knocked back in his hurt pose, then his cape tears off...
+king_stand_sprite   = spr_king_walk_left; // ...and he's left standing without it...
+king_fall_delay     = 60;  // ...this long, then he drops to his knees
 
-// the heal beam
+// the heal beam: she turns around to face Ralsei first
+turn_hold   = 25;
 heal_frame  = 14;          // frame of spr_susie_heal the beam leaves on
 beam_speed  = 6;
 beam_scale  = 2;
@@ -95,6 +104,9 @@ beam     = { on: false, x: 0, y: 0, tx: 0, ty: 0, dir: 0, frame: 0, trail: [] };
 buster   = noone;
 charge_snd = -1;
 runners  = [];
+step_i   = 0;
+wait_t   = 0;
+talking  = false;
 
 // ------------------------------------------------------------ helpers
 
@@ -292,4 +304,54 @@ spade_break = function(_x, _y)
     {
         array_push(chunks, { x: _x, y: _y, vx: random_range(1, 4), vy: random_range(-4, -1), rot: random(360), vr: random_range(-15, 15), t: 0 });
     }
+}
+
+// ------------------------------------------------------------ the scene
+// { act: "name" } runs an action and waits for it, { text: "id" } opens a normal textbox and waits
+// for it to close, { wait: frames } just waits.
+steps = [
+    { act: "first_block" },           // the Knight swoons Susie, she blocks it
+    { wait: 15 },
+    { text: "rk_finale_1" },          // "Nice try, as"
+    { act: "susie_rapid" },           // ...faster and faster
+    { act: "ralsei_barrier" },        // Ralsei's barrier; the Knight stops for a second
+    { wait: 60 },
+    { act: "barrier_barrage" },       // then hits it with everything
+    { act: "king_spades" },           // King walks up, his cape, two spades, the barrier breaks
+    { wait: 15 },
+    { act: "double_swoon" },          // both swooned
+    { wait: 40 },
+    { text: "rk_finale_2" },          // "Enough."
+    { act: "knight_leave" },          // back into the ball, to the door
+    { wait: 30 },
+    { act: "struggle" },              // they try to get up
+    { wait: 20 },
+    { text: "rk_finale_3" },          // King's lines, "C-Crap..."
+    { act: "susie_getup" },           // she gets up, right a bit, down a bit
+    { act: "king_counter" },          // King throws, she blocks and Rude Busters him
+    { wait: 20 },
+    { act: "heal_beam" },             // turns around, heals Ralsei from there
+    { wait: 15 },
+    { text: "rk_finale_4" },          // "Come on!"
+    { act: "run_inside" }             // to the door, quick fade into the next room
+];
+
+/// runs the next step once the current one's done. returns false when there's nothing left
+run_steps = function()
+{
+    if (busy) return true;
+    if (talking)
+    {
+        if (instance_exists(obj_textbox)) return true;
+        talking = false;
+    }
+    if (wait_t > 0) { wait_t--; return true; }
+    if (step_i >= array_length(steps)) return false;
+
+    var _st = steps[step_i];
+    step_i++;
+    if (variable_struct_exists(_st, "act"))  play(_st.act);
+    if (variable_struct_exists(_st, "text")) { create_textbox(_st.text); talking = true; }
+    if (variable_struct_exists(_st, "wait")) wait_t = _st.wait;
+    return true;
 }

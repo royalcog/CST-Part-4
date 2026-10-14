@@ -39,6 +39,8 @@ if (!split_controlled && !external_move)
     }
 }
 
+if (swap_grace > 0) swap_grace--;
+
 if (invulnerable)
 {
     invuln_timer--;

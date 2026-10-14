@@ -89,12 +89,34 @@ if (beam.on)
     }
 }
 
+// ============================================================ the scene
+if (!run_steps())
+{
+    scr_knight_finale_end(); // everything's done (the fade's already started)
+    exit;
+}
+
 // ============================================================ actions
 if (action == "") exit;
 t++;
 
 switch (action)
 {
+    // ------------------------------------------------ the Knight swoons Susie, she blocks it (same as round 2)
+    case "first_block":
+        switch (sub)
+        {
+            case "start":
+                scr_knight_swoon_block_susie(spr_roark_slash_susie_2, 50);
+                go("wait");
+            break;
+
+            case "wait":
+                if (global.knight_swoon_done) finish();
+            break;
+        }
+    break;
+
     // ------------------------------------------------ Susie blocks, faster and faster
     case "susie_rapid":
         switch (sub)
@@ -214,28 +236,59 @@ switch (action)
         {
             case "start":
             {
-                // he's not in this room: in from offscreen right, feet level with theirs
+                // he's not in this room: he walks up from below the screen, in his normal walk
                 var _f   = party_front();
                 var _cam = view_camera[0];
-                var _sx  = camera_get_view_x(_cam) + camera_get_view_width(_cam) + king_spawn_pad;
-                if (!instance_exists(obj_king)) instance_create_depth(_sx, 0, -2000, obj_king);
-                place_body(obj_king, spr_king_walk_left, _sx, _f.y + king_ground_nudge);
+                var _cr  = camera_get_view_x(_cam) + camera_get_view_width(_cam);
+                var _half = (sprite_get_bbox_right(spr_king_battle_idle) - sprite_get_bbox_left(spr_king_battle_idle) + 1) * 2 / 2;
+                var _kx  = min(_f.x + king_stop_gap, _cr - king_edge_margin - _half - push_dist);
+                var _sy  = camera_get_view_y(_cam) + camera_get_view_height(_cam) + king_spawn_pad
+                           + (sprite_get_bbox_bottom(king_walk_sprite) - sprite_get_bbox_top(king_walk_sprite)) * 2;
+                if (!instance_exists(obj_king)) instance_create_depth(_kx, _sy, -2000, obj_king);
+                obj_king.visible = true;
+                place_body(obj_king, king_walk_sprite, _kx, _sy);
+                obj_king.image_index = 0;
                 obj_king.image_speed = 1;
-                saved.king_stop = _f.x + king_stop_gap;
+                saved.king_y = _f.y + king_ground_nudge;
                 go("walk");
             }
             break;
 
             case "walk":
             {
-                obj_king.x -= king_walk_speed;
+                obj_king.y -= king_walk_speed;
                 var _b = scr_get_body(obj_king);
-                if (_b.x <= saved.king_stop)
+                if (_b.y <= saved.king_y)
                 {
-                    pose(obj_king, spr_king_battle_idle, true);
-                    go("wind");
+                    obj_king.y += saved.king_y - _b.y;
+                    obj_king.image_speed = 0; // stands there, still in his walk
+                    obj_king.image_index = 0;
+                    go("pre_cape");
                 }
             }
+            break;
+
+            // his cape flies in onto his back (the dark screen), and he's in his battle pose
+            case "pre_cape":
+                if (t >= 20)
+                {
+                    var _cam = view_camera[0];
+                    var _c = instance_create_depth(camera_get_view_x(_cam) + camera_get_view_width(_cam) + cape_spawn_pad,
+                                                   obj_king.y + 37, -99999, obj_king_cape);
+                    _c.laugh = false;
+                    _c.on_merge = function() { pose(obj_king, spr_king_battle_idle, true); };
+                    if (cape_sound != noone) audio_play_sound(cape_sound, 1, false);
+                    go("cape");
+                }
+            break;
+
+            case "cape":
+                if (!instance_exists(obj_king_cape) || t > 240)
+                {
+                    with (obj_king_cape) instance_destroy();
+                    if (obj_king.sprite_index != spr_king_battle_idle) pose(obj_king, spr_king_battle_idle, true);
+                    go("wind");
+                }
             break;
 
             case "wind":
@@ -430,6 +483,20 @@ switch (action)
                 saved.walked += getup_walk_speed;
                 if (saved.walked >= getup_walk_dist)
                 {
+                    pose(obj_susie, spr_susie_walk_down, true);
+                    obj_susie.image_speed = 0.6;
+                    saved.walked = 0;
+                    go("down");
+                }
+            break;
+
+            case "down":
+                obj_susie.y += getup_walk_speed;
+                saved.walked += getup_walk_speed;
+                if (saved.walked >= getup_down_dist)
+                {
+                    // stops facing King
+                    pose(obj_susie, spr_susie_walk_right_upset, false);
                     obj_susie.image_speed = 0;
                     obj_susie.image_index = 0;
                     finish();
@@ -511,15 +578,30 @@ switch (action)
             {
                 var _k = min(t / push_frames, 1);
                 obj_king.x = saved.kx + push_dist * (1 - power(1 - _k, 3));
-                // a second later he drops to his knees
-                if (t >= push_frames + king_fall_delay)
+                if (t >= push_frames)
+                {
+                    // his cape tears off and flies back the way it came
+                    var _c = instance_create_depth(obj_king.x + 46, obj_king.y + 37, obj_king.depth - 1, obj_king_cape);
+                    _c.mode = "leave";
+                    _c.dark = false;
+                    if (cape_sound != noone) audio_play_sound(cape_sound, 1, false);
+                    pose(obj_king, king_stand_sprite, false);
+                    obj_king.image_speed = 0;
+                    obj_king.image_index = 0;
+                    go("stagger");
+                }
+            }
+            break;
+
+            // a second later he drops to his knees
+            case "stagger":
+                if (t >= king_fall_delay)
                 {
                     pose(obj_king, spr_king_kneel_sad, false);
                     audio_play_sound(snd_impact, 1, false);
                     scr_camera_shake(2, 10);
                     go("wait_susie");
                 }
-            }
             break;
 
             case "wait_susie":
@@ -539,9 +621,17 @@ switch (action)
                 saved.ending    = false;
                 saved.susie_ok  = false;
                 saved.ralsei_up = !instance_exists(obj_ralsei);
-                pose(obj_susie, spr_susie_heal, false);
-                charge_snd = scr_audio_fade_in(snd_charge, 1000, 1, true);
-                go("charge");
+                pose(obj_susie, spr_susie_left_neutral, false); // turns around to face Ralsei
+                go("turn");
+            break;
+
+            case "turn":
+                if (t >= turn_hold)
+                {
+                    pose(obj_susie, spr_susie_heal, false);
+                    charge_snd = scr_audio_fade_in(snd_charge, 1000, 1, true);
+                    go("charge");
+                }
             break;
 
             case "charge":

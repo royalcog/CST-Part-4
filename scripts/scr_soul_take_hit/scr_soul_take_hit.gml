@@ -1,5 +1,7 @@
 function scr_soul_take_hit(_amount, _color_top, _color_bottom)
 {
+    if (variable_instance_exists(obj_soul, "swap_grace") && obj_soul.swap_grace > 0) exit; // a colour change just landed
+	
     if (!instance_exists(obj_soul) || obj_soul.invulnerable) exit;
 
     // a random living ally actually loses the HP
