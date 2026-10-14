@@ -151,14 +151,13 @@ switch (state)
 
     case "finale":
         timer--;
-        if (timer <= 0 && fi < array_length(finale))
+        if (timer <= 0 && fi < finale_count)
         {
             // throw the next one still waiting (closest first on each side, so they don't pass through each other)
             var _pick = -1;
             for (var i = 0; i < array_length(finale); i++)
             {
-                if (finale[i].state != "wait") continue;
-                if (_pick == -1 || i < _pick) _pick = i;
+                if (finale[i].state == "wait") { _pick = i; break; }
             }
             if (_pick != -1)
             {
@@ -167,10 +166,15 @@ switch (state)
                 finale[_pick].speed = lerp(finale_speed_a, finale_speed_b, _k);
                 audio_play_sound(snd_smallswing, 1, false);
                 timer = round(lerp(finale_gap_a, finale_gap_b, _k));
+                fi++;
             }
-            fi++;
+            else
+            {
+                fi = finale_count; // nothing left waiting
+            }
         }
-        if (fi >= finale_count && array_length(finale) == 0) { timer = end_delay; state = "end_wait"; }
+        // done once every echo has been blocked or has hit
+        if (array_length(finale) == 0) { timer = end_delay; state = "end_wait"; }
     break;
 
     case "end_wait":

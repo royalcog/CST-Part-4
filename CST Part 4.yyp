@@ -731,6 +731,7 @@
     {"id":{"name":"spr_hammerbox","path":"sprites/spr_hammerbox/spr_hammerbox.yy",},},
     {"id":{"name":"spr_headralsei","path":"sprites/spr_headralsei/spr_headralsei.yy",},},
     {"id":{"name":"spr_headsusie","path":"sprites/spr_headsusie/spr_headsusie.yy",},},
+    {"id":{"name":"spr_healbeam","path":"sprites/spr_healbeam/spr_healbeam.yy",},},
     {"id":{"name":"spr_hometown_cafe","path":"sprites/spr_hometown_cafe/spr_hometown_cafe.yy",},},
     {"id":{"name":"spr_hometown_tiles","path":"sprites/spr_hometown_tiles/spr_hometown_tiles.yy",},},
     {"id":{"name":"spr_invischaracter","path":"sprites/spr_invischaracter/spr_invischaracter.yy",},},

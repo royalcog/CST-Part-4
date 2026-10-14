@@ -591,6 +591,7 @@
     {"name":"spr_hammer_barrage","order":5,"path":"sprites/spr_hammer_barrage/spr_hammer_barrage.yy",},
     {"name":"spr_hammer","order":5,"path":"sprites/spr_hammer/spr_hammer.yy",},
     {"name":"spr_headralsei","order":1,"path":"sprites/spr_headralsei/spr_headralsei.yy",},
+    {"name":"spr_healbeam","order":35,"path":"sprites/spr_healbeam/spr_healbeam.yy",},
     {"name":"spr_hometown_cafe","order":11,"path":"sprites/spr_hometown_cafe/spr_hometown_cafe.yy",},
     {"name":"spr_hometown_tiles","order":3,"path":"sprites/spr_hometown_tiles/spr_hometown_tiles.yy",},
     {"name":"spr_invischaracter","order":4,"path":"sprites/spr_invischaracter/spr_invischaracter.yy",},
