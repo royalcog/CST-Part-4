@@ -756,6 +756,7 @@
     {"id":{"name":"spr_king_hurt","path":"sprites/spr_king_hurt/spr_king_hurt.yy",},},
     {"id":{"name":"spr_king_kneel_happy_hand","path":"sprites/spr_king_kneel_happy_hand/spr_king_kneel_happy_hand.yy",},},
     {"id":{"name":"spr_king_kneel_happy","path":"sprites/spr_king_kneel_happy/spr_king_kneel_happy.yy",},},
+    {"id":{"name":"spr_king_kneel_sad","path":"sprites/spr_king_kneel_sad/spr_king_kneel_sad.yy",},},
     {"id":{"name":"spr_king_laugh","path":"sprites/spr_king_laugh/spr_king_laugh.yy",},},
     {"id":{"name":"spr_king_left_shadow","path":"sprites/spr_king_left_shadow/spr_king_left_shadow.yy",},},
     {"id":{"name":"spr_king_right_shadow","path":"sprites/spr_king_right_shadow/spr_king_right_shadow.yy",},},

@@ -610,6 +610,7 @@
     {"name":"spr_king_hurt","order":11,"path":"sprites/spr_king_hurt/spr_king_hurt.yy",},
     {"name":"spr_king_kneel_happy_hand","order":13,"path":"sprites/spr_king_kneel_happy_hand/spr_king_kneel_happy_hand.yy",},
     {"name":"spr_king_kneel_happy","order":12,"path":"sprites/spr_king_kneel_happy/spr_king_kneel_happy.yy",},
+    {"name":"spr_king_kneel_sad","order":14,"path":"sprites/spr_king_kneel_sad/spr_king_kneel_sad.yy",},
     {"name":"spr_king_laugh","order":8,"path":"sprites/spr_king_laugh/spr_king_laugh.yy",},
     {"name":"spr_king_left_shadow","order":5,"path":"sprites/spr_king_left_shadow/spr_king_left_shadow.yy",},
     {"name":"spr_king_right_shadow","order":6,"path":"sprites/spr_king_right_shadow/spr_king_right_shadow.yy",},
