@@ -21,7 +21,7 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
     {
         _w.spin_t   = 0;
         _w.from_ang = _w.ang;
-        audio_play_sound(block_sound, 1, false);
+        audio_play_sound(snd_smallswing, 1, false);
     }
 
     if (_w.spin_t >= 0 && _w.spin_t < feint_spin_frames)
@@ -42,7 +42,7 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
         var _px = _c.x + lengthdir_x(soul.shield_r, _w.ang), _py = _c.y + lengthdir_y(soul.shield_r, _w.ang);
         if (soul.shield_on && soul.shield_dir == _side)
         {
-            audio_play_sound(block_sounds[_side], 1, false);
+            audio_play_sound(block_sound, 1, false);
             array_push(sparks, { x: _px, y: _py, ang: _w.ang, t: 0 });
         }
         else
