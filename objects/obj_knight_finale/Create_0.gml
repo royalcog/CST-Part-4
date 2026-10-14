@@ -1,8 +1,8 @@
 // ===================================================================
-// The end of the Knight fight. The cutscene itself is round 13's
+// The end of the Knight fight. The cutscene itself is round 14's
 // dialogue (scr_knight_finale_batch); this object does the parts
 // dialogue can't: the swoon barrage, Ralsei's barrier, King's spades,
-// the Knight leaving, Susie's counter + heal beam, running inside.
+// the Knight leaving, Susie's counter + heal beam, running to the door.
 // Each part is an "action": play("name") starts it, busy goes false when it's done.
 // ===================================================================
 depth = -3500; // in front of everyone, behind the TALKbox
@@ -18,21 +18,23 @@ rapid_hits = [
     { dur: 20, gap: 9 },  { dur: 14, gap: 6 },  { dur: 10, gap: 4 }
 ];
 
-// Ralsei's barrier (a wall of light in front of both of them)
+// Ralsei's barrier: a big curved wall of light bowing out in front of both of them
 ralsei_cast_frame = 4;
-barrier_gap       = 22;  // px in front of whoever's further forward
-barrier_w         = 8;
-barrier_pad_top   = 18;
-barrier_pad_bot   = 6;
-barrier_grow      = 16;  // frames to grow in
+barrier_gap       = 30;  // px from whoever's further forward to the front of the curve
+barrier_pad       = 34;  // how far it reaches past the tops of their heads / below their feet
+barrier_arc       = 58;  // half the curve's angle (bigger = more curved)
+barrier_th        = 12;  // how thick it is
+barrier_grow      = 18;  // frames to grow in
 
 // the barrage on the barrier: each swoon cuts into the last one
 barrage_count = 20;
 barrage_int_a = 26;  barrage_int_b = 5;  // frames between swoons, first -> last
 barrage_hold  = 40;  // after the last hit
 
-// King comes over and throws
-king_walk_dist  = 150;
+// King comes over and throws. he isn't in this room, so he walks in from offscreen right
+king_spawn_pad  = 60;   // how far past the right edge of the screen he starts
+king_stop_gap   = 230;  // he stops this far right of whoever's further forward
+king_ground_nudge = -10; // his feet vs. theirs (negative = a little further back/up)
 king_walk_speed = 3;
 king_wind       = 20;   // frames he holds before throwing
 king_hand_x     = -22;  // where the spade leaves from, from the middle of his body
@@ -41,14 +43,12 @@ spade_speed     = 18;
 spade_gap       = 8;    // frames between the two spades
 spade_spin      = 25;   // degrees per frame
 spade_scale     = 1.5;
-shard_count     = 16;
+shard_count     = 28;
 
-// the Knight leaving: back into the ball, into the castle door
-leave_frames     = 100;
-leave_end_scale  = 0.3;
-door_off_x       = 0;   // the emblem on the castle, from obj_castle_tutorial_area's position
-door_off_y       = 22;
-castle_base_off  = 80;  // the castle's bottom edge, from obj_castle_tutorial_area's y
+// the castle door (the bottom of it): the Knight goes there, then Susie and Ralsei do
+door_x           = 420;
+door_y           = 50;
+leave_frames     = 100;  // the Knight's ball flying there (fades out over the second half)
 
 // Susie gets up
 struggle_frames  = 50;
@@ -61,7 +61,7 @@ defend_at_dist      = 90;  // she snaps into her guard when the spade's this clo
 buster_delay        = 25;
 push_dist           = 30;
 push_frames         = 14;
-king_hurt_hold      = 40;
+king_fall_delay     = 60;  // in his hurt pose this long, then he drops to his knees
 
 // the heal beam
 heal_frame  = 14;          // frame of spr_susie_heal the beam leaves on
@@ -70,10 +70,12 @@ beam_scale  = 2;
 hand_off_x  = -14;         // where the beam leaves from, from the middle of Susie's body
 hand_off_y  = -10;
 
-// running inside
+// running to the door, then a quick fade into the next room
 run_speed       = 3.5;
-run_fade_px     = 30;   // fades out over the last this-many px before the castle
 ralsei_run_wait = 12;   // he starts a beat after her
+next_room       = rm_one;
+exit_fade_step  = 0.05; // per frame (0.05 = about a third of a second each way)
+exit_fade_hold  = 15;   // frames held on black
 
 // --- state ---
 action   = "";
@@ -84,7 +86,7 @@ idx      = 0;
 swoon_on = noone;
 saved    = {};
 
-barrier  = { on: false, broken: false, x1: 0, y1: 0, x2: 0, y2: 0, grow: 0, flash: 0, t: 0, cracks: [] };
+barrier  = { on: false, broken: false, cx: 0, cy: 0, r: 1, grow: 0, flash: 0, t: 0, cracks: [] };
 shards   = [];
 spades   = [];
 chunks   = [];
@@ -164,17 +166,33 @@ swoon_popup = function(_o)
     with (obj_battle_ui_box) if (body == _o) { scr_party_swoon_popup(id); break; }
 }
 
-door_point = function()
+/// puts _o in sprite _spr with the bottom-middle of its body on (_bx, _by)
+place_body = function(_o, _spr, _bx, _by)
 {
-    if (instance_exists(obj_castle_tutorial_area))
-        return { x: obj_castle_tutorial_area.x + door_off_x, y: obj_castle_tutorial_area.y + door_off_y };
-    return { x: room_width / 2, y: 260 };
+    with (_o)
+    {
+        sprite_index = _spr;
+        x = _bx - ((sprite_get_bbox_left(_spr) + sprite_get_bbox_right(_spr) + 1) / 2 - sprite_get_xoffset(_spr)) * image_xscale;
+        y = _by - (sprite_get_bbox_bottom(_spr) + 1 - sprite_get_yoffset(_spr)) * image_yscale;
+        last_sprite = _spr;
+    }
 }
 
-castle_base_y = function()
+/// the right edge of whoever's further forward, and where their feet are
+party_front = function()
 {
-    if (instance_exists(obj_castle_tutorial_area)) return obj_castle_tutorial_area.y + castle_base_off;
-    return 320;
+    var _right = -100000, _feet = 0, _n = 0;
+    var _list = [obj_susie, obj_ralsei];
+    for (var i = 0; i < 2; i++)
+    {
+        if (!instance_exists(_list[i])) continue;
+        var _r = body_rect(_list[i]);
+        _right = max(_right, _r.x2);
+        _feet += _r.y2;
+        _n++;
+    }
+    if (_n == 0) return { x: 200, y: 360 };
+    return { x: _right, y: _feet / _n };
 }
 
 // ------------------------------------------------------------ barrier
@@ -193,25 +211,36 @@ barrier_build = function()
         _top   = min(_top, _r[i].y1);
         _bot   = max(_bot, _r[i].y2);
     }
-    barrier.x1 = _right + barrier_gap;
-    barrier.x2 = barrier.x1 + barrier_w;
-    barrier.y1 = _top - barrier_pad_top;
-    barrier.y2 = _bot + barrier_pad_bot;
+    // a slice of a circle: its middle bulges out to (_right + barrier_gap), its ends reach past them top and bottom
+    var _half_h = (_bot - _top) / 2 + barrier_pad;
+    barrier.r  = _half_h / dsin(barrier_arc);
+    barrier.cx = _right + barrier_gap - barrier.r;
+    barrier.cy = (_top + _bot) / 2;
     barrier.on = true;
     barrier.broken = false;
     barrier.grow = 0;
     barrier.cracks = [];
 }
 
+/// a point on the barrier at angle _a (0 = its middle), _off px out from its centre line
+barrier_point = function(_a, _off)
+{
+    return { x: barrier.cx + lengthdir_x(barrier.r + _off, _a), y: barrier.cy + lengthdir_y(barrier.r + _off, _a) };
+}
+
 barrier_hit = function()
 {
     if (!barrier.on || barrier.broken) return;
     barrier.flash = 1;
-    // a crack somewhere on it
-    var _cx = random_range(barrier.x1, barrier.x2);
-    var _cy = random_range(barrier.y1 + 6, barrier.y2 - 6);
-    var _a  = random(360), _l = random_range(6, 16);
-    array_push(barrier.cracks, { x1: _cx - lengthdir_x(_l, _a), y1: _cy - lengthdir_y(_l, _a), x2: _cx + lengthdir_x(_l, _a), y2: _cy + lengthdir_y(_l, _a) });
+    // a jagged crack across the band somewhere along it
+    var _a = random_range(-barrier_arc * 0.85, barrier_arc * 0.85);
+    var _p = barrier_point(_a, -barrier_th / 2);
+    for (var k = 1; k <= 3; k++)
+    {
+        var _q = barrier_point(_a + random_range(-3, 3), -barrier_th / 2 + barrier_th * k / 3);
+        array_push(barrier.cracks, { x1: _p.x, y1: _p.y, x2: _q.x, y2: _q.y });
+        _p = _q;
+    }
     var _s = audio_play_sound(snd_impact, 1, false);
     audio_sound_pitch(_s, random_range(0.9, 1.15));
     scr_camera_shake(3, 8);
@@ -224,13 +253,25 @@ barrier_shatter = function()
     barrier.on = false;
     for (var i = 0; i < shard_count; i++)
     {
-        array_push(shards, { x: random_range(barrier.x1, barrier.x2), y: random_range(barrier.y1, barrier.y2),
-                             vx: random_range(-4, -0.5), vy: random_range(-3, 1), rot: random(360), vr: random_range(-12, 12),
-                             len: random_range(4, 10), t: 0 });
+        var _a = random_range(-barrier_arc, barrier_arc);
+        var _p = barrier_point(_a, random_range(-barrier_th / 2, barrier_th / 2));
+        var _d = _a + 180 + random_range(-40, 40); // blown back towards them
+        var _sp = random_range(1, 4);
+        array_push(shards, { x: _p.x, y: _p.y, vx: lengthdir_x(_sp, _d), vy: lengthdir_y(_sp, _d) - random_range(0, 2),
+                             rot: random(360), vr: random_range(-12, 12), len: random_range(5, 11), t: 0 });
     }
     audio_play_sound(snd_glassbreak, 1, false);
     audio_play_sound(snd_impact, 1, false);
     scr_camera_shake(6, 20);
+}
+
+/// is (_x, _y) touching the barrier?
+barrier_touches = function(_x, _y, _pad)
+{
+    if (!barrier.on || barrier.broken) return false;
+    var _d = point_distance(barrier.cx, barrier.cy, _x, _y);
+    if (abs(_d - barrier.r) > barrier_th / 2 + _pad) return false;
+    return abs(angle_difference(point_direction(barrier.cx, barrier.cy, _x, _y), 0)) <= barrier_arc;
 }
 
 // ------------------------------------------------------------ spades

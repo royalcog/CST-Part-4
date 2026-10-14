@@ -1,10 +1,38 @@
-if (!instance_exists(obj_battlebox)) { instance_destroy(); exit; }
+// the box only goes away on purpose (Susie breaking it); otherwise the attack's over
+if (!instance_exists(obj_battlebox) && !fullscreen && !waiting_break) { instance_destroy(); exit; }
 var _s = get_soul();
 var _c = scr_box_center();
 
 scr_soul_swap_step();
 scr_slashes_step();
 if (white_t > 0) white_t--;
+
+// Susie's buster broke the box
+if (waiting_break && (!instance_exists(buster) || buster.broken)) box_broken();
+
+// the darkness once the box is gone, and the whole-screen grid while light blue
+dim = fullscreen ? min(dim + 1 / dim_fade, 1) : 0;
+var _blue_now = fullscreen && instance_exists(_s) && _s.soul_mode == "lightblue";
+grid_fade = _blue_now ? min(grid_fade + 1 / 30, 1) : max(grid_fade - 1 / 30, 0);
+
+// green can turn 8 ways once it's the whole screen
+if (instance_exists(_s))
+{
+    _s.shield_dirs = fullscreen ? 8 : 4;
+    _s.shield_arc  = fullscreen ? shield_arc_8 : 50;
+}
+
+// shards from the corners
+for (var i = array_length(shards) - 1; i >= 0; i--)
+{
+    var _p = shards[i];
+    _p.t++;
+    _p.vy += 0.25;
+    _p.x += _p.vx;
+    _p.y += _p.vy;
+    _p.rot += _p.vr;
+    if (_p.t >= shard_life) array_delete(shards, i, 1);
+}
 
 // --- the dark corners: light blue can't go in them, and they hurt to touch ---
 for (var k = 0; k < 9; k++) if (dark[k]) dark_t[k] = min(dark_t[k] + 1, dark_fade);
@@ -37,7 +65,8 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
     _w.dist -= _w.speed;
 
     var _horiz = (_w.side == 0 || _w.side == 2);
-    var _half  = _horiz ? (_b.x2 - _b.x1) / 2 : (_b.y2 - _b.y1) / 2;
+    var _half  = (_w.side == -1) ? min(_b.x2 - _b.x1, _b.y2 - _b.y1) / 2
+               : (_horiz ? (_b.x2 - _b.x1) / 2 : (_b.y2 - _b.y1) / 2);
     var _past  = -_half - _w.dist;
     _w.alpha = min(_w.t / fade_in, 1) * clamp(1 - _past / fade_out_px, 0, 1);
     if (_past > fade_out_px + blade_len) { array_delete(swords, i, 1); continue; }
@@ -46,7 +75,8 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
 
     if (_s.soul_mode == "green" && abs(_w.lane) < 1 && _w.dist <= _s.shield_r + 2 && _w.dist > -_s.shield_r)
     {
-        if (_s.shield_on && _s.shield_dir == _w.side)
+        var _facing = (_s.shield_dirs == 8) ? (_s.shield_dir == _w.d8) : (_s.shield_dir == _w.side);
+        if (_s.shield_on && _facing)
         {
             audio_play_sound(block_sound, 1, false);
             array_push(sparks, { x: _c.x + lengthdir_x(_s.shield_r, _w.ang), y: _c.y + lengthdir_y(_s.shield_r, _w.ang), ang: _w.ang, t: 0 });
@@ -89,6 +119,7 @@ switch (state)
             && (array_length(swords) > 0 || array_length(slashes) > 0 || scr_soul_swap_busy())) break;
         if (bi > 0 && beats[bi - 1].act == "await" && scr_soul_swap_busy()) break;
         if (bi > 0 && beats[bi - 1].act == "flash" && white_t > 0) break;
+        if (bi > 0 && beats[bi - 1].act == "buster" && !fullscreen) break;
 
         timer--;
         if (timer > 0) break;
@@ -105,6 +136,8 @@ switch (state)
             case "shrink": shrink_box(_bt.s); break;
             case "corner": darken_corner(); break;
             case "x":      spawn_x(); break;
+            case "buster": start_buster(); break;
+            case "sword8": spawn_sword8(_bt.how, _bt.spd); break;
             case "flash":
                 white_t = flash_frames;
                 audio_play_sound(snd_glassbreak, 1, false);

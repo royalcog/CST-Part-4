@@ -3,6 +3,12 @@
 /// Stable regardless of box_angle (rotation happens around this point).
 function scr_box_center()
 {
+    // no box (e.g. Susie broke it): the middle of the whole-screen play area
+    if (!instance_exists(obj_battlebox))
+    {
+        var _b = scr_get_attack_bounds();
+        return { x: (_b.x1 + _b.x2) / 2, y: (_b.y1 + _b.y2) / 2 };
+    }
     var _interior = scr_get_box_interior();
     return {
         x: lerp(_interior.x1, _interior.x2, 0.5),

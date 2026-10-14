@@ -13,7 +13,7 @@ break_sound     = snd_glassbreak;
 break_shake     = 2;
 
 // Susie fixes it
-susie_line      = [ { speaker: obj_susie, text: "Try this on for size!" } ];
+susie_line      = [ { speaker: obj_susie, text: "Can't break us!" } ];
 buster_delay    = 25;  // her line starts -> she swings
 restore_sound   = snd_sparklegem;
 restore_frames  = 30;

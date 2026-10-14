@@ -412,6 +412,7 @@
     {"id":{"name":"scr_call_after_frames","path":"scripts/scr_call_after_frames/scr_call_after_frames.yy",},},
     {"id":{"name":"scr_cam_panning","path":"scripts/scr_cam_panning/scr_cam_panning.yy",},},
     {"id":{"name":"scr_clip_segment_to_box","path":"scripts/scr_clip_segment_to_box/scr_clip_segment_to_box.yy",},},
+    {"id":{"name":"scr_controls","path":"scripts/scr_controls/scr_controls.yy",},},
     {"id":{"name":"scr_dimming","path":"scripts/scr_dimming/scr_dimming.yy",},},
     {"id":{"name":"scr_doki_bar_visibility","path":"scripts/scr_doki_bar_visibility/scr_doki_bar_visibility.yy",},},
     {"id":{"name":"scr_draw_pixel_number","path":"scripts/scr_draw_pixel_number/scr_draw_pixel_number.yy",},},

@@ -1,41 +1,65 @@
-// --- Ralsei's barrier ---
+// --- Ralsei's barrier: a curved band of light ---
 if (barrier.on)
 {
     var _g  = 1 - power(1 - barrier.grow, 3);
-    var _cy = (barrier.y1 + barrier.y2) / 2;
-    var _hh = (barrier.y2 - barrier.y1) / 2 * _g;
-    var _ya = _cy - _hh, _yb = _cy + _hh;
-    var _h  = max(_yb - _ya, 1);
+    var _ha = barrier_arc * _g;              // grows out from its middle
     var _p  = 0.75 + 0.25 * sin(barrier.t * 0.2);
+    var _n  = 28;
+    var _th = barrier_th;
 
     gpu_set_blendmode(bm_add);
     draw_set_color(ralsei_color);
-    draw_set_alpha(0.25 * _p);
-    draw_rectangle(barrier.x1 - 4, _ya, barrier.x2 + 4, _yb, false); // soft glow
-    draw_set_alpha(0.35 * _p);
-    draw_rectangle(barrier.x1, _ya, barrier.x2, _yb, false);
 
-    // bands sweeping down it
-    draw_set_alpha(0.3);
-    for (var k = 0; k < 4; k++)
+    // soft glow, then the band itself
+    for (var _pass = 0; _pass < 2; _pass++)
     {
-        var _yy = _ya + ((barrier.t * 1.5 + k * _h / 4) mod _h);
-        draw_line_width(barrier.x1, _yy, barrier.x2, _yy, 2);
+        var _w = (_pass == 0) ? _th * 2.2 : _th;
+        draw_set_alpha((_pass == 0) ? 0.15 * _p : 0.4 * _p);
+        draw_primitive_begin(pr_trianglestrip);
+        for (var i = 0; i <= _n; i++)
+        {
+            var _a = lerp(-_ha, _ha, i / _n);
+            var _in = barrier_point(_a, -_w / 2), _out = barrier_point(_a, _w / 2);
+            draw_vertex(_in.x, _in.y);
+            draw_vertex(_out.x, _out.y);
+        }
+        draw_primitive_end();
     }
 
     // bright edges
     draw_set_alpha(0.9 * _p);
-    draw_line_width(barrier.x1, _ya, barrier.x1, _yb, 2);
-    draw_line_width(barrier.x2, _ya, barrier.x2, _yb, 2);
-    draw_line_width(barrier.x1, _ya, barrier.x2, _ya, 2);
-    draw_line_width(barrier.x1, _yb, barrier.x2, _yb, 2);
+    for (var i = 0; i < _n; i++)
+    {
+        var _a1 = lerp(-_ha, _ha, i / _n), _a2 = lerp(-_ha, _ha, (i + 1) / _n);
+        var _o1 = barrier_point(_a1, _th / 2), _o2 = barrier_point(_a2, _th / 2);
+        var _i1 = barrier_point(_a1, -_th / 2), _i2 = barrier_point(_a2, -_th / 2);
+        draw_line_width(_o1.x, _o1.y, _o2.x, _o2.y, 2);
+        draw_line_width(_i1.x, _i1.y, _i2.x, _i2.y, 1);
+    }
+
+    // glints running along it
+    draw_set_color(c_white);
+    for (var k = 0; k < 3; k++)
+    {
+        var _a = lerp(-_ha, _ha, frac(barrier.t / 70 + k / 3));
+        var _q = barrier_point(_a, 0);
+        draw_set_alpha(0.6 * _p);
+        draw_circle(_q.x, _q.y, 3, false);
+    }
 
     // flash on every hit
     if (barrier.flash > 0)
     {
-        draw_set_color(c_white);
-        draw_set_alpha(barrier.flash * 0.8);
-        draw_rectangle(barrier.x1 - 4, _ya, barrier.x2 + 4, _yb, false);
+        draw_set_alpha(barrier.flash * 0.7);
+        draw_primitive_begin(pr_trianglestrip);
+        for (var i = 0; i <= _n; i++)
+        {
+            var _a = lerp(-_ha, _ha, i / _n);
+            var _in = barrier_point(_a, -_th), _out = barrier_point(_a, _th);
+            draw_vertex(_in.x, _in.y);
+            draw_vertex(_out.x, _out.y);
+        }
+        draw_primitive_end();
     }
     gpu_set_blendmode(bm_normal);
 
@@ -45,9 +69,9 @@ if (barrier.on)
     for (var k = 0; k < array_length(barrier.cracks); k++)
     {
         var _ck = barrier.cracks[k];
-        if (_ck.y1 < _ya || _ck.y2 > _yb) continue;
         draw_line_width(_ck.x1, _ck.y1, _ck.x2, _ck.y2, 1);
     }
+    draw_set_alpha(1);
 }
 
 // --- barrier shards ---
@@ -97,7 +121,7 @@ if (beam.on)
                     beam_scale, beam_scale, beam.dir, c_white, 1);
 }
 
-// --- the Knight's ball heading into the door ---
+// --- the Knight's ball heading into the door (same size all the way, fading out) ---
 if (ball.on && ball.alpha > 0)
 {
     var _w = sprite_get_width(spr_roark_ball), _h = sprite_get_height(spr_roark_ball);

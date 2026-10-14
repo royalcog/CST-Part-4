@@ -82,12 +82,29 @@ function scr_soul_green_step()
     x = _c.x;
     y = _c.y;
 
-    // newest press wins (0 right, 1 up, 2 left, 3 down)
-    if (keyboard_check_pressed(vk_right)) shield_dir = 0;
-    if (keyboard_check_pressed(vk_up))    shield_dir = 1;
-    if (keyboard_check_pressed(vk_left))  shield_dir = 2;
-    if (keyboard_check_pressed(vk_down))  shield_dir = 3;
+    var _step = 90;
+    if (shield_dirs == 8)
+    {
+        // 8 directions (0 right, 1 up-right, 2 up ... 7 down-right): hold two arrows for a diagonal.
+        // only a new press changes it, so letting go of one key of a diagonal doesn't snap it back
+        _step = 45;
+        if (keyboard_check_pressed(vk_right) || keyboard_check_pressed(vk_up)
+            || keyboard_check_pressed(vk_left) || keyboard_check_pressed(vk_down))
+        {
+            var _hx = keyboard_check(vk_right) - keyboard_check(vk_left);
+            var _vy = keyboard_check(vk_down) - keyboard_check(vk_up);
+            if (_hx != 0 || _vy != 0) shield_dir = round(point_direction(0, 0, _hx, _vy) / 45) mod 8;
+        }
+    }
+    else
+    {
+        // newest press wins (0 right, 1 up, 2 left, 3 down)
+        if (keyboard_check_pressed(vk_right)) shield_dir = 0;
+        if (keyboard_check_pressed(vk_up))    shield_dir = 1;
+        if (keyboard_check_pressed(vk_left))  shield_dir = 2;
+        if (keyboard_check_pressed(vk_down))  shield_dir = 3;
+    }
 
-    shield_angle += angle_difference(shield_dir * 90, shield_angle) * shield_turn;
+    shield_angle += angle_difference(shield_dir * _step, shield_angle) * shield_turn;
     if (shield_on) shield_pop = min(shield_pop + 0.1, 1);
 }

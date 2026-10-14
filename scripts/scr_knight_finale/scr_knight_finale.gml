@@ -86,8 +86,8 @@ function scr_knight_finale_batch(_rk_cps)
 
         { speaker: obj_susie, text: "Come on!" },
 
-        // into the castle
-        { run: function() { scr_knight_finale_play("run_inside"); },     wait_until: scr_knight_finale_idle, wait: 30 },
+        // to the castle door (this also starts the quick fade into the next room)
+        { run: function() { scr_knight_finale_play("run_inside"); },     wait_until: scr_knight_finale_idle },
 
         { run: scr_knight_finale_end }
     ];

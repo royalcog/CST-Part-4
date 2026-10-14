@@ -53,11 +53,7 @@ for (var i = array_length(spades) - 1; i >= 0; i--)
     _s.x += lengthdir_x(_s.speed, _dir);
     _s.y += lengthdir_y(_s.speed, _dir);
 
-    if (barrier.on && !barrier.broken && _s.x <= barrier.x2 && _s.x >= barrier.x1 - _s.speed
-        && _s.y >= barrier.y1 && _s.y <= barrier.y2)
-    {
-        barrier_shatter();
-    }
+    if (barrier_touches(_s.x, _s.y, _s.speed)) barrier_shatter();
 }
 
 // heal beam
@@ -110,7 +106,7 @@ switch (action)
             break;
 
             case "swoon":
-                swoon((idx mod 2 == 0) ? spr_roark_slash_susie_1 : spr_roark_slash_susie_2, rapid_hits[idx].dur);
+                swoon(spr_roark_slash_susie_2, rapid_hits[idx].dur); // all on Susie
                 go("swoon_wait");
             break;
 
@@ -189,7 +185,7 @@ switch (action)
                 var _k = power(idx / max(barrage_count - 1, 1), 0.7);
                 saved.interval = round(lerp(barrage_int_a, barrage_int_b, _k));
                 if (idx > 0) barrier_hit(); // the last one lands as this one cuts into it
-                swoon(choose(spr_roark_slash_susie_1, spr_roark_slash_susie_2, spr_roark_slash_ralsei), saved.interval + 6);
+                swoon((idx mod 2 == 0) ? spr_roark_slash_susie_2 : spr_roark_slash_ralsei, saved.interval + 6); // back and forth between them
                 go("between");
             }
             break;
@@ -217,21 +213,29 @@ switch (action)
         switch (sub)
         {
             case "start":
-                saved.hits = 0;
-                if (!instance_exists(obj_king)) { go("wind"); break; }
-                pose(obj_king, spr_king_walk_left, true);
-                saved.walked = 0;
+            {
+                // he's not in this room: in from offscreen right, feet level with theirs
+                var _f   = party_front();
+                var _cam = view_camera[0];
+                var _sx  = camera_get_view_x(_cam) + camera_get_view_width(_cam) + king_spawn_pad;
+                if (!instance_exists(obj_king)) instance_create_depth(_sx, 0, -2000, obj_king);
+                place_body(obj_king, spr_king_walk_left, _sx, _f.y + king_ground_nudge);
+                obj_king.image_speed = 1;
+                saved.king_stop = _f.x + king_stop_gap;
                 go("walk");
+            }
             break;
 
             case "walk":
+            {
                 obj_king.x -= king_walk_speed;
-                saved.walked += king_walk_speed;
-                if (saved.walked >= king_walk_dist)
+                var _b = scr_get_body(obj_king);
+                if (_b.x <= saved.king_stop)
                 {
                     pose(obj_king, spr_king_battle_idle, true);
                     go("wind");
                 }
+            }
             break;
 
             case "wind":
@@ -281,7 +285,7 @@ switch (action)
         switch (sub)
         {
             case "start":
-                swoon(spr_roark_slash_susie_1, 45);
+                swoon(spr_roark_slash_susie_2, 45);
                 go("s1");
             break;
 
@@ -333,14 +337,12 @@ switch (action)
                 if (obj_knight.reverse_phase == 2 || t > 150)
                 {
                     var _c = body_mid(obj_knight);
-                    var _d = door_point();
                     ball.on    = true;
                     ball.x     = _c.x;  ball.y  = _c.y;
                     ball.sx    = _c.x;  ball.sy = _c.y;
-                    ball.tx    = _d.x;  ball.ty = _d.y;
+                    ball.tx    = door_x; ball.ty = door_y;
                     ball.xs    = sign(obj_knight.image_xscale);
                     ball.scale = abs(obj_knight.image_xscale);
-                    saved.start_scale = ball.scale;
                     ball.alpha = 1;
                     ball.frame = 0;
                     ball.t     = 0;
@@ -357,7 +359,6 @@ switch (action)
                 var _e = (_k < 0.5) ? 2 * _k * _k : 1 - power(-2 * _k + 2, 2) / 2;
                 ball.x = lerp(ball.sx, ball.tx, _e);
                 ball.y = lerp(ball.sy, ball.ty, _e);
-                ball.scale = lerp(saved.start_scale, leave_end_scale, _e);
                 ball.alpha = (_k < 0.5) ? 1 : 1 - (_k - 0.5) / 0.5;
                 ball.frame += sprite_get_speed(spr_roark_ball) / game_get_speed(gamespeed_fps);
                 if (_k >= 1)
@@ -510,9 +511,12 @@ switch (action)
             {
                 var _k = min(t / push_frames, 1);
                 obj_king.x = saved.kx + push_dist * (1 - power(1 - _k, 3));
-                if (t >= push_frames + king_hurt_hold)
+                // a second later he drops to his knees
+                if (t >= push_frames + king_fall_delay)
                 {
-                    pose(obj_king, spr_king_battle_idle, true);
+                    pose(obj_king, spr_king_kneel_sad, false);
+                    audio_play_sound(snd_impact, 1, false);
+                    scr_camera_shake(2, 10);
                     go("wait_susie");
                 }
             }
@@ -581,7 +585,7 @@ switch (action)
         }
     break;
 
-    // ------------------------------------------------ both run into the castle
+    // ------------------------------------------------ both run to the castle door, then a quick fade into the next room
     case "run_inside":
         switch (sub)
         {
@@ -597,16 +601,13 @@ switch (action)
 
             case "run":
             {
-                var _door = door_point();
-                var _base = castle_base_y();
-                var _all_gone = true;
-
+                var _all_there = true;
                 for (var i = 0; i < array_length(runners); i++)
                 {
                     var _r = runners[i];
-                    if (_r.phase == "gone") continue;
-                    if (!instance_exists(_r.obj)) { _r.phase = "gone"; continue; }
-                    _all_gone = false;
+                    if (_r.phase == "there") continue;
+                    if (!instance_exists(_r.obj)) { _r.phase = "there"; continue; }
+                    _all_there = false;
                     var _o = _r.obj;
 
                     switch (_r.phase)
@@ -616,19 +617,21 @@ switch (action)
                             if (_r.wait <= 0)
                             {
                                 var _f = scr_get_feet(_o);
-                                _r.dir = (_door.x + _r.off >= _f.x) ? 1 : -1;
+                                _r.dir = (door_x + _r.off >= _f.x) ? 1 : -1;
                                 pose(_o, (_r.dir < 0) ? _r.spr_l : _r.spr_r, true);
                                 _o.image_speed = 1.5;
                                 _r.phase = "side";
                             }
                         break;
 
+                        // across to line up under the door...
                         case "side":
                         {
                             _o.x += _r.dir * run_speed;
                             var _f = scr_get_feet(_o);
-                            if ((_door.x + _r.off - _f.x) * _r.dir <= 0)
+                            if ((door_x + _r.off - _f.x) * _r.dir <= 0)
                             {
+                                _o.x += door_x + _r.off - _f.x; // exactly in line
                                 pose(_o, _r.spr_up, true);
                                 _o.image_speed = 1.5;
                                 _r.phase = "up";
@@ -636,28 +639,33 @@ switch (action)
                         }
                         break;
 
+                        // ...then up to it
                         case "up":
                         {
                             _o.y -= run_speed;
                             var _f = scr_get_feet(_o);
-                            var _left = _f.y - _base;
-                            _o.image_alpha = clamp(_left / run_fade_px, 0, 1);
-                            if (_left <= 0)
+                            if (_f.y <= door_y)
                             {
-                                _o.image_alpha = 0;
-                                _o.visible = false;
-                                _r.phase = "gone";
+                                _o.y += door_y - _f.y;
+                                _o.image_speed = 0;
+                                _o.image_index = 0;
+                                _r.phase = "there";
                             }
                         }
                         break;
                     }
                 }
-                if (_all_gone) go("hold");
+                if (_all_there)
+                {
+                    // both at the door: quick fade out, into the next room, quick fade in
+                    var _fader = instance_create_depth(0, 0, -10004, obj_cutscenefade);
+                    _fader.fade_target   = 1;
+                    _fader.fade_step     = exit_fade_step;
+                    _fader.target_room   = next_room;
+                    _fader.wait_duration = exit_fade_hold;
+                    finish();
+                }
             }
-            break;
-
-            case "hold":
-                if (t >= 20) finish();
             break;
         }
     break;

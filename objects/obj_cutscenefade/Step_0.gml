@@ -9,7 +9,7 @@ if (fade_target == 1)
 
     if (fade_alpha < 1)
     {
-        fade_alpha += 0.01;
+        fade_alpha += fade_step;
     }
     else
     {
@@ -92,7 +92,7 @@ else if (fade_target == 0)
     {
         if (fade_alpha > 0)
         {
-            fade_alpha -= 0.01;
+            fade_alpha -= fade_step;
         }
         else
         {

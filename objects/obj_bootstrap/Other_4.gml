@@ -1,5 +1,7 @@
 display_set_gui_size(camera_get_view_width(view_camera[0]), camera_get_view_height(view_camera[0]));
 
+if (!variable_global_exists("wasd_on")) scr_controls_set(true);
+
 // 1. Initialize Globals FIRST before using them anywhere
 
 // Testing Globals

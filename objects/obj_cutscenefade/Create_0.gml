@@ -1,4 +1,5 @@
 fade_alpha = 0;
+fade_step  = 0.01;       // how much it fades per frame (both ways). bigger = quicker
 fade_target = 1;
 target_room = room;
 has_cleaned_up = false;

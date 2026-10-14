@@ -11,3 +11,9 @@ if (global.DEBUG_BARRAGE)
         _chain.batches = [ [ { speaker: obj_friend, text: "Test line for offset tuning.", no_animate: true } ] ];
     }
 }
+
+if (keyboard_check_pressed(vk_f4))
+{
+    scr_controls_toggle();
+    show_debug_message(global.wasd_on ? "Controls: WASD + arrows" : "Controls: arrows only");
+}

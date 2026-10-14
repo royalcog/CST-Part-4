@@ -40,7 +40,10 @@ if accept_key
 				//brightness
 				case 1: break;
 				//controls
-				case 2: break;
+				case 2:
+					scr_controls_toggle();
+					controls_label();
+				break;
 				//back
 				case 3: menu_level = 0; break;
 			}
