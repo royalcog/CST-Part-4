@@ -55,7 +55,7 @@ shield_arc_8   = 28;   // narrower shield with 8 directions (so neighbours don't
 shard_life     = 45;
 
 // light blue -> green: an extra breather once the shield's up, before anything comes at it
-green_extra    = 60;
+green_extra    = 30;
 
 // the flash at the very end
 flash_frames   = 45;
