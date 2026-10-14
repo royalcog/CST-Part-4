@@ -11,7 +11,7 @@ accel            = 0.03;  // how quickly they get up to speed
 turn_rate        = 1.6;   // degrees per frame they can turn toward the soul
 separation       = 26;    // stars push apart when closer than this
 star_hit_radius  = 9;
-star_damage      = 51;
+star_damage      = 25;
 
 attack_length    = 520;   // frames from the first star to the explosion
 glow_frames      = 70;    // how long they glow red before going off
@@ -26,7 +26,7 @@ shard_life       = 70;
 shard_fade       = 20;
 shard_spin       = 6;     // degrees per frame
 shard_hit_radius = 5;
-shard_damage     = 90;
+shard_damage     = 45;
 
 hit_color_top    = c_white;
 hit_color_bottom = c_white;

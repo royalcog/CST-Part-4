@@ -84,7 +84,7 @@ function scr_slashes_init()
 {
     scr_knight_swing_init();
     slashes          = [];
-    slash_damage     = 91;
+    slash_damage     = 45;
     hit_color_top    = c_white;
     hit_color_bottom = c_white;
     cut_sound        = snd_knight_cut;

@@ -11,7 +11,7 @@ red_color     = c_red;
 blue_color    = make_color_rgb(66, 252, 255);
 
 // slashes (both phases)
-slash_damage     = 91;
+slash_damage     = 45;
 hit_color_top    = c_white;
 hit_color_bottom = c_white;
 cut_sound        = snd_knight_cut;

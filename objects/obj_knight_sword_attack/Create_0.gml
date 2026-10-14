@@ -12,7 +12,7 @@ launch_speed   = 42;   // px/frame once it fires
 sword_scale    = 1.5;
 side_gap       = 10;   // gap between the box interior and the sword's tip while charging
 hit_radius     = 5;    // the blade is thin, keep this small
-damage         = 182;
+damage         = 91;
 trail_len      = 5;    // ghost copies left behind while it flies
 flight_alpha   = 0.45; // how visible it is mid-flight (low = "barely see its outline")
 fade_in_frames = 10;
