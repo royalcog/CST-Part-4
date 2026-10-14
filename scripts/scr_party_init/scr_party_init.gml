@@ -417,6 +417,18 @@ function scr_start_knight_attack10()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_shield_attack);
 }
 
+function scr_start_knight_attack11()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_prism_attack);
+}
+
+function scr_start_knight_attack12()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_echo_attack);
+}
+
 /// the Knight ends the battle: music cuts, the UI slides off. everyone stays exactly where they are, HP and all
 function scr_knight_stop_battle()
 {
@@ -764,7 +776,26 @@ function scr_start_knight_battle()
                   } }
             ],
             king_box_attack: scr_start_knight_attack10
+        },
+        // ROUND 11 — Prism: the soul keeps changing colour
+        {
+            attackers: scr_party_round(_party, { Susie: 33, Ralsei: 25 }),
+            dialogue_batch: [
+                { speaker: obj_knight, text: "You think... you're above... the rules?", cps: _rk_cps, snd: snd_knight_phone_call },
+                { speaker: obj_susie,  text: "If rules can be created, they can be easily broken too." },
+				{ speaker: obj_susie,  text: "We don't have to follow your stupid 'game'." },
+				{ speaker: obj_ralsei,  text: "..." },
+            ],
+            king_box_attack: scr_start_knight_attack11
+        },
+        // ROUND 12 — Echo: copies of the soul replay its path
+        {
+            attackers: scr_party_round(_party, { Susie: 34, Ralsei: 26 }),
+            dialogue_batch: [
+                { speaker: obj_knight, text: "You keep... running...", cps: _rk_cps, snd: snd_knight_phone_call },
+                { speaker: obj_knight, text: "Let us see... where it takes you...", cps: _rk_cps, snd: snd_knight_phone_call }
+            ],
+            king_box_attack: scr_start_knight_attack12
         }
-        // rounds 11+ go here as they're built
     ];
 }

@@ -10,7 +10,7 @@
   "compression":1,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":81.081085,
+  "duration":81.081726,
   "exportDir":"",
   "name":"sng_blackaxe",
   "parent":{
