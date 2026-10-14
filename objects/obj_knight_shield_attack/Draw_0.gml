@@ -4,7 +4,8 @@ var _c = scr_box_center();
 for (var i = 0; i < array_length(swords); i++)
 {
     var _w = swords[i];
-    var _x = _c.x + lengthdir_x(_w.dist, _w.ang), _y = _c.y + lengthdir_y(_w.dist, _w.ang);
+    // dist is where the tip is, so the sprite's middle sits tip_off further out
+    var _x = _c.x + lengthdir_x(_w.dist + tip_off, _w.ang), _y = _c.y + lengthdir_y(_w.dist + tip_off, _w.ang);
     var _a = min(_w.t / fade_in, 1);
     if (_w.feint) gpu_set_fog(true, feint_color, 0, 1);
     draw_sprite_ext(spr_roaringknight_sword, 0, _x, _y, sword_scale, sword_scale, _w.ang + 180, c_white, _a);

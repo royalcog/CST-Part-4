@@ -145,6 +145,8 @@ switch (state)
             obj_soul.x = lerp(obj_soul.x, _cx, 0.25);
             obj_soul.y = lerp(obj_soul.y, _cy, 0.25);
             if (point_distance(obj_soul.x, obj_soul.y, _cx, _cy) < 1) obj_soul.visible = false;
+            if (instance_exists(obj_soul)) obj_soul.visible = false; // taken in once the glow ends
+            global.susie_soul = true; // her attacks do double damage from here on
         }
 
         if (!instance_exists(flash_inst))

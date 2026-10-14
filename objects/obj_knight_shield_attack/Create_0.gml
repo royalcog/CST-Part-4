@@ -1,5 +1,3 @@
-scr_knight_swing_init(); // he swings as he sends each sword
-
 // --- tuning ---
 start_delay    = 20;   // box open -> it shrinks
 box_scale      = 0.4;  // small square box, like Undertale's green mode
@@ -23,10 +21,11 @@ learn_delay    = 60;   // shield appears -> first sword
 sword_scale    = 1.2;
 spawn_dist     = 300;  // how far out they start
 fade_in        = 10;
+tip_off        = (sprite_get_bbox_right(spr_roaringknight_sword) + 1 - sprite_get_xoffset(spr_roaringknight_sword)) * sword_scale; // origin -> tip
 sword_damage   = 45;
 hit_color_top    = c_white;
 hit_color_bottom = c_white;
-block_sounds   = [snd_soundbattle_rightblock, snd_soundbattle_upblock, snd_soundbattle_leftblock, snd_soundbattle_downblock];
+block_sound    = snd_impact;
 spark_frames   = 12;
 
 // feints: fly in, then whip around to the other side right before they land
@@ -63,12 +62,11 @@ same_count  = 0;
 spin_side   = 0;
 spin_step   = 1;
 
-/// one sword from _side (0 right, 1 up, 2 left, 3 down), heading for the soul
+/// one sword from _side (0 right, 1 up, 2 left, 3 down), heading for the soul. dist = how far its TIP is from the soul
 spawn_sword = function(_side, _speed, _feint)
 {
     array_push(swords, { ang: _side * 90, dist: spawn_dist, speed: _speed, feint: _feint,
                          spin_t: -1, from_ang: 0, t: 0 });
-    scr_knight_swing();
 }
 
 pick_side = function(_pattern)

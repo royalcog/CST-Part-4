@@ -1,7 +1,6 @@
 if (!instance_exists(obj_battlebox)) { instance_destroy(); exit; }
 if (!instance_exists(soul)) soul = instance_exists(obj_soul) ? instance_find(obj_soul, 0) : noone;
 
-scr_knight_swing_step();
 if (flash_t > 0) flash_t--;
 
 // Ralsei goes back to his battle idle once the spell's played out
@@ -22,7 +21,7 @@ for (var i = array_length(swords) - 1; i >= 0; i--)
     {
         _w.spin_t   = 0;
         _w.from_ang = _w.ang;
-        audio_play_sound(snd_smallswing, 1, false);
+        audio_play_sound(block_sound, 1, false);
     }
 
     if (_w.spin_t >= 0 && _w.spin_t < feint_spin_frames)

@@ -227,7 +227,16 @@ switch (state)
 
     case "attacking_hit":
         var _atk = _round.attackers[attack_index];
-            attack_popup = damage_func(_atk.damage,
+        var _dmg = _atk.damage;
+
+        // Susie hits twice as hard once she's taken in the soul (Knight attack 4)
+        if (is_real(_dmg) && variable_global_exists("susie_soul") && global.susie_soul
+            && variable_struct_exists(_atk, "box_name") && _atk.box_name == "Susie")
+        {
+            _dmg *= 2;
+        }
+
+            attack_popup = damage_func(_dmg,
             variable_struct_exists(_atk, "color_top")    ? _atk.color_top    : c_white,
             variable_struct_exists(_atk, "color_bottom") ? _atk.color_bottom : c_white);
         timer = popup_clear_frames; // fallback in case the popup never spawned (e.g. King missing)

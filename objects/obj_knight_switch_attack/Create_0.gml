@@ -76,9 +76,6 @@ grid_on    = false;
 saved_mode = variable_global_exists("soul_mode") ? global.soul_mode : "red";
 last_cut_snd = 0;
 
-knight_saved    = undefined; // his normal look while he's swinging
-knight_return_t = 0;
-
 knight_swing   = function() { scr_knight_swing(); }
 knight_restore = function() { scr_knight_swing_restore(); }
 

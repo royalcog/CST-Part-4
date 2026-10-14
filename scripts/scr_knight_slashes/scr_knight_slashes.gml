@@ -49,14 +49,17 @@ function scr_knight_swing()
 
     if (is_undefined(knight_saved))
     {
-        knight_saved = { spr: _k.sprite_index, img: _k.image_index, spd: _k.image_speed, loop: _k.anim_loop, x: _k.x, y: _k.y };
+        knight_saved = { spr: _k.sprite_index, img: _k.image_index, spd: _k.image_speed, loop: _k.anim_loop, x: _k.x, y: _k.y,
+                         start_y: variable_instance_exists(_k, "start_y") ? _k.start_y : undefined };
 
         // the two sprites have different sizes/origins: line the swing up bottom-center to bottom-center
         // keep his feet where they were
         var _old = scr_knight_feet(_k.sprite_index);
         var _new = scr_knight_feet(knight_attack_sprite);
         _k.x = knight_saved.x + (_old.x - _new.x) * _k.image_xscale + knight_nudge_x;
-        _k.y = knight_saved.y + (_old.y - _new.y) * _k.image_yscale + knight_nudge_y;
+        var _dy = (_old.y - _new.y) * _k.image_yscale + knight_nudge_y;
+        _k.y = knight_saved.y + _dy;
+        if (!is_undefined(knight_saved.start_y)) _k.start_y = knight_saved.start_y + _dy; // he bobs around start_y, so it has to move too
     }
 
     with (_k)
@@ -100,6 +103,7 @@ function scr_knight_swing_restore()
         anim_loop    = _sv.loop;
         x = _sv.x;
         y = _sv.y;
+        if (!is_undefined(_sv.start_y)) start_y = _sv.start_y;
     }
 }
 

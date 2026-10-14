@@ -533,6 +533,7 @@ function scr_party_round(_party, _changes)
 /// music + turn sequencer for the Knight fight. Call right after scr_duo_ui_setup().
 function scr_start_knight_battle()
 {
+    global.susie_soul = false; // turns on when she absorbs the soul (attack 4)
     start_knight_battle_music();
 
     with (obj_king_turn_sequencer) instance_destroy();
