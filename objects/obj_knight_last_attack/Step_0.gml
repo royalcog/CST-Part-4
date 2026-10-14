@@ -120,6 +120,7 @@ switch (state)
         if (bi > 0 && beats[bi - 1].act == "await" && scr_soul_swap_busy()) break;
         if (bi > 0 && beats[bi - 1].act == "flash" && white_t > 0) break;
         if (bi > 0 && beats[bi - 1].act == "buster" && !fullscreen) break;
+        if (green_hold > 0 && !scr_soul_swap_busy()) { green_hold--; break; } // the extra second after light blue -> green
 
         timer--;
         if (timer > 0) break;
@@ -129,7 +130,10 @@ switch (state)
         var _bt = beats[bi];
         switch (_bt.act)
         {
-            case "mode":   scr_soul_swap_start(_bt.m); break;
+            case "mode":
+                if (_bt.m == "green" && instance_exists(_s) && _s.soul_mode == "lightblue") green_hold = green_extra;
+                scr_soul_swap_start(_bt.m);
+            break;
             case "red":    spawn_red(_bt.p, _bt.charge); break;
             case "blue":   spawn_blue(_bt.n, _bt.charge); break;
             case "sword":  spawn_sword(_bt.side, _bt.lane, _bt.spd); break;

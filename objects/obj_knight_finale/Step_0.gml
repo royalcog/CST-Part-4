@@ -472,7 +472,7 @@ switch (action)
                 if (t > 2 && obj_susie.image_speed == 0)
                 {
                     pose(obj_susie, spr_susie_walk_right_upset, true);
-                    obj_susie.image_speed = 0.6; // slow, she's hurting
+                    obj_susie.image_speed = getup_anim_speed;
                     saved.walked = 0;
                     go("walk");
                 }
@@ -484,7 +484,7 @@ switch (action)
                 if (saved.walked >= getup_walk_dist)
                 {
                     pose(obj_susie, spr_susie_walk_down, true);
-                    obj_susie.image_speed = 0.6;
+                    obj_susie.image_speed = getup_anim_speed;
                     saved.walked = 0;
                     go("down");
                 }
@@ -697,6 +697,15 @@ switch (action)
                     var _r = runners[i];
                     if (_r.phase == "there") continue;
                     if (!instance_exists(_r.obj)) { _r.phase = "there"; continue; }
+
+                    // made it: fade out right there
+                    if (_r.phase == "fade")
+                    {
+                        _r.obj.image_alpha = max(_r.obj.image_alpha - run_fade_speed, 0);
+                        if (_r.obj.image_alpha <= 0) { _r.obj.visible = false; _r.phase = "there"; }
+                        else _all_there = false;
+                        continue;
+                    }
                     _all_there = false;
                     var _o = _r.obj;
 
@@ -729,17 +738,16 @@ switch (action)
                         }
                         break;
 
-                        // ...then up to it
+                        // ...then up into it
                         case "up":
                         {
                             _o.y -= run_speed;
                             var _f = scr_get_feet(_o);
-                            if (_f.y <= door_y)
+                            var _ty = door_y - run_extra_up;
+                            if (_f.y <= _ty)
                             {
-                                _o.y += door_y - _f.y;
-                                _o.image_speed = 0;
-                                _o.image_index = 0;
-                                _r.phase = "there";
+                                _o.y += _ty - _f.y;
+                                _r.phase = "fade"; // keeps walking in place while it fades
                             }
                         }
                         break;
@@ -747,7 +755,7 @@ switch (action)
                 }
                 if (_all_there)
                 {
-                    // both at the door: quick fade out, into the next room, quick fade in
+                    // both gone through the door: quick fade out, into the next room, quick fade in
                     var _fader = instance_create_depth(0, 0, -10004, obj_cutscenefade);
                     _fader.fade_target   = 1;
                     _fader.fade_step     = exit_fade_step;

@@ -54,6 +54,9 @@ grid_line_w    = 2;
 shield_arc_8   = 28;   // narrower shield with 8 directions (so neighbours don't overlap)
 shard_life     = 45;
 
+// light blue -> green: an extra breather once the shield's up, before anything comes at it
+green_extra    = 60;
+
 // the flash at the very end
 flash_frames   = 45;
 
@@ -73,6 +76,7 @@ same_count = 0;
 spin_side  = irandom(3);
 spin_step  = choose(1, -1);
 white_t    = 0;
+green_hold = 0;
 spin8      = irandom(7);
 spin8_step = choose(1, -1);
 last8      = -1;

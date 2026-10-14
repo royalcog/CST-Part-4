@@ -58,9 +58,10 @@ leave_frames     = 100;  // the Knight's ball flying there (fades out over the s
 
 // Susie gets up: right a bit, then down a bit (room for the heal beam later)
 struggle_frames  = 50;
-getup_walk_dist  = 90;
+getup_walk_dist  = 150;
 getup_down_dist  = 30;
-getup_walk_speed = 1;
+getup_walk_speed = 2;
+getup_anim_speed = 1;
 
 // King throws at Susie, she blocks and Rude Busters him
 counter_spade_speed = 13;
@@ -81,6 +82,8 @@ hand_off_y  = -10;
 
 // running to the door, then a quick fade into the next room
 run_speed       = 3.5;
+run_extra_up    = 0;   // how far past the bottom of the door they keep going up
+run_fade_speed  = 0.08; // they fade out once they get there (per frame)
 ralsei_run_wait = 12;   // he starts a beat after her
 next_room       = rm_one;
 exit_fade_step  = 0.05; // per frame (0.05 = about a third of a second each way)

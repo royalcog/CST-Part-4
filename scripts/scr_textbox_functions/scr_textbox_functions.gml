@@ -523,11 +523,13 @@ function scr_knight_to_ball()
 {
     if instance_exists(obj_knight)
     {
-        obj_knight.reverse_phase = 1;
-        obj_knight.reverse_frame = obj_knight.image_number - 1;
+        // swap the sprite FIRST: image_number has to be the ball sprite's, not whatever he was in before
+        // (his sword sprite has 19 frames vs the ball's 9, which made him play the ball turn twice)
         obj_knight.sprite_index = spr_roark_ball_to_knight;
         obj_knight.image_speed = 0;
         obj_knight.image_index = obj_knight.image_number - 1;
+        obj_knight.reverse_frame = obj_knight.image_number - 1;
+        obj_knight.reverse_phase = 1;
     }
 }
 
