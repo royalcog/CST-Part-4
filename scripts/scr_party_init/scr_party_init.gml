@@ -429,6 +429,12 @@ function scr_start_knight_attack12()
     return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_echo_attack);
 }
 
+function scr_start_knight_attack13()
+{
+    start_knight_battle_music(1500);
+    return instance_create_depth(0, 0, obj_battlebox.depth - 1, obj_knight_last_attack);
+}
+
 /// the Knight ends the battle: music cuts, the UI slides off. everyone stays exactly where they are, HP and all
 function scr_knight_stop_battle()
 {
@@ -796,6 +802,21 @@ function scr_start_knight_battle()
                 { speaker: obj_knight, text: "Let us see... where it takes you...", cps: _rk_cps, snd: snd_knight_phone_call }
             ],
             king_box_attack: scr_start_knight_attack12
+        },
+        // ROUND 13 — the last attack: darkness closing in, every colour, the X
+        {
+            attackers: scr_party_round(_party, { Susie: 35, Ralsei: 27 }),
+            dialogue_batch: [
+                { speaker: obj_knight, text: "This ends... now...", cps: _rk_cps, snd: snd_knight_phone_call }
+            ],
+            king_box_attack: scr_start_knight_attack13
+        },
+
+        // ROUND 14 — no more turns: straight into the ending
+        {
+            skip_party: true,
+            attackers: [],
+            dialogue_batch: scr_knight_finale_batch(_rk_cps)
         }
     ];
 }

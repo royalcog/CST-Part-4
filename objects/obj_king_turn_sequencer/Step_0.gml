@@ -27,6 +27,14 @@ switch (state)
 
         round_index = (round_index + 1) mod array_length(rounds);
         _round = rounds[round_index];
+		
+		// a round with skip_party goes straight to its dialogue: no readies, no attacks
+        if (variable_struct_exists(_round, "skip_party") && _round.skip_party)
+        {
+            if (instance_exists(obj_UI)) obj_UI.active_box = noone;
+            state = "talk_start";
+            break;
+        }
 
         // dialogue-only: skip readies and attacks completely
         if (dialogue_only)
