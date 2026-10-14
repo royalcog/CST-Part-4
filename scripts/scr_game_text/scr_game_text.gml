@@ -118,7 +118,7 @@ function scr_game_text(_text_id)
 		break;
 
 		case "rk_finale_4":
-			scr_text("* Come on!", "susie", 32);
+			scr_text("* Come on!", "susie", 18);
 		break;
 		
 /*

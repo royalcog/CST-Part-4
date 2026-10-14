@@ -332,7 +332,7 @@ steps = [
     { wait: 20 },
     { act: "heal_beam" },             // turns around, heals Ralsei from there
     { wait: 15 },
-    { text: "rk_finale_4" },          // "Come on!"
+    { text: "rk_finale_4" },          // "Come on."
     { act: "run_inside" }             // to the door, quick fade into the next room
 ];
 
