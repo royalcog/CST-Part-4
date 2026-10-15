@@ -1,19 +1,30 @@
 t++;
-flash = max(flash - 0.1, 0);
+flash = max(flash - 0.08, 0);
 
 if (state == "cut" && t >= break_delay) do_break();
 
-for (var i = array_length(chunks) - 1; i >= 0; i--)
+for (var i = array_length(shards) - 1; i >= 0; i--)
 {
-    var _c = chunks[i];
-    _c.t++;
-    if (!_c.landed)
+    var _s = shards[i];
+    _s.t++;
+    if (!_s.landed)
     {
-        _c.vy += 0.35;
-        _c.x  += _c.vx;
-        _c.y  += _c.vy;
-        _c.rot += _c.vr;
-        if (_c.vy > 0 && _c.y >= _c.floor_y) { _c.y = _c.floor_y; _c.landed = true; }
+        _s.vy += shard_gravity;
+        _s.x  += _s.vx;
+        _s.y  += _s.vy;
+        _s.rot += _s.vr;
+        if (_s.vy > 0 && _s.y >= _s.floor_y)
+        {
+            _s.y = _s.floor_y;
+            if (_s.bounced) _s.landed = true;
+            else
+            {
+                _s.bounced = true;
+                _s.vy  = -_s.vy * 0.3;
+                _s.vx *= 0.5;
+                _s.vr *= 0.5;
+            }
+        }
     }
-    if (_c.t >= 70) array_delete(chunks, i, 1);
+    if (_s.t >= shard_life) array_delete(shards, i, 1);
 }

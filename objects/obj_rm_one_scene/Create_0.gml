@@ -12,7 +12,7 @@ ralsei_x = 175;  ralsei_y = 412;
 walk_in          = true;  // they walk up from below the screen (false = already standing there)
 walk_in_speed    = 2.5;
 ralsei_walk_wait = 10;    // he comes in a beat after her
-susie_point_sprite = spr_susie_point_up;
+susie_point_sprite = spr_susie_point_right;
 if (!sprite_exists(susie_point_sprite)) susie_point_sprite = spr_susie_point_up;
 if (!sprite_exists(susie_point_sprite)) susie_point_sprite = spr_susie_point_right;
 
@@ -76,6 +76,19 @@ stand = function(_o, _spr)
     _o.sprite_index = _spr;
     _o.image_index  = 0;
     _o.image_speed  = 0;
+}
+
+/// swaps to _spr facing _xs (2 = right, -2 = left) without the feet moving
+pose_facing = function(_o, _spr, _xs)
+{
+    if (!instance_exists(_o)) return;
+    var _f = scr_get_feet(_o);
+    _o.sprite_index = _spr;
+    _o.last_sprite  = _spr; // already placed, so scr_auto_keep_feet leaves it alone
+    _o.image_xscale = _xs;
+    _o.image_index  = 0;
+    _o.image_speed  = 0;
+    set_feet(_o, _f.x, _f.y);
 }
 
 /// a runner: { obj, pts:[{x,y}], i, speed, anim, wait, l, r, up, down, fade }

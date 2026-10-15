@@ -4,56 +4,53 @@ var _w = door_x2 - door_x1, _h = door_y2 - door_y1;
 if (door_spr == -1)
 {
     var _tm = layer_tilemap_get_id(layer_get_id("Tiles_1"));
-    var _s  = surface_create(_w, _h);
-    surface_set_target(_s);
+    var _sf = surface_create(_w, _h);
+    surface_set_target(_sf);
     draw_clear_alpha(c_black, 0);
     draw_tilemap(_tm, -door_x1, -door_y1);
     surface_reset_target();
-    door_spr  = sprite_create_from_surface(_s, 0, 0, _w, _h, false, false, 0, 0);
-    left_spr  = sprite_create_from_surface(_s, 0, 0, _w div 2, _h, false, false, 0, 0);
-    right_spr = sprite_create_from_surface(_s, _w div 2, 0, _w - _w div 2, _h, false, false, _w - _w div 2, 0);
-    surface_free(_s);
+    door_spr = sprite_create_from_surface(_sf, 0, 0, _w, _h, false, false, 0, 0);
+    surface_free(_sf);
 }
 
+// the doorway
 if (state == "broken")
 {
-    // the doorway
     draw_set_alpha(1);
     draw_set_color(open_color);
     draw_roundrect_ext(door_x1 + 1, door_y1 + 1, door_x2 - 1, door_y2, open_radius, open_radius, false);
+}
+// still standing on its cut for a few frames, shaking
+else if (state == "cut" && sprite_exists(door_spr))
+{
+    draw_sprite(door_spr, 0, door_x1 + random_range(-1.5, 1.5), door_y1 + random_range(-1, 1));
+}
 
-    // the panels: smashed in, swinging away into the dark
-    var _k = min(t / smash_frames, 1);
-    if (_k < 1)
+// the shards
+if (array_length(shards) > 0 && sprite_exists(door_spr))
+{
+    var _uv = sprite_get_uvs(door_spr, 0);
+    var _uw = (_uv[2] - _uv[0]) / _w, _vh = (_uv[3] - _uv[1]) / _h;
+    draw_primitive_begin_texture(pr_trianglelist, sprite_get_texture(door_spr, 0));
+    for (var i = 0; i < array_length(shards); i++)
     {
-        var _e  = 1 - power(1 - _k, 3);
-        var _xs = lerp(1, 0.15, _e);
-        var _ys = lerp(1, 0.85, _e);
-        var _dy = (_h * (1 - _ys)) / 2 + _e * 6;
-        var _a  = 1 - _k;
-        var _shake = (1 - _k) * 2;
-        draw_sprite_ext(left_spr, 0, door_x1 + random_range(-_shake, _shake), door_y1 + _dy, _xs, _ys, _e * 8, c_white, _a);
-        draw_sprite_ext(right_spr, 0, door_x2 + random_range(-_shake, _shake), door_y1 + _dy, _xs, _ys, -_e * 8, c_white, _a);
+        var _s  = shards[i];
+        var _a  = (_s.t < shard_life - shard_fade) ? 1 : (shard_life - _s.t) / shard_fade;
+        var _cs = dcos(_s.rot), _sn = dsin(_s.rot);
+        for (var k = 0; k < 3; k++)
+        {
+            var _lx = _s.lx[k], _ly = _s.ly[k];
+            draw_vertex_texture_colour(_s.x + _lx * _cs + _ly * _sn, _s.y - _lx * _sn + _ly * _cs,
+                                       _uv[0] + _s.u[k] * _uw, _uv[1] + _s.v[k] * _vh, c_white, _a);
+        }
     }
-}
-else if (state != "idle" && sprite_exists(door_spr))
-{
-    // still standing for a few frames after the cut, shaking
-    draw_sprite(door_spr, 0, door_x1 + random_range(-1, 1), door_y1);
+    draw_primitive_end();
 }
 
-// chunks of the door
-for (var i = 0; i < array_length(chunks); i++)
+// the cut line
+if (state != "idle" && (state == "cut" || t < cut_frames - break_delay))
 {
-    var _c = chunks[i];
-    var _a = (_c.t < 50) ? 1 : 1 - (_c.t - 50) / 20;
-    draw_sprite_general(door_spr, 0, _c.sx, _c.sy, _c.sz, _c.sz, _c.x, _c.y, 1, 1, _c.rot, c_white, c_white, c_white, c_white, _a);
-}
-
-// the cut itself
-if (state != "idle" && t < cut_frames)
-{
-    var _k  = t / cut_frames;
+    var _k  = (state == "cut") ? t / cut_frames : (t + break_delay) / cut_frames;
     var _cw = cut_width * (1 - _k);
     gpu_set_blendmode(bm_add);
     draw_set_color(c_white);
@@ -64,7 +61,7 @@ if (state != "idle" && t < cut_frames)
     gpu_set_blendmode(bm_normal);
 }
 
-// white flash over the door when it's hit
+// white flash when it's cut and again when it bursts
 if (flash > 0)
 {
     gpu_set_blendmode(bm_add);

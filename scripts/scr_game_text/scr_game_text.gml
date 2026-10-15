@@ -127,7 +127,7 @@ function scr_game_text(_text_id)
 
 		case "rm1_ralsei_no":
 			scr_text("* N-No...", "ralsei", 34);
-			scr_text("* NO!!!", "ralsei", 32);
+			scr_text("* NO!!!", "ralsei", 42);
 		break;
 		
 /*

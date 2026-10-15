@@ -60,6 +60,7 @@ switch (action)
                     image_index  = image_number - 1;
                     image_speed  = 0;
                     anim_loop    = false;
+                    image_xscale = other.knight_facing;
                     x = other.knight_feet_x - other.knight_stand_feet.x * image_xscale;
                     y = other.knight_feet_y - other.knight_stand_feet.y * image_yscale;
                     start_y   = y;
@@ -70,8 +71,8 @@ switch (action)
                 // Susie and Ralsei
                 var _s = instance_exists(obj_susie)  ? obj_susie  : instance_create_layer(susie_x, susie_y, "Instances", obj_susie);
                 var _r = instance_exists(obj_ralsei) ? obj_ralsei : instance_create_layer(ralsei_x, ralsei_y, "Instances", obj_ralsei);
-                stand(_s, spr_susie_walk_up);
-                stand(_r, spr_ralsei_walk_up);
+                stand(_s, spr_susie_walk_right_neutral);
+                stand(_r, spr_ralsei_walk_right_neutral);
                 _s.image_alpha = 1; _s.visible = true;
                 _r.image_alpha = 1; _r.visible = true;
 
@@ -101,8 +102,8 @@ switch (action)
                 for (var i = 0; i < array_length(runners); i++) if (!step_runner(runners[i])) _done = false;
                 if (_done)
                 {
-                    stand(obj_susie,  spr_susie_walk_up);
-                    stand(obj_ralsei, spr_ralsei_walk_up);
+                    stand(obj_susie,  spr_susie_walk_right_neutral);
+                    stand(obj_ralsei, spr_ralsei_walk_right_neutral);
                     if (!instance_exists(obj_cutscenefade)) finish(); // wait for the fade in
                 }
             }
@@ -151,7 +152,7 @@ switch (action)
                 if (!variable_struct_exists(saved, "ralsei") && door.state == "broken")
                 {
                     saved.ralsei = true;
-                    stand(obj_ralsei, spr_ralsei_surprised);
+                    pose_facing(obj_ralsei, spr_ralsei_surprised, -2); // that sprite faces left, mirrored to face right
                 }
                 if (t >= knight_after_swing && door.state == "broken")
                 {
@@ -206,6 +207,8 @@ switch (action)
         {
             case "start":
                 runners = [];
+                if (instance_exists(obj_ralsei) && obj_ralsei.image_xscale < 0)
+                    pose_facing(obj_ralsei, spr_ralsei_walk_right_neutral, 2);
                 if (instance_exists(obj_ralsei))
                     array_push(runners, ralsei_runner(door_path(obj_ralsei), ralsei_run_speed, ralsei_run_anim, 0, true));
                 if (instance_exists(obj_susie))
