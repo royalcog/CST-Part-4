@@ -1648,7 +1648,7 @@ if (waiting_for_warp && array_length(move_queue_active) == 0)
         
         // Just set the target, the fader handles the rest
         if (warp_step == 0) { _fader.target_room = rm_two; warp_step = 1; }
-        else if (warp_step == 1) { _fader.target_room = rm_three; warp_step = 2; }
+        else if (warp_step == 1) { _fader.target_room = rm_one; warp_step = 2; }
 		else if (warp_step == 2) { _fader.target_room = rm_four; warp_step = 3; }
 		else if (warp_step == 3) { _fader.target_room = rm_five; warp_step = 4; }
     }
