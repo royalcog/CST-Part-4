@@ -12,8 +12,7 @@ ralsei_x = 175;  ralsei_y = 412;
 walk_in          = true;  // they walk up from below the screen (false = already standing there)
 walk_in_speed    = 2.5;
 ralsei_walk_wait = 10;    // he comes in a beat after her
-
-susie_point_sprite = asset_get_index("spr_susie_pointup");
+susie_point_sprite = spr_susie_point_up;
 if (!sprite_exists(susie_point_sprite)) susie_point_sprite = spr_susie_point_up;
 if (!sprite_exists(susie_point_sprite)) susie_point_sprite = spr_susie_point_right;
 
@@ -49,6 +48,8 @@ action = "";  busy = false;  sub = "";  t = 0;
 saved = {};
 steps_i = 0;  wait_t = 0;  talking = false;
 runners = [];
+point_looping = false; // Susie's point anim loops while her line types out
+point_saw_box = false;
 ball = { on: false, x: 0, y: 0, sx: 0, sy: 0, tx: 0, ty: 0, t: 0, frame: 0, xs: 1, scale: 2, alpha: 1 };
 
 door = instance_exists(obj_door_break) ? instance_find(obj_door_break, 0) : instance_create_depth(0, 0, 250, obj_door_break);

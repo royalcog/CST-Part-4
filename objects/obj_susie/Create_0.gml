@@ -10,5 +10,5 @@ image_yscale = 2;
 anim_loop = true;
 
 // sprites whose origins are already hand-aligned with her standing sprites
-keep_feet_skip = [spr_susie_pointright, spr_susie_pointup, spr_susie_angry,
+keep_feet_skip = [spr_susie_point_right, spr_susie_point_up, spr_susie_angry,
                   spr_susie_battle_intro, spr_susie_battle_idle, spr_susie_attack_ready, spr_susie_hurt];

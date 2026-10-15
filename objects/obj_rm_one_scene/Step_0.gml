@@ -15,6 +15,24 @@ if (ball.on)
     }
 }
 
+// Susie's point loops until her line is fully typed, then lands on its last frame
+if (point_looping && instance_exists(obj_susie))
+{
+    if (instance_exists(obj_textbox))
+    {
+        point_saw_box = true;
+        var _done = false;
+        with (obj_textbox) _done = (draw_char >= text_length[page]);
+        if (_done) { obj_susie.image_speed = 0; point_looping = false; }
+    }
+    else if (point_saw_box)
+    {
+        // box closed before we caught it finishing (skipped)
+        obj_susie.anim_loop = false;
+        point_looping = false;
+    }
+}
+
 if (!run_steps())
 {
     global.cutscene_lock = false;
@@ -99,8 +117,10 @@ switch (action)
             obj_susie.sprite_index = susie_point_sprite;
             obj_susie.image_index  = 0;
             obj_susie.image_speed  = 1;
-            obj_susie.anim_loop    = false;
+            obj_susie.anim_loop    = true;
         }
+        point_looping = true;
+        point_saw_box = false;
         finish();
     break;
 
