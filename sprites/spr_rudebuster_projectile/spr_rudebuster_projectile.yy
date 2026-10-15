@@ -31,8 +31,8 @@
   "nineSlice":null,
   "origin":4,
   "parent":{
-    "name":"Susie",
-    "path":"folders/Sprites/Characters/Susie.yy",
+    "name":"Projectiles",
+    "path":"folders/Sprites/Characters/Susie/Projectiles.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

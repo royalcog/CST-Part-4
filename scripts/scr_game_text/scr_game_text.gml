@@ -121,6 +121,15 @@ function scr_game_text(_text_id)
 			scr_text("* Come on!", "susie", 18);
 		break;
 		
+		case "rm1_susie_point":
+			scr_text("* What do you think you're doing???", "susie", 39);
+		break;
+
+		case "rm1_ralsei_no":
+			scr_text("* N-No...", "ralsei", 34);
+			scr_text("* NO!!!", "ralsei", 32);
+		break;
+		
 /*
 
 */
