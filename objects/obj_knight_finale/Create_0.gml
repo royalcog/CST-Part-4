@@ -82,7 +82,7 @@ hand_off_y  = -10;
 
 // running to the door, then a quick fade into the next room
 run_speed       = 3.5;
-run_extra_up    = 0;   // how far past the bottom of the door they keep going up
+run_extra_up    = -10;   // how far past the bottom of the door they keep going up
 run_fade_speed  = 0.08; // they fade out once they get there (per frame)
 ralsei_run_wait = 12;   // he starts a beat after her
 next_room       = rm_one;
