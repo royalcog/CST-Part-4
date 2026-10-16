@@ -1,17 +1,11 @@
 var _fps = game_get_speed(gamespeed_fps);
 
-// the master clock: seconds since the swords hit, read off the fountain sound
-if (t_all == 0)
-{
-    snd_fountain = play_snd(fountain_sound);
-    scr_camera_shake(impact_shake, 15);
-}
+// the clock: seconds into the fountain sound
 t_all++;
 var _clock = snd_pos(snd_fountain, t_all);
 
 if (flash > 0) flash = max(0, flash - 1 / flash_fade);
-if (show_geyser)  loop_frame += sprite_get_speed(spr_titan_fountain_loop) / _fps;
-if (beam_looping) beam_frame += sprite_get_speed(spr_titanbeam_loop) / _fps;
+if (show_geyser) loop_frame += sprite_get_speed(spr_titan_fountain_loop) / _fps;
 if (petrified)
 {
     dark_scroll  += dark_scroll_spd;
@@ -36,24 +30,11 @@ if (knight_moving)
 }
 
 // the camera rising up the geyser
-if (!pan1_done && _clock >= pan1_at)
+if (!pan_done && _clock >= pan_at)
 {
-    var _k = clamp((_clock - pan1_at) / pan1_time, 0, 1);
-    set_cam_y(cam_home_y - pan1_dist * _k * _k * (3 - 2 * _k));
-    if (_k >= 1) pan1_done = true;
-}
-
-// the blast: build-up, then the hum fades in under its tail
-if (snd_blast >= 0 || blast_t > 0)
-{
-    blast_t++;
-    if (snd_hum < 0 && hum_sound != noone
-        && (snd_pos(snd_blast, blast_t) >= hum_at || (snd_blast >= 0 && !audio_is_playing(snd_blast))))
-    {
-        snd_hum = play_snd(hum_sound, true);
-        audio_sound_gain(snd_hum, 0, 0);
-        audio_sound_gain(snd_hum, 1, hum_fade);
-    }
+    var _k = clamp((_clock - pan_at) / pan_time, 0, 1);
+    set_cam_y(cam_home_y - pan_dist * _k * _k * (3 - 2 * _k));
+    if (_k >= 1) pan_done = true;
 }
 
 // debris from the shell
@@ -69,41 +50,65 @@ for (var i = array_length(debris) - 1; i >= 0; i--)
     if (_d.life <= 0) array_delete(debris, i, 1);
 }
 
+// the laser runs off its own sound
+if (show_laser)
+{
+    laser_t++;
+    var _lp = snd_pos(snd_laser, laser_t);
+
+    if (!laser_looping)
+    {
+        var _last = frame;
+        // the charge ring builds slowly and bursts on the sound's hit
+        if (_lp < laser_flash_time) frame = beam_flash_frame * (_lp / laser_flash_time);
+        else                        frame = beam_flash_frame + (_lp - laser_flash_time) * sprite_get_speed(spr_tower_titanbeam_start);
+
+        if (_last < beam_flash_frame && frame >= beam_flash_frame) flash = laser_flash;
+
+        if (frame >= sprite_get_number(spr_tower_titanbeam_start))
+        {
+            laser_looping = true;
+            laser_frame = 0;
+        }
+    }
+    else laser_frame += sprite_get_speed(spr_titanbeam_loop) / _fps;
+
+    if (snd_hum < 0 && hum_sound != noone && (_lp >= hum_at || (snd_laser >= 0 && !audio_is_playing(snd_laser))))
+    {
+        snd_hum = play_snd(hum_sound, true);
+        audio_sound_gain(snd_hum, 0, 0);
+        audio_sound_gain(snd_hum, 1, hum_fade);
+    }
+}
+
 switch (state)
 {
     case "pool":
         // the swords hit: the pool flashes white and fades to black
-        pool_white = 1 - clamp(_clock / pool_flash_fade, 0, 1);
+        pool_white = 1 - clamp((_clock - pool_flash_start) / pool_flash_fade, 0, 1);
         if (_clock >= burst_at)
         {
             pool_white = 0;
             show_burst = true;
-            frame = 0;
             state = "burst";
         }
     break;
 
     case "burst":
-    {
         frame = (_clock - burst_at) * sprite_get_speed(spr_titan_fountain_burst);
-        var _n = sprite_get_number(spr_titan_fountain_burst);
-
-        // its last frame is the full column: that's the slam
-        if (frame >= _n - 1)
+        // its last frame is the full column
+        if (frame >= sprite_get_number(spr_titan_fountain_burst) - 1)
         {
-            scr_camera_shake(burst_shake, 20);
-            flash = 0.5;
+            flash = column_flash;
             if (instance_exists(obj_dark_fountain)) obj_dark_fountain.visible = false;
             show_burst  = false;
             show_geyser = true;
             loop_frame  = 0;
             state = "geyser";
         }
-    }
     break;
 
     case "geyser":
-        scr_camera_shake(loop_shake, 2);
         if (_clock >= petrify_at)
         {
             // hard cut to dark stone
@@ -118,37 +123,28 @@ switch (state)
     break;
 
     case "petrified":
-        // the blast builds, and the shell cracks right on its hit
-        if (snd_blast < 0 && blast_t == 0 && _clock >= shatter_at - blast_hit)
+        if (_clock >= shatter_at)
         {
-            snd_blast = play_snd(blast_sound);
-            blast_t = 1;
-        }
-        if (blast_t > 0) scr_camera_shake(shatter_shake * clamp(snd_pos(snd_blast, blast_t) / blast_hit, 0, 1), 2);
-
-        if (blast_t > 0 && snd_pos(snd_blast, blast_t) >= blast_hit)
-        {
-            scr_camera_shake(burst_shake, 15);
-            // start the crack at the bottom of the screen (whatever's under it is already grey)
-            var _view_bottom = camera_get_view_y(view_camera[0]) + camera_get_view_height(view_camera[0]);
-            front_y = min(base_bottom_y, _view_bottom + 10);
+            // the crack climbs from the bottom of the screen to past the top
+            var _vt = camera_get_view_y(view_camera[0]);
+            front_from = min(base_bottom_y, _vt + camera_get_view_height(view_camera[0]) + 10);
+            front_to   = _vt - 40;
+            shattering = true;
             state = "shatter";
         }
     break;
 
     case "shatter":
     {
-        scr_camera_shake(shatter_shake, 2);
-        front_y -= shatter_speed;
+        var _k = clamp((_clock - shatter_at) / (shatter_end - shatter_at), 0, 1);
+        front_y = lerp(front_from, front_to, _k);
 
-        // chunks breaking off the shell along the crack
-        var _hw = sprite_get_width(spr_fountain) * dark_scale / 2;
         repeat (debris_rate)
         {
             var _side = random_range(-1, 1);
             var _sz   = random_range(3, 8);
             array_push(debris, {
-                x: fx + _side * _hw,
+                x: fx + _side * pillar_half,
                 y: front_y + random_range(-6, 10),
                 vx: _side * random_range(0.5, 3),
                 vy: random_range(-3.5, -0.5),
@@ -163,113 +159,55 @@ switch (state)
             });
         }
 
-        if (front_y <= tower_top_y)
-        {
-            front_y = tower_top_y;
-            state = "settle";
-            t = 0;
-        }
-    }
-    break;
-
-    case "settle":
-        if (++t >= settle_time)
-        {
-            cam_from = get_cam_y();
-            cam_to   = tower_top_y - beam_rise - pan_margin;
-            state = "pan_up";
-            t = 0;
-        }
-    break;
-
-    case "pan_up":
-    {
-        t++;
-        var _k = clamp(t / pan_up_time, 0, 1);
-        set_cam_y(lerp(cam_from, cam_to, _k * _k * (3 - 2 * _k)));
         if (_k >= 1)
         {
-            play_snd(ring_sound);
-            show_beam = true;
-            beam_looping = false;
-            frame = 0;
-            state = "beam_start";
-            t = 0;
-        }
-    }
-    break;
-
-    case "beam_start":
-    {
-        var _last = frame;
-        frame += sprite_get_speed(spr_tower_titanbeam_start) / _fps;
-
-        if (_last < beam_flash_frame && frame >= beam_flash_frame)
-        {
-            play_snd(beam_flash_sound);
-            scr_camera_shake(burst_shake, 25);
-            flash = 0.8;
-        }
-
-        if (frame >= sprite_get_number(spr_tower_titanbeam_start))
-        {
-            beam_looping = true;
-            beam_frame = 0;
-            state = "beam_hold";
-            t = 0;
-        }
-    }
-    break;
-
-    case "beam_hold":
-        if (++t >= beam_hold)
-        {
-            if (snd_hum >= 0) audio_sound_gain(snd_hum, hum_far_gain, pan_down_time / _fps * 1000);
-            cam_from = get_cam_y();
-            cam_to   = cam_home_y;
-            state = "pan_down";
-            t = 0;
-        }
-    break;
-
-    case "pan_down":
-    {
-        t++;
-        var _k = clamp(t / pan_down_time, 0, 1);
-        set_cam_y(lerp(cam_from, cam_to, _k * _k * (3 - 2 * _k)));
-        if (_k >= 1)
-        {
+            shattering = false;
+            front_y = -100000; // all grey now
             state = "hand_wait";
-            t = 0;
         }
     }
     break;
 
     case "hand_wait":
-        if (++t >= hand_wait)
+        if (_clock >= hand_at)
         {
+            // it bursts out of the pillar's right side
             play_snd(hand_sound);
-            scr_camera_shake(burst_shake, 25);
-            flash = 0.6;
+            flash = hand_flash;
+            hand_y = camera_get_view_y(view_camera[0]) + hand_top_gap;
             show_hand = true;
-            hand_reveal = 0;
-            hand_frame = 0;
             state = "hand";
-            t = 0;
         }
     break;
 
     case "hand":
-        hand_reveal = min(1, hand_reveal + 1 / hand_emerge);
-        hand_frame += sprite_get_speed(spr_tower_titanhand) / _fps;
-        if (hand_frame >= sprite_get_number(spr_tower_titanhand) - 1)
+    {
+        var _ht = _clock - hand_at;
+        var _last_frame = sprite_get_number(spr_tower_titanhand) - 1;
+        hand_reveal = clamp(_ht / hand_emerge, 0, 1);
+        hand_frame  = min(_ht * sprite_get_speed(spr_tower_titanhand), _last_frame);
+
+        if (hand_frame >= _last_frame)
         {
-            hand_frame = sprite_get_number(spr_tower_titanhand) - 1;
+            laser_at = _clock + laser_gap;
+            state = "laser_wait";
+        }
+    }
+    break;
+
+    case "laser_wait":
+        if (_clock >= laser_at)
+        {
+            snd_laser = play_snd(laser_sound);
+            laser_t = 0;
+            frame = 0;
+            laser_looping = false;
+            show_laser = true;
             state = "done";
         }
     break;
 
     case "done":
-        // whatever comes next goes here
+        // the laser keeps firing; whatever comes next goes here
     break;
 }

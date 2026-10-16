@@ -68,7 +68,8 @@ if (swords_spawned)
         else fire_t--;
     }
 
-    if (firing && fire_i >= array_length(swords) && _all_gone && state == "throw") state = "done";
+    // the first sword going under the platform is the impact: the Titan scene starts there
+    if (firing && state == "throw" && swords[0].gone) state = "done";
 }
 
 switch (state)
