@@ -2,8 +2,8 @@
 scale        = 2;
 top_y        = 0;     // the column runs up to here
 
-scroll_spd   = 1.2;   // texture rising, px per frame
-scroll_spd2  = 2.0;   // second layer, a bit faster
+scroll_spd   = 0.6;   // texture rising, px per frame
+scroll_spd2  = 1.0;   // second layer, a bit faster
 layer2_alpha = 0.6;
 
 hue     = 150;        // 0-255

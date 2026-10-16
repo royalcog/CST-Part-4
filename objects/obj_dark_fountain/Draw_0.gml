@@ -30,7 +30,9 @@ surface_reset_target();
 
 draw_surface(surf, x - _w / 2, top_y);
 
-// the glowing rim: additive, so the sprite's black does nothing and only the white edge shows
-gpu_set_blendmode(bm_add);
-draw_sprite_ext(spr_fountain_bottom, 0, x, top_y + _by, scale, scale, 0, c_white, 1);
+// cut everything outside the U away. the sprite's black isn't fully opaque (its right edge fades to ~44%),
+// so one pass leaves texture showing through — 8 passes make anything solid-ish fully erase
+gpu_set_blendmode_ext(bm_zero, bm_inv_src_alpha);
+var _by = _h - (sprite_get_height(spr_fountain_bottom) - sprite_get_yoffset(spr_fountain_bottom)) * scale;
+repeat (8) draw_sprite_ext(spr_fountain_bottom, 0, _w / 2, _by, scale, scale, 0, c_white, 1);
 gpu_set_blendmode(bm_normal);

@@ -7,8 +7,8 @@ stand_y    = edge_y + 30;      // where their feet stop
 gap        = 45;               // how far each stands from the centre
 susie_x    = room_width / 2 - gap;
 ralsei_x   = room_width / 2 + gap;
-walk_speed = 2;
-walk_anim  = 1;
+walk_speed = 1.25;
+walk_anim  = 0.65;
 talk_wait  = 30;               // frames after they stop before Ralsei talks
 
 // --- state ---
@@ -37,3 +37,6 @@ step_up = function(_o, _fy)
     _o.y -= walk_speed;
     return false;
 }
+
+// the shadow colour on Susie and Ralsei (same as obj_shadow_tint's tint at full strength)
+shadow_col = make_color_rgb(82, 92, 179);
