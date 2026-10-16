@@ -196,6 +196,13 @@ switch (state)
     break;
 
     case "done":
-        // that's all for now. cutscene_lock stays on so Z doesn't open self_4 before it exists
+        // the swords are down: the Titan comes up out of the fountain
+        if (!layer_exists("Titan")) layer_create(345, "Titan");
+        if (!instance_exists(obj_titan_spawn)) instance_create_layer(0, 0, "Titan", obj_titan_spawn);
+        state = "titan";
+    break;
+
+    case "titan":
+        // obj_titan_spawn runs the rest. cutscene_lock stays on
     break;
 }
