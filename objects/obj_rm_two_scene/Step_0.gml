@@ -1,3 +1,48 @@
+// the Knight floats (his own bob/trail are off, so he doesn't leave shadows)
+if (instance_exists(knight))
+{
+    bob += bob_speed;
+    knight.y = knight_y0 + sin(bob) * bob_amp;
+}
+
+// the swords
+if (swords_spawned)
+{
+    var _all_in = true, _all_gone = true;
+    for (var i = 0; i < array_length(swords); i++)
+    {
+        var _s = swords[i];
+        if (_s.gone) continue;
+        _all_gone = false;
+
+        if (_s.delay > 0)
+        {
+            _s.delay--;
+            _all_in = false;
+            if (_s.delay == 0 && i == 0) audio_play_sound(sword_appear_sound, 1, false);
+            continue;
+        }
+        _s.alpha = min(1, _s.alpha + 1 / sword_fade_in);
+        if (_s.alpha < 1) _all_in = false;
+
+        if (swords_dropping)
+        {
+            _s.vy = min(sword_max_speed, _s.vy + sword_accel);
+            _s.y += _s.vy;
+            // fully under the platform edge (the floor tiles cover it), so it's gone
+            var _top = _s.y - sprite_get_yoffset(spr_roark_sword2) * sword_scale;
+            if (_top > edge_y) _s.gone = true;
+        }
+    }
+
+    if (!swords_dropping && _all_in && instance_exists(knight) && knight.image_index >= sword_drop_frame)
+    {
+        swords_dropping = true;
+        audio_play_sound(sword_drop_sound, 1, false);
+    }
+    if (swords_dropping && _all_gone && state == "throw") state = "done";
+}
+
 switch (state)
 {
     case "setup":
@@ -22,6 +67,24 @@ switch (state)
             _o.visible     = true;
             set_feet(_o, _pair[i][1], _bottom);
         }
+
+        // the Knight, already floating over the fountain
+        knight = instance_exists(obj_knight) ? instance_find(obj_knight, 0) : instance_create_layer(0, 0, "Instances", obj_knight);
+        with (knight)
+        {
+            ball_phase    = 0;     // no built-in bob, no shadow trail
+            reverse_phase = 0;
+            visible       = true;
+            image_alpha   = 1;
+            sprite_index  = spr_roark_beckon;
+            image_index   = 0;
+            image_speed   = 0;
+            anim_loop     = true;
+        }
+        knight.x  = knight_x      - (knight_beckon_head.x - sprite_get_xoffset(spr_roark_beckon)) * knight.image_xscale;
+        knight_y0 = knight_head_y - (knight_beckon_head.y - sprite_get_yoffset(spr_roark_beckon)) * knight.image_yscale;
+        knight.y  = knight_y0;
+
         state = "walk";
     }
     break;
@@ -30,7 +93,30 @@ switch (state)
     {
         var _a = step_up(obj_susie,  stand_y);
         var _b = step_up(obj_ralsei, stand_y);
-        if (_a && _b && !instance_exists(obj_cutscenefade)) { state = "pause"; t = 0; }
+        if (_a && _b && !instance_exists(obj_cutscenefade))
+        {
+            // he beckons them over
+            knight.image_index = 0;
+            knight.image_speed = beckon_anim;
+            beckon_count = 0;
+            beckon_last  = 0;
+            state = "beckon";
+        }
+    }
+    break;
+
+    case "beckon":
+    {
+        var _f = knight.image_index;
+        if (_f < beckon_last) beckon_count++; // wrapped back to frame 0 = one beckon done
+        beckon_last = _f;
+        if (beckon_count >= beckon_loops)
+        {
+            knight.image_speed = 0;
+            knight.image_index = 0;
+            state = "pause";
+            t = 0;
+        }
     }
     break;
 
@@ -43,6 +129,41 @@ switch (state)
     break;
 
     case "talk":
+        if (!instance_exists(obj_textbox)) { state = "throw_wait"; t = 0; }
+    break;
+
+    case "throw_wait":
+        if (++t >= throw_wait)
+        {
+            knight_pose(spr_roark_throw_sword, knight_beckon_head, knight_throw_head);
+            knight.image_speed = throw_anim;
+            knight.anim_loop   = false; // obj_knight holds the last frame
+            audio_play_sound(throw_sound, 1, false);
+            state = "throw";
+        }
+    break;
+
+    case "throw":
+        // arm up: the swords appear over his head, one by one left to right
+        if (!swords_spawned && knight.image_index >= sword_spawn_frame)
+        {
+            for (var i = 0; i < sword_count; i++)
+            {
+                array_push(swords, {
+                    x: lerp(sword_x_from, sword_x_to, (sword_count > 1) ? i / (sword_count - 1) : 0.5),
+                    y: sword_y,
+                    alpha: 0,
+                    vy: 0,
+                    delay: 1 + i * sword_stagger,
+                    gone: false
+                });
+            }
+            swords_spawned = true;
+        }
+        // the drop and the finish are handled above, with the swords
+    break;
+
+    case "done":
         // that's all for now. cutscene_lock stays on so Z doesn't open self_4 before it exists
     break;
 }
