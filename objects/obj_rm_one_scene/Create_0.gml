@@ -41,7 +41,17 @@ susie_run_speed  = 4.5;
 susie_run_anim   = 1.6;
 run_fade_speed   = 0.1;
 
-on_done = undefined;  // optional function: runs once they're both through the door
+// once they're both through the door: fade into rm_two
+exit_fade_step = 0.05; // per frame (about a third of a second each way)
+exit_fade_hold = 15;   // frames held on black
+on_done = function()
+{
+    var _fader = instance_create_depth(0, 0, -10004, obj_cutscenefade);
+    _fader.fade_target   = 1;
+    _fader.fade_step     = exit_fade_step;
+    _fader.target_room   = rm_two;
+    _fader.wait_duration = exit_fade_hold;
+};
 
 // --- state ---
 action = "";  busy = false;  sub = "";  t = 0;
