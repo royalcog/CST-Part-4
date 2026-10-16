@@ -19,7 +19,7 @@ if (swords_spawned)
         {
             _s.delay--;
             _all_in = false;
-            if (_s.delay == 0 && i == 0) audio_play_sound(sword_appear_sound, 1, false);
+            if (_s.delay == 0 && i == 0 && sword_appear_sound != noone) audio_play_sound(sword_appear_sound, 1, false);
             continue;
         }
         _s.alpha = min(1, _s.alpha + 1 / sword_fade_in);
@@ -34,14 +34,14 @@ if (swords_spawned)
             if (_top > edge_y) _s.gone = true;
         }
     }
-    if (_all_in) swords_all_in = true;
+        if (_all_in) swords_all_in = true;
 
-        // a beat after they're all in: he swings, and they go one at a time
+    // a beat after they're all in: he swings, and they go one at a time
     if (swords_all_in && !firing)
     {
         hold_t++;
 
-        // start the fountain sound a little early, so its throw whoosh lands on the first throw
+        // start the fountain sound early, so its throw part lands on the throws
         if (!drop_started && hold_t >= sword_hold - round(sword_drop_lead * game_get_speed(gamespeed_fps)))
         {
             drop_started = true;
@@ -67,6 +67,8 @@ if (swords_spawned)
         }
         else fire_t--;
     }
+
+    if (firing && fire_i >= array_length(swords) && _all_gone && state == "throw") state = "done";
 }
 
 switch (state)
