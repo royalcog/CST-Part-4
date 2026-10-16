@@ -855,6 +855,7 @@
     {"name":"spr_susie_right_neutral","order":17,"path":"sprites/spr_susie_right_neutral/spr_susie_right_neutral.yy",},
     {"name":"spr_susie_right","order":16,"path":"sprites/spr_susie_right/spr_susie_right.yy",},
     {"name":"spr_susie_rudebuster","order":34,"path":"sprites/spr_susie_rudebuster/spr_susie_rudebuster.yy",},
+    {"name":"spr_susie_shocked_up","order":38,"path":"sprites/spr_susie_shocked_up/spr_susie_shocked_up.yy",},
     {"name":"spr_susie_shocked","order":19,"path":"sprites/spr_susie_shocked/spr_susie_shocked.yy",},
     {"name":"spr_susie_sit_head_down_dark","order":2,"path":"sprites/spr_susie_sit_head_down_dark/spr_susie_sit_head_down_dark.yy",},
     {"name":"spr_susie_sit_head_down_happy_dark","order":11,"path":"sprites/spr_susie_sit_head_down_happy_dark/spr_susie_sit_head_down_happy_dark.yy",},

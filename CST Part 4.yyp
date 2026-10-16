@@ -1029,6 +1029,7 @@
     {"id":{"name":"spr_susie_right_neutral","path":"sprites/spr_susie_right_neutral/spr_susie_right_neutral.yy",},},
     {"id":{"name":"spr_susie_right","path":"sprites/spr_susie_right/spr_susie_right.yy",},},
     {"id":{"name":"spr_susie_rudebuster","path":"sprites/spr_susie_rudebuster/spr_susie_rudebuster.yy",},},
+    {"id":{"name":"spr_susie_shocked_up","path":"sprites/spr_susie_shocked_up/spr_susie_shocked_up.yy",},},
     {"id":{"name":"spr_susie_shocked","path":"sprites/spr_susie_shocked/spr_susie_shocked.yy",},},
     {"id":{"name":"spr_susie_sit_head_down_dark","path":"sprites/spr_susie_sit_head_down_dark/spr_susie_sit_head_down_dark.yy",},},
     {"id":{"name":"spr_susie_sit_head_down_happy_dark","path":"sprites/spr_susie_sit_head_down_happy_dark/spr_susie_sit_head_down_happy_dark.yy",},},
