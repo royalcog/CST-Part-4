@@ -6,15 +6,15 @@ global.cutscene_lock = true;
 // --- tuning ---
 // where everyone stands (feet). the cauldron covers about x 320-440, y 244-356
 knight_feet_x = 580;  knight_feet_y = 330;
-susie_x  = 230;  susie_y  = 395;
-ralsei_x = 175;  ralsei_y = 412;
+susie_x  = 230;  susie_y  = 320;
+ralsei_x = 175;  ralsei_y = 340;
 
 walk_in          = true;  // they walk up from below the screen (false = already standing there)
 walk_in_speed    = 2.5;
 ralsei_walk_wait = 10;    // he comes in a beat after her
 susie_point_sprite = spr_susie_point_right;
-if (!sprite_exists(susie_point_sprite)) susie_point_sprite = spr_susie_point_up;
-if (!sprite_exists(susie_point_sprite)) susie_point_sprite = spr_susie_point_right;
+knight_facing      = -2; // his sprites face right, so -2 = facing left at 2x
+knight_attack_facing = 2; // spr_knight_attack is already drawn facing left, so it doesn't get flipped
 
 // the Knight: standing pose = last frame of spr_roark_ball_to_knight. feet in each sprite's own pixels
 knight_stand_sprite = spr_roark_ball_to_knight;
@@ -143,17 +143,19 @@ door_path = function(_o)
     ];
 }
 
-/// Knight: switch between standing and swinging without his feet moving
-knight_swap = function(_spr, _from_feet, _to_feet)
+/// Knight: switch between standing and swinging (and which way he's flipped) without his feet moving
+knight_swap = function(_spr, _from_feet, _to_feet, _xs)
 {
     if (!instance_exists(obj_knight)) return;
     with (obj_knight)
     {
-        var _dx = (_from_feet.x - _to_feet.x) * image_xscale;
-        var _dy = (_from_feet.y - _to_feet.y) * image_yscale;
-        x += _dx;
-        y += _dy;
-        start_y += _dy; // he bobs around start_y
+        var _fx = x + _from_feet.x * image_xscale;
+        var _fy = y + _from_feet.y * image_yscale;
+        image_xscale = _xs;
+        var _ny = _fy - _to_feet.y * image_yscale;
+        start_y += _ny - y; // he bobs around start_y
+        x = _fx - _to_feet.x * image_xscale;
+        y = _ny;
         sprite_index = _spr;
     }
 }

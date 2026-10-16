@@ -131,7 +131,7 @@ switch (action)
         {
             case "start":
                 if (!instance_exists(obj_knight)) { finish(); break; }
-                knight_swap(spr_knight_attack, knight_stand_feet, knight_attack_feet);
+                knight_swap(spr_knight_attack, knight_stand_feet, knight_attack_feet, knight_attack_facing);
                 with (obj_knight) { image_index = 0; image_speed = 1; anim_loop = false; }
                 audio_play_sound(knight_swing_sound, 1, false);
                 go("swing");
@@ -152,11 +152,11 @@ switch (action)
                 if (!variable_struct_exists(saved, "ralsei") && door.state == "broken")
                 {
                     saved.ralsei = true;
-                    pose_facing(obj_ralsei, spr_ralsei_surprised, -2); // that sprite faces left, mirrored to face right
+                    pose_facing(obj_ralsei, spr_ralsei_surprised, 2); // that sprite faces left, mirrored to face right
                 }
                 if (t >= knight_after_swing && door.state == "broken")
                 {
-                    knight_swap(knight_stand_sprite, knight_attack_feet, knight_stand_feet);
+                    knight_swap(knight_stand_sprite, knight_attack_feet, knight_stand_feet, knight_facing);
                     with (obj_knight) { image_index = image_number - 1; image_speed = 0; }
                     finish();
                 }
