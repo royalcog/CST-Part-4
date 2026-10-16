@@ -148,11 +148,21 @@ switch (action)
             break;
 
             case "hold":
-                // Ralsei sees the door go
+                // Ralsei and Susie see the door go
                 if (!variable_struct_exists(saved, "ralsei") && door.state == "broken")
                 {
                     saved.ralsei = true;
                     pose_facing(obj_ralsei, spr_ralsei_surprised, 2); // that sprite faces left, mirrored to face right
+
+                    // Susie: shocked until she runs in after him, standing on the same foot she was pointing on
+                    point_looping = false;
+                    if (instance_exists(obj_susie))
+                    {
+                        if (obj_susie.sprite_index == susie_point_sprite)
+                            pose_on_foot(obj_susie, spr_susie_shocked, 2, susie_point_foot, susie_shock_foot);
+                        else
+                            pose_facing(obj_susie, spr_susie_shocked, 2);
+                    }
                 }
                 if (t >= knight_after_swing && door.state == "broken")
                 {
@@ -212,7 +222,13 @@ switch (action)
                 if (instance_exists(obj_ralsei))
                     array_push(runners, ralsei_runner(door_path(obj_ralsei), ralsei_run_speed, ralsei_run_anim, 0, true));
                 if (instance_exists(obj_susie))
-                    array_push(runners, susie_runner(door_path(obj_susie), susie_run_speed, susie_run_anim, susie_follow_wait, true));
+                {
+                    var _sp = door_path(obj_susie);
+                    // still shocked: start her path at her planted foot, not the shocked canvas's bottom (3px lower)
+                    if (obj_susie.sprite_index == spr_susie_shocked)
+                        _sp[0].y = obj_susie.y + (susie_shock_foot.y - sprite_get_yoffset(spr_susie_shocked)) * obj_susie.image_yscale;
+                    array_push(runners, susie_runner(_sp, susie_run_speed, susie_run_anim, susie_follow_wait, true));
+                }
                 go("run");
             break;
 

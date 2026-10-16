@@ -130,6 +130,30 @@ function scr_game_text(_text_id)
 			scr_text("* NO!!!", "ralsei", 42);
 		break;
 		
+		case "rm2_ralsei_plead":
+			// every line cuts off the moment it's typed and jumps to the next, except the last one
+			var _lines = [
+				["* You don't have to do this",          42],
+				["* It's not worth it",                  44],
+				["* What are you gaining",               43],
+				["* Please don't do it",                 40],
+				["* The Prophecy doesn't say anything",  45],
+				["* This is all a mistake",              43],
+				["* I didn't do anything wrong",         42],
+				["* Please leave us alone",              41],
+				["* Please leave",                       41],
+				["* Please",                             41]
+			];
+			for (var i = 0; i < array_length(_lines); i++)
+			{
+				scr_text(_lines[i][0], "ralsei", _lines[i][1]);
+					scr_text_cutoff_skip(string_length(_lines[i][0]));
+			}
+
+			scr_text("* DON'T DO IT!!!", "ralsei", 42);
+				scr_text_shake(1, 99);
+		break;
+		
 /*
 
 */

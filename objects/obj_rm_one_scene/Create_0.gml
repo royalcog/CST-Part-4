@@ -16,6 +16,11 @@ susie_point_sprite = spr_susie_point_right;
 knight_facing      = -2; // his sprites face right, so -2 = facing left at 2x
 knight_attack_facing = 2; // spr_knight_attack is already drawn facing left, so it doesn't get flipped
 
+// Susie's planted (back) foot, in each sprite's own pixels: bottom-centre of the foot
+susie_point_foot = { x: 10.5, y: 59 }; // spr_susie_point_right
+susie_shock_foot = { x: 19,   y: 43 }; // spr_susie_shocked (the back foot, not the kicked-out one)
+susie_walk_foot  = { x: 10.5, y: 43 }; // spr_susie_walk_right
+
 // the Knight: standing pose = last frame of spr_roark_ball_to_knight. feet in each sprite's own pixels
 knight_stand_sprite = spr_roark_ball_to_knight;
 knight_stand_feet   = { x: 41, y: 77 };
@@ -101,6 +106,23 @@ pose_facing = function(_o, _spr, _xs)
     set_feet(_o, _f.x, _f.y);
 }
 
+/// swaps _o to _spr (facing _xs) so pixel _to_px of the new sprite lands exactly where pixel _from_px of the old one was
+pose_on_foot = function(_o, _spr, _xs, _from_px, _to_px)
+{
+    if (!instance_exists(_o)) return;
+    var _fx = _o.x + (_from_px.x - sprite_get_xoffset(_o.sprite_index)) * _o.image_xscale;
+    var _fy = _o.y + (_from_px.y - sprite_get_yoffset(_o.sprite_index)) * _o.image_yscale;
+
+    _o.sprite_index = _spr;
+    _o.last_sprite  = _spr; // placed by hand, so scr_auto_keep_feet leaves it alone
+    _o.image_xscale = _xs;
+    _o.image_index  = 0;
+    _o.image_speed  = 0;
+
+    _o.x = _fx - (_to_px.x - sprite_get_xoffset(_spr)) * _xs;
+    _o.y = _fy - (_to_px.y - sprite_get_yoffset(_spr)) * _o.image_yscale;
+}
+
 /// a runner: { obj, pts:[{x,y}], i, speed, anim, wait, l, r, up, down, fade }
 /// walks it toward its next point, with the walk sprite for whichever way it's mostly going. true when it's done
 step_runner = function(_r)
@@ -122,7 +144,14 @@ step_runner = function(_r)
     var _dx = _p.x - _f.x, _dy = _p.y - _f.y;
     var _d  = point_distance(0, 0, _dx, _dy);
     var _spr = (abs(_dx) > abs(_dy)) ? ((_dx < 0) ? _r.l : _r.r) : ((_dy < 0) ? _r.up : _r.down);
-    if (_o.sprite_index != _spr) { _o.sprite_index = _spr; _o.anim_loop = true; }
+    if (_o.sprite_index != _spr)
+    {
+        // coming out of her shocked pose: her walking feet go where her planted foot was
+        if (_o.sprite_index == spr_susie_shocked)
+            pose_on_foot(_o, spr_susie_walk_right, _o.image_xscale, susie_shock_foot, susie_walk_foot);
+        _o.sprite_index = _spr;
+        _o.anim_loop = true;
+    }
     _o.image_speed = _r.anim;
 
     if (_d <= _r.speed) { _o.x += _dx; _o.y += _dy; _r.i++; }
