@@ -36,10 +36,19 @@ if (swords_spawned)
     }
     if (_all_in) swords_all_in = true;
 
-    // a beat after they're all in: he swings, and they go one at a time
+        // a beat after they're all in: he swings, and they go one at a time
     if (swords_all_in && !firing)
     {
-        if (++hold_t >= sword_hold)
+        hold_t++;
+
+        // start the fountain sound a little early, so its throw whoosh lands on the first throw
+        if (!drop_started && hold_t >= sword_hold - round(sword_drop_lead * game_get_speed(gamespeed_fps)))
+        {
+            drop_started = true;
+            if (sword_drop_sound != noone) snd_drop = audio_play_sound(sword_drop_sound, 1, false);
+        }
+
+        if (hold_t >= sword_hold)
         {
             firing = true;
             fire_i = 0;
@@ -52,14 +61,12 @@ if (swords_spawned)
         if (fire_t <= 0)
         {
             swords[fire_i].thrown = true;
-            audio_play_sound(sword_throw_sound, 1, false);
+            if (sword_throw_sound != noone) audio_play_sound(sword_throw_sound, 1, false);
             fire_i++;
             fire_t = sword_fire_gap;
         }
         else fire_t--;
     }
-
-    if (firing && fire_i >= array_length(swords) && _all_gone && state == "throw") state = "done";
 }
 
 switch (state)

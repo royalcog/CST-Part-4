@@ -251,13 +251,13 @@ function scr_set_var_on_page_delayed(_obj, _var_name, _value, _delay)
         is_custom_call: true,
         call_func: method({ obj: _obj, var_name: _var_name, value: _value }, function()
         {
-            if (obj_titan_spawn == noone)
+            if (obj == noone)
             {
                 variable_global_set(var_name, value);
             }
-            else if (instance_exists(obj_titan_spawn))
+            else if (instance_exists(obj))
             {
-                variable_instance_set(obj_titan_spawn, var_name, value);
+                variable_instance_set(obj, var_name, value);
             }
         })
     });
@@ -987,13 +987,13 @@ function scr_set_var_after_textbox_delayed(_obj, _var_name, _value, _delay)
     if (!instance_exists(obj_cutscenehandler_midfightattacks)) exit;
     scr_custom_call_after_textbox_delayed(method({ obj: _obj, var_name: _var_name, value: _value }, function()
     {
-        if (obj_titan_spawn == noone)
+        if (obj == noone)
         {
             variable_global_set(var_name, value);
         }
-        else if (instance_exists(obj_titan_spawn))
+        else if (instance_exists(obj))
         {
-            variable_instance_set(obj_titan_spawn, var_name, value);
+            variable_instance_set(obj, var_name, value);
         }
     }), _delay);
 }

@@ -8,56 +8,86 @@ if (show_beam)
     var _img  = beam_looping ? floor(beam_frame) mod sprite_get_number(_spr)
                              : min(floor(frame), sprite_get_number(_spr) - 1);
     var _apex = tower_top_y - beam_rise;
-    draw_sprite_ext(_spr, _img, fx, _apex + (sprite_get_yoffset(_spr) - beam_tip_px) * scale, scale, scale, 0, c_white, 1);
+    draw_sprite_ext(_spr, _img, fx, _apex + (sprite_get_yoffset(_spr) - beam_tip_px) * tower_scale, tower_scale, tower_scale, 0, c_white, 1);
 
-    // only needed if beam_rise is taller than the tip sprite
-    var _tip_bottom = _apex + (sprite_get_height(_spr) - beam_tip_px) * scale;
+    var _tip_bottom = _apex + (sprite_get_height(_spr) - beam_tip_px) * tower_scale;
     if ((beam_looping || _img >= beam_solid_frame) && _tip_bottom < tower_top_y)
         draw_column(spr_titanbeam_midsection, _img mod sprite_get_number(spr_titanbeam_midsection),
-                    tower_top_y, _tip_bottom, tower_top_y);
+                    tower_top_y, _tip_bottom, tower_top_y, tower_scale);
 }
+
+// the pool: black, with the white flash fading off it
+if (show_pool && !show_burst && !show_geyser)
+    draw_pool(spr_titan_fountain_burst_base, 0, 1);
+if (pool_white > 0)
+    draw_pool(spr_titan_fountain_loop_base_white, 0, pool_white);
 
 // the burst
 if (show_burst)
 {
-    var _i = min(floor(frame), sprite_get_number(spr_titan_fountain_burst) - 1);
+    var _i = clamp(floor(frame), 0, sprite_get_number(spr_titan_fountain_burst) - 1);
     draw_pool(spr_titan_fountain_burst_base, _i, 1);
     draw_pool(spr_titan_fountain_burst, _i, 1);
 }
 
-// the pool: glowing while the geyser runs, flashing white as it hardens
-if (show_geyser && !hardening)
-    draw_pool(spr_titan_fountain_loop_base, floor(loop_frame) mod sprite_get_number(spr_titan_fountain_loop_base), 1);
-if (pool_white > 0)
-    draw_pool(spr_titan_fountain_loop_base_white, 0, pool_white);
-
-// the geyser column, above wherever the stone's reached
+// the geyser
 if (show_geyser)
 {
-    draw_column(spr_titan_fountain_loop, floor(loop_frame) mod sprite_get_number(spr_titan_fountain_loop),
-                base_bottom_y, _vt, min(_vb, stone_y));
-    if (!hardening)
-        draw_pool(spr_titan_fountain_loop_rings, floor(loop_frame) mod sprite_get_number(spr_titan_fountain_loop_rings), 1);
+    var _li = floor(loop_frame);
+    draw_pool(spr_titan_fountain_loop_base, _li mod sprite_get_number(spr_titan_fountain_loop_base), 1);
+    draw_column(spr_titan_fountain_loop, _li mod sprite_get_number(spr_titan_fountain_loop), base_bottom_y, _vt, _vb);
+    draw_pool(spr_titan_fountain_loop_rings, _li mod sprite_get_number(spr_titan_fountain_loop_rings), 1);
 }
 
-// the stone pillar + its edge shading
-if (stone_y < base_bottom_y)
+if (petrified)
 {
-    var _top = max(stone_y, _vt), _bot = min(base_bottom_y, _vb);
-    draw_column(spr_titantower_piece,    0, base_bottom_y, _top, _bot);
-    draw_column(spr_titantower_gradient, 0, base_bottom_y, _top, _bot);
+    var _hw = sprite_get_width(spr_fountain) * dark_scale / 2;
 
-    // a bright line where the stone's still climbing
-    if (hardening && stone_y > tower_top_y)
+    // the dark stone shell, above the crack
+    var _top = max(tower_top_y, _vt);
+    var _bot = min(front_y, _vb);
+    if (_bot > _top)
     {
-        var _hw = sprite_get_width(spr_titantower_piece) * scale / 2;
+        draw_set_color(c_black);
+        draw_rectangle(fx - _hw, _top, fx + _hw, _bot, false);
+
+        var _th = sprite_get_height(spr_fountain) * dark_scale;
+        draw_column(spr_fountain, 0, base_bottom_y + _th - (dark_scroll mod _th), _top, _bot, dark_scale, dark_col, 1);
         gpu_set_blendmode(bm_add);
-        draw_set_color(c_white);
-        draw_set_alpha(0.8);
-        draw_rectangle(fx - _hw, stone_y - 3, fx + _hw, stone_y + 3, false);
-        draw_set_alpha(1);
+        draw_column(spr_fountain, 0, base_bottom_y + _th - ((dark_scroll2 + _th / 3) mod _th), _top, _bot, dark_scale, dark_col2, dark_layer2_alpha);
         gpu_set_blendmode(bm_normal);
     }
+
+    // the grey tower, below the crack
+    var _gt = max(front_y, _vt);
+    var _gb = min(base_bottom_y, _vb);
+    if (_gb > _gt)
+    {
+        draw_column(spr_titantower_piece,    0, base_bottom_y, _gt, _gb, tower_scale);
+        draw_column(spr_titantower_gradient, 0, base_bottom_y, _gt, _gb, tower_scale);
+    }
+
+    // the last thin bit of the geyser, shrinking away
+    if (cyan_line > 0)
+    {
+        var _lw = cyan_line_w * cyan_line / 2;
+        draw_set_color(make_color_rgb(0, 230, 255));
+        draw_rectangle(fx - _lw, _vt, fx + _lw, min(front_y, _vb), false);
+    }
+}
+
+// chunks of the shell
+if (array_length(debris) > 0)
+{
+    draw_primitive_begin(pr_trianglelist);
+    for (var i = 0; i < array_length(debris); i++)
+    {
+        var _d = debris[i];
+        draw_vertex_color(_d.x + lengthdir_x(_d.r1, _d.rot),       _d.y + lengthdir_y(_d.r1, _d.rot),       _d.col, _d.alpha);
+        draw_vertex_color(_d.x + lengthdir_x(_d.r2, _d.rot + 125), _d.y + lengthdir_y(_d.r2, _d.rot + 125), _d.col, _d.alpha);
+        draw_vertex_color(_d.x + lengthdir_x(_d.r3, _d.rot + 235), _d.y + lengthdir_y(_d.r3, _d.rot + 235), _d.col, _d.alpha);
+    }
+    draw_primitive_end();
 }
 
 // the hand, pushing out of the pillar fist-first
@@ -70,3 +100,4 @@ if (show_hand)
                          hand_x, hand_y - sprite_get_yoffset(spr_tower_titanhand) * scale,
                          scale, scale, c_white, 1);
 }
+draw_set_color(c_white);

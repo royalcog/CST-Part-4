@@ -48,9 +48,12 @@ sword_hold         = 60;                   // once they're all in: wait this lon
 sword_fire_gap     = 5;                    // frames between each throw (one at a time, left to right)
 sword_accel        = 1.5;
 sword_max_speed    = 26;
-sword_appear_sound = snd_spear_appear;
-sword_throw_sound  = snd_heavyswing;       // plays on every throw
-
+sword_appear_sound = snd_empty;
+sword_drop_sound   = snd_titanfountain;    // its opening whoosh is the throw; obj_titan_spawn keeps reading it as its clock
+sword_drop_lead    = 0.22;                 // seconds of the sound before the whoosh: it starts this early so the whoosh lands on the first throw
+sword_throw_sound  = noone;                // optional extra sound on every throw (was snd_heavyswing)
+snd_drop           = -1;
+drop_started       = false;
 // the swords draw from here: in front of the fountain (350), behind the floor tiles (300) and everyone else
 depth = 320;
 
