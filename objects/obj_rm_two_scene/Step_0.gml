@@ -25,7 +25,7 @@ if (swords_spawned)
         _s.alpha = min(1, _s.alpha + 1 / sword_fade_in);
         if (_s.alpha < 1) _all_in = false;
 
-        if (swords_dropping)
+        if (_s.thrown)
         {
             _s.vy = min(sword_max_speed, _s.vy + sword_accel);
             _s.y += _s.vy;
@@ -34,13 +34,32 @@ if (swords_spawned)
             if (_top > edge_y) _s.gone = true;
         }
     }
+    if (_all_in) swords_all_in = true;
 
-    if (!swords_dropping && _all_in && instance_exists(knight) && knight.image_index >= sword_drop_frame)
+    // a beat after they're all in: he swings, and they go one at a time
+    if (swords_all_in && !firing)
     {
-        swords_dropping = true;
-        audio_play_sound(sword_drop_sound, 1, false);
+        if (++hold_t >= sword_hold)
+        {
+            firing = true;
+            fire_i = 0;
+            fire_t = 0;
+            if (instance_exists(knight)) knight.image_speed = throw_anim; // finish the swing
+        }
     }
-    if (swords_dropping && _all_gone && state == "throw") state = "done";
+    if (firing && fire_i < array_length(swords))
+    {
+        if (fire_t <= 0)
+        {
+            swords[fire_i].thrown = true;
+            audio_play_sound(sword_throw_sound, 1, false);
+            fire_i++;
+            fire_t = sword_fire_gap;
+        }
+        else fire_t--;
+    }
+
+    if (firing && fire_i >= array_length(swords) && _all_gone && state == "throw") state = "done";
 }
 
 switch (state)
@@ -138,7 +157,13 @@ switch (state)
             knight_pose(spr_roark_throw_sword, knight_beckon_head, knight_throw_head);
             knight.image_speed = throw_anim;
             knight.anim_loop   = false; // obj_knight holds the last frame
-            audio_play_sound(throw_sound, 1, false);
+
+            // they both go shocked
+            if (ralsei_shock_sprite != noone && instance_exists(obj_ralsei) && obj_ralsei.sprite_index == spr_ralsei_walk_up)
+                pose_on_foot(obj_ralsei, ralsei_shock_sprite, ralsei_walk_foot, ralsei_shock_foot);
+            if (susie_shock_sprite != noone && instance_exists(obj_susie) && obj_susie.sprite_index == spr_susie_walk_up)
+                pose_on_foot(obj_susie, susie_shock_sprite, susie_walk_foot, susie_shock_foot);
+
             state = "throw";
         }
     break;
@@ -155,12 +180,19 @@ switch (state)
                     alpha: 0,
                     vy: 0,
                     delay: 1 + i * sword_stagger,
+                    thrown: false,
                     gone: false
                 });
             }
             swords_spawned = true;
         }
-        // the drop and the finish are handled above, with the swords
+        // hold his arm up until the throws start
+        if (!firing && knight.image_index >= sword_hold_frame)
+        {
+            knight.image_speed = 0;
+            knight.image_index = sword_hold_frame;
+        }
+        // the throws and the finish are handled above, with the swords
     break;
 
     case "done":

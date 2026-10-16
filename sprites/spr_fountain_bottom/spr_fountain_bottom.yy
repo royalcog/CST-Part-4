@@ -25,8 +25,8 @@
   "nineSlice":null,
   "origin":4,
   "parent":{
-    "name":"Special Cutscene",
-    "path":"folders/Sprites/Special Cutscene.yy",
+    "name":"Dark Fountain",
+    "path":"folders/Sprites/Special Cutscene/Dark Fountain.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",
