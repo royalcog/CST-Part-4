@@ -9,6 +9,8 @@ function scr_shadow_tint_begin()
     shader_set(shd_shadow_tint);
     shader_set_uniform_f(shader_get_uniform(shd_shadow_tint, "u_tint"), _c.tint_r, _c.tint_g, _c.tint_b);
     shader_set_uniform_f(shader_get_uniform(shd_shadow_tint, "u_strength"), _c.strength);
+    shader_set_uniform_f(shader_get_uniform(shd_shadow_tint, "u_y_near"), _c.near_y);
+    shader_set_uniform_f(shader_get_uniform(shd_shadow_tint, "u_y_far"), _c.far_y);
 }
 
 function scr_shadow_tint_end()

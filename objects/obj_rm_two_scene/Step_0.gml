@@ -20,7 +20,6 @@ switch (state)
             _o.image_speed = walk_anim;
             _o.image_alpha = 1;
             _o.visible     = true;
-            _o.image_blend = shadow_col; // the darkish blue shadow
             set_feet(_o, _pair[i][1], _bottom);
         }
         state = "walk";

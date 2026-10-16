@@ -7,3 +7,8 @@ for (var i = 0; i < array_length(_layers); i++)
         layer_script_end(_layers[i], -1);
     }
 }
+
+for (var i = 0; i < array_length(shade_objs); i++)
+{
+    with (shade_objs[i]) image_blend = c_white;
+}

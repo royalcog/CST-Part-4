@@ -37,6 +37,3 @@ step_up = function(_o, _fy)
     _o.y -= walk_speed;
     return false;
 }
-
-// the shadow colour on Susie and Ralsei (same as obj_shadow_tint's tint at full strength)
-shadow_col = make_color_rgb(82, 92, 179);

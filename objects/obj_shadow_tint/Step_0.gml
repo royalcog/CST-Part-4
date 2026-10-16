@@ -1,21 +1,4 @@
-// 1. anyone sitting on a hidden managed depth layer (set depth = in Create, like Susie/Ralsei)
-//    gets moved onto a real layer at the exact same depth, so draw order doesn't change
-with (all)
-{
-    if (array_contains(other.skip_objs, object_index)) continue;
-    if (depth <= other.front_depth || depth >= other.back_depth) continue;
-
-    var _ln = layer_exists(layer) ? layer_get_name(layer) : "";
-    if (array_contains(other.room_layer_names, _ln)) continue;  // already on a room layer
-    if (string_pos("shadow_", _ln) == 1) continue;             // already moved
-
-    var _d    = depth;
-    var _name = "shadow_" + string(_d);
-    var _l    = layer_exists(_name) ? layer_get_id(_name) : layer_create(_d, _name);
-    layer = _l;
-}
-
-// 2. hook the tint onto every layer in range (room layers + the shadow_ ones)
+// floor tiles (and any other room layers in range): per-pixel shadow through the shader
 var _layers = layer_get_all();
 for (var i = 0; i < array_length(_layers); i++)
 {
@@ -26,4 +9,15 @@ for (var i = 0; i < array_length(_layers); i++)
 
     layer_script_begin(_l, scr_shadow_tint_begin);
     layer_script_end(_l, scr_shadow_tint_end);
+}
+
+// characters: shaded by how close their feet are to the fountain
+tint_col = make_color_rgb(tint_r * 255, tint_g * 255, tint_b * 255);
+for (var i = 0; i < array_length(shade_objs); i++)
+{
+    with (shade_objs[i])
+    {
+        var _f = scr_get_feet(id);
+        image_blend = merge_color(c_white, other.tint_col, other.shade_at(_f.y));
+    }
 }
