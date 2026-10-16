@@ -36,19 +36,14 @@ if (swords_spawned)
     }
         if (_all_in) swords_all_in = true;
 
-    // a beat after they're all in: he swings, and they go one at a time
+    // once they're all in, he throws when the sound gets to the throw
     if (swords_all_in && !firing)
     {
         hold_t++;
-
-        // start the fountain sound early, so its throw part lands on the throws
-        if (!drop_started && hold_t >= sword_hold - round(sword_drop_lead * game_get_speed(gamespeed_fps)))
-        {
-            drop_started = true;
-            if (sword_drop_sound != noone) snd_drop = audio_play_sound(sword_drop_sound, 1, false);
-        }
-
-        if (hold_t >= sword_hold)
+        var _ready = (snd_drop >= 0 && audio_is_playing(snd_drop))
+                   ? audio_sound_get_track_position(snd_drop) >= sword_throw_at
+                   : hold_t >= sword_hold;   // no sound: the old fixed hold
+        if (_ready)
         {
             firing = true;
             fire_i = 0;
@@ -167,7 +162,8 @@ switch (state)
             knight_pose(spr_roark_throw_sword, knight_beckon_head, knight_throw_head);
             knight.image_speed = throw_anim;
             knight.anim_loop   = false; // obj_knight holds the last frame
-
+            if (wingshut_sound != noone) audio_play_sound(wingshut_sound, 1, false, wingshut_gain);
+			
             // they both go shocked
             if (ralsei_shock_sprite != noone && instance_exists(obj_ralsei) && obj_ralsei.sprite_index == spr_ralsei_walk_up)
                 pose_on_foot(obj_ralsei, ralsei_shock_sprite, ralsei_walk_foot, ralsei_shock_foot);
@@ -195,6 +191,9 @@ switch (state)
                 });
             }
             swords_spawned = true;
+
+            // the fountain sound starts as they appear
+            if (sword_drop_sound != noone) snd_drop = audio_play_sound(sword_drop_sound, 1, false, 1, sword_drop_offset);
         }
         // hold his arm up until the throws start
         if (!firing && knight.image_index >= sword_hold_frame)

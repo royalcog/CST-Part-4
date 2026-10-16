@@ -49,11 +49,11 @@ sword_fire_gap     = 5;                    // frames between each throw (one at 
 sword_accel        = 1.5;
 sword_max_speed    = 26;
 sword_appear_sound = noone;                // was snd_spear_appear (snd_empty has a click in it)
-sword_drop_sound   = snd_titanfountain;    // its opening is the throw; obj_titan_spawn keeps reading it as its clock
-sword_drop_lead    = 0.6;                  // how many seconds before the first throw the sound starts (up to sword_hold / 60)
+sword_drop_sound   = snd_titanfountain;    // starts as the swords appear; obj_titan_spawn keeps reading it as its clock
+sword_drop_offset  = 0.0;                  // seconds into the sound it starts from when they appear (raise it to make the sound "earlier")
+sword_throw_at     = 1.5;                  // he throws when the sound reaches this; the first sword lands ~0.37s later, on the hiss cutting out
 sword_throw_sound  = noone;                // optional extra sound on every throw (was snd_heavyswing)
 snd_drop           = -1;
-drop_started       = false;
 // the swords draw from here: in front of the fountain (350), behind the floor tiles (300) and everyone else
 depth = 320;
 
