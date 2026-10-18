@@ -73,15 +73,3 @@ set_feet(lancer, king_x + lancer_start_dx, _bottom + 60);
 queen = instance_create_depth(0, 0, -3001, obj_queen);
 pose(queen, spr_queen_walk_up, 1);
 set_feet(queen, king_x + queen_start_dx, _bottom + 90);
-
-king = instance_exists(obj_king) ? instance_find(obj_king, 0) : instance_create_depth(0, 0, -2000, obj_king);
-pose(king, spr_king_kneel_sad);
-set_feet(king, king_x, king_y);
-
-lancer = instance_create_depth(0, 0, -2000, obj_lancer);
-pose(lancer, spr_lancer_up);
-set_feet(lancer, king_x + lancer_start_dx, _bottom + 60);
-
-queen = instance_create_depth(0, 0, -3001, obj_queen);
-pose(queen, spr_queen_walk_up, 1);
-set_feet(queen, king_x + queen_start_dx, _bottom + 90);

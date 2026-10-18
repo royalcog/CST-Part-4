@@ -179,8 +179,6 @@ function scr_game_text(_text_id)
 
 		case "self_5":
 			scr_text("* We're not gonna let them hurt Castle Town.", "susie", 32);
-				scr_obj_sprite_on_page(obj_susie, spr_susie_walk_up, false);
-				scr_obj_sprite_on_page(obj_ralsei, spr_ralsei_walk_up, false);
 			scr_text("* We're...", "susie", 31);
 			scr_text("* ...", "susie", 31);
 			scr_text("* Where did they...", "susie", 31);
@@ -199,6 +197,8 @@ function scr_game_text(_text_id)
 		case "self_6":
 			global.cutscene_lock = true;   // the rest plays out on its own
 			scr_text("* How are we gonna get up there???", "susie", 39);
+				scr_obj_sprite_on_page(obj_susie, spr_susie_walk_up, false);
+				scr_obj_sprite_on_page(obj_ralsei, spr_ralsei_walk_up, false);
 			scr_text("* I...", "ralsei", 34);
 			scr_text("* ...", "ralsei", 45);
 			scr_text("* Wait!", "ralsei", 12);
@@ -234,18 +234,18 @@ function scr_game_text(_text_id)
 		break;
 
 		case "rm0_2":
-			scr_text("* Dad, what happened? What's going on?", "lancer", 13);
-			scr_text("* It's... already over, my son...", "king", 11);
-			scr_text("* What Did You Do", "queen", 11);
-			scr_text("* A new world will arise amidst the darkness...", "king", 4);
-			scr_text("* We will...", "king", 11);
-			scr_text("* We will do what no other Darkener has ever dreamed of...", "king", 4);
+			scr_text("* Dad, what happened? What's going on?", "lancer", 7);
+			scr_text("* It's... already over, my son...", "king", 1);
+			scr_text("* What Did You Do", "queen", 16);
+			scr_text("* A new world will arise amidst the darkness...", "king", 2);
+			scr_text("* We will...", "king", 3);
+			scr_text("* We will do what no other Darkener has ever dreamed of...", "king", 1);
 			scr_text("* ...", "lancer", 11);
-			scr_text("* You...", "lancer", 13);
-			scr_text("* You're a monster...", "lancer", 14);
-			scr_text("* ...", "king", 12);
-			scr_text("* My son...", "king", 12);
-			scr_text("* ...", "lancer", 14);
+			scr_text("* You...", "lancer", 10);
+			scr_text("* You're a monster...", "lancer", 12);
+			scr_text("* ...", "king", 3);
+			scr_text("* My son...", "king", 1);
+			scr_text("* ...", "lancer", 11);
 		break;
 
 		case "rm0_3":
@@ -254,8 +254,8 @@ function scr_game_text(_text_id)
 		break;
 
 		case "rm0_4":
-			scr_text("* ...", "king", 12);
-			scr_text("* Do what you want to d", "king", 11);
+			scr_text("* ...", "king", 5);
+			scr_text("* Do what you have to d", "king", 0);
 				scr_text_cutoff_skip(string_length("* Do what you want to d"));   // cut off the moment it's typed
 				scr_obj_sprite_once_on_page(obj_queen, spr_queen_pie_throw);     // she throws while he's saying it
 		break;

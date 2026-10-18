@@ -22,23 +22,17 @@ if (beam_on && beam_w > 0)
         var _by = _vy + _vh + 40;
         draw_beam(line_x(_sy) - _vx, _sy - _vy, line_x(_by) - _vx, _by - _vy, beam_w);
 
-        // cut away everything below the shield's top surface
+        // cut away only what's behind the shield, along the beam's lean. anything that misses it keeps going
         gpu_set_blendmode_ext(bm_zero, bm_zero);
-        var _n   = 40;
-        var _bot = _vh + 50;
-        var _pl  = shield_point(-shield_arc, shield_th / 2);
-        var _pr  = shield_point( shield_arc, shield_th / 2);
+        var _n    = 40;
+        var _long = _vh * 3;   // far enough to be past the bottom of the screen
         draw_primitive_begin(pr_trianglestrip);
-        draw_vertex(_pr.x - _vx + 80, _pr.y - _vy);   // past its right end
-        draw_vertex(_pr.x - _vx + 80, _bot);
         for (var i = 0; i <= _n; i++)
         {
             var _q = shield_point(lerp(shield_arc, -shield_arc, i / _n), shield_th / 2);
             draw_vertex(_q.x - _vx, _q.y - _vy);
-            draw_vertex(_q.x - _vx, _bot);
+            draw_vertex(_q.x - _vx + bdx * _long, _q.y - _vy + bdy * _long);
         }
-        draw_vertex(_pl.x - _vx - 80, _pl.y - _vy);   // past its left end
-        draw_vertex(_pl.x - _vx - 80, _bot);
         draw_primitive_end();
         gpu_set_blendmode(bm_normal);
 
