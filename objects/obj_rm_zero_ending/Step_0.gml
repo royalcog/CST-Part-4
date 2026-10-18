@@ -65,9 +65,25 @@ switch (state)
         if (st >= 30) { create_textbox("rm0_4"); go("t4"); }
     break;
 
-    case "t4":   // his line gets cut off as she throws: straight to black
-        if (!instance_exists(obj_textbox))
+    case "t4":   // she throws partway through his last line, and it cuts to black the instant the pie lands
+    {
+        var _tb = instance_exists(obj_textbox) ? instance_find(obj_textbox, 0) : noone;
+
+        // start the throw near the end of his second page
+        if (queen.sprite_index != spr_queen_pie_throw && _tb != noone && _tb.page >= 1
+            && _tb.draw_char >= _tb.text_length[_tb.page] - throw_lead_chars)
         {
+            queen.sprite_index = spr_queen_pie_throw;
+            queen.image_index  = 0;
+            queen.image_speed  = throw_speed;
+            queen.anim_loop    = false;
+        }
+
+        // the pie comes down: his line's cut off, black
+        if ((queen.sprite_index == spr_queen_pie_throw && queen.image_index >= throw_slam_frame)
+            || (_tb == noone && st > 10))
+        {
+            with (obj_textbox) instance_destroy();
             var _f = instance_create_depth(0, 0, -9999, obj_cutscenefade);
             _f.fade_back_same_room = true;
             _f.hold_black  = true;
@@ -77,6 +93,7 @@ switch (state)
             if (end_sound != noone) audio_play_sound(end_sound, 1, false);
             go("end");
         }
+    }
     break;
 
     case "end":

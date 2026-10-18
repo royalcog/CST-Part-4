@@ -255,9 +255,7 @@ function scr_game_text(_text_id)
 
 		case "rm0_4":
 			scr_text("* ...", "king", 5);
-			scr_text("* Do what you have to d", "king", 0);
-				scr_text_cutoff_skip(string_length("* Do what you want to d"));   // cut off the moment it's typed
-				scr_obj_sprite_once_on_page(obj_queen, spr_queen_pie_throw);     // she throws while he's saying it
+			scr_text("* Do what you have to d", "king", 0);   // obj_rm_zero_ending cuts this off as the pie lands
 		break;
 /*
 

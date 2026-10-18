@@ -205,7 +205,7 @@ if (instance_exists(ralsei))
         set_feet(ralsei, r_fx - knock_dist * _ease, r_fy - sin(_e * pi) * knock_hop);
         if (_e >= 1) r_phase = "down";
     }
-    else if (r_phase == "down") set_feet(ralsei, r_fx - knock_dist, r_fy);
+    else if (r_phase == "down" && state != "done") set_feet(ralsei, r_fx - knock_dist, r_fy);
 }
 
 // ---------------------------------------------------------------- Susie jumping clear
@@ -225,7 +225,7 @@ if (instance_exists(susie))
             s_phase = "landed";
         }
     }
-    else if (s_phase == "landed") set_feet(susie, s_fx + s_jdir * susie_jump, s_fy);
+    else if (s_phase == "landed" && state != "done") set_feet(susie, s_fx + s_jdir * susie_jump, s_fy);
 }
 
 // ---------------------------------------------------------------- "Watch out!", the break

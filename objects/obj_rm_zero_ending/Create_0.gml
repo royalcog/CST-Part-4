@@ -20,6 +20,9 @@ queen_walk_speed = 0.8;           // slowly
 queen_walk_anim  = 0.7;
 queen_by_king_dx = -70;    queen_by_king_dy = 6;     // right next to him
 end_sound = snd_damagetaken;
+throw_lead_chars = 9;     // she starts throwing this many letters before the end of his last line...
+throw_slam_frame = 2;     // ...and it cuts to black on the frame the pie comes down
+throw_speed      = 1;     // spr_queen_pie_throw's speed (6fps at 1)
 
 // --- state ---
 state = "enter";

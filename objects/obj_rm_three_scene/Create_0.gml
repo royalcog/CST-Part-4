@@ -27,9 +27,10 @@ mini_src_base  = 130;   // where the tower comes up from behind the castle
 mini_src_hand  = 60;    // the hand's height
 mini_w         = 64;    // the tower's width, px
 mini_scale     = 0.45;  // the hand
-mini_look_ang  = 10;    // degrees it sways either way, looking around...
-mini_look_spd  = 0.02;  // ...this fast
-mini_bob       = 3;     // px it drifts up and down
+mini_hand_frame = 295;   // the hand holds still on this frame
+mini_beam_scale = 0.25;  // the tiny laser's size
+mini_laser_end_x = 430;  // where it cuts off: around the other fountain
+mini_laser_end_y = -872;
 
 // where the top of town is: the camera never goes above it
 var _xs = (town != noone) ? town.image_xscale : 1, _ys = (town != noone) ? town.image_yscale : 1;
