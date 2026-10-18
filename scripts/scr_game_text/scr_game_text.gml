@@ -162,16 +162,40 @@ function scr_game_text(_text_id)
 		case "self_4":
 			scr_text("* We...", "ralsei", 34);
 			scr_text("* We can't let...", "ralsei", 35);
-				// Susie gets up
+				// Susie gets up: mirrored so she keeps facing the same way, and kept on the same spot
 				scr_custom_call_after_textbox_delayed(function()
 				{
 				    if (!instance_exists(obj_susie)) return;
-				    with (obj_susie) { sprite_index = spr_susie_getup; image_index = 0; image_speed = 1; anim_loop = false; image_xscale = abs(image_xscale); }
+				    with (obj_susie)
+				    {
+				        var _b = scr_get_body(id);
+				        sprite_index = spr_susie_getup;
+				        image_xscale = -image_xscale;   // the get-up faces the other way as drawn
+				        image_index  = 0;
+				        image_speed  = 1;
+				        anim_loop    = false;
+				        var _n = scr_get_body(id);
+				        x += _b.x - _n.x;
+				        y += _b.y - _n.y;
+				        last_sprite = sprite_index;     // placed by hand: End Step leaves it alone
+				    }
 				    scr_call_on_anim_frame(obj_susie, spr_susie_getup, sprite_get_number(spr_susie_getup) - 1, function()
 				    {
 				        scr_call_after_frames(function()
 				        {
-				            with (obj_susie) { sprite_index = spr_susie_left_neutral; image_index = 0; image_speed = 0; anim_loop = true; }
+				            with (obj_susie)
+				            {
+				                var _b = scr_get_body(id);
+				                sprite_index = spr_susie_left_neutral;
+				                image_xscale = abs(image_xscale);   // still facing left
+				                image_index  = 0;
+				                image_speed  = 0;
+				                anim_loop    = true;
+				                var _n = scr_get_body(id);
+				                x += _b.x - _n.x;
+				                y += _b.y - _n.y;
+				                last_sprite = sprite_index;
+				            }
 				        }, 10);
 				    });
 				}, 20);
@@ -187,10 +211,22 @@ function scr_game_text(_text_id)
 			scr_text("* But without Kris...", "susie", 31);
 			scr_text("* We have to do our best.", "ralsei", 40);
 			scr_text("* ...", "susie", 31);
-				// Ralsei gets up
+				// Ralsei gets up, on the same spot
 				scr_custom_call_after_textbox_delayed(function()
 				{
-				    with (obj_ralsei) { sprite_index = spr_ralsei_right_neutral; image_index = 0; image_speed = 0; anim_loop = true; image_xscale = abs(image_xscale); }
+				    with (obj_ralsei)
+				    {
+				        var _b = scr_get_body(id);
+				        sprite_index = spr_ralsei_right_neutral;
+				        image_xscale = abs(image_xscale);
+				        image_index  = 0;
+				        image_speed  = 0;
+				        anim_loop    = true;
+				        var _n = scr_get_body(id);
+				        x += _b.x - _n.x;
+				        y += _b.y - _n.y;
+				        last_sprite = sprite_index;
+				    }
 				}, 20);
 		break;
 
@@ -234,7 +270,7 @@ function scr_game_text(_text_id)
 		break;
 
 		case "rm0_2":
-			scr_text("* Dad, what happened? What's going on?", "lancer", 7);
+			scr_text("* Dad, what happened?|* What's going on?", "lancer", 7);
 			scr_text("* It's... already over, my son...", "king", 1);
 			scr_text("* What Did You Do", "queen", 16);
 			scr_text("* A new world will arise amidst the darkness...", "king", 2);
@@ -242,7 +278,7 @@ function scr_game_text(_text_id)
 			scr_text("* We will do what no other Darkener has ever dreamed of...", "king", 1);
 			scr_text("* ...", "lancer", 11);
 			scr_text("* You...", "lancer", 10);
-			scr_text("* You're a monster...", "lancer", 12);
+			scr_text("* You're a...", "lancer", 12);
 			scr_text("* ...", "king", 3);
 			scr_text("* My son...", "king", 1);
 			scr_text("* ...", "lancer", 11);
@@ -256,6 +292,7 @@ function scr_game_text(_text_id)
 		case "rm0_4":
 			scr_text("* ...", "king", 5);
 			scr_text("* Do what you have to d", "king", 0);   // obj_rm_zero_ending cuts this off as the pie lands
+				scr_obj_sprite_on_page(obj_king, spr_king_kneel_happy, false);
 		break;
 /*
 

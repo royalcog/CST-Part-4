@@ -35,14 +35,14 @@ switch (state)
         if (!instance_exists(obj_textbox)) { pose(lancer, spr_lancer_up); go("run"); }
     break;
 
-    case "run":
-        if (instance_exists(lancer))
-        {
-            var _f = scr_get_feet(lancer);
-            lancer.image_alpha = clamp(point_distance(_f.x, _f.y, door_x, door_y) / door_fade, 0, 1);
-            if (move_feet(lancer, door_x, door_y, lancer_run_speed)) { instance_destroy(lancer); lancer = noone; go("gone"); }
-        }
-        else go("gone");
+    case "run":   // up to the castle door, the same spot Susie and Ralsei went through...
+        if (!instance_exists(lancer)) { go("gone"); break; }
+        if (move_feet(lancer, door_x, door_y, lancer_run_speed)) go("fade");
+    break;
+
+    case "fade":   // ...and fades out there
+        lancer.image_alpha = max(0, lancer.image_alpha - door_fade_speed);
+        if (lancer.image_alpha <= 0) { instance_destroy(lancer); lancer = noone; go("gone"); }
     break;
 
     case "gone":

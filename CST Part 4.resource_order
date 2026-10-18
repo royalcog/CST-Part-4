@@ -396,6 +396,7 @@
     {"name":"scr_trigger_shadow_pause","order":6,"path":"scripts/scr_trigger_shadow_pause/scr_trigger_shadow_pause.yy",},
     {"name":"scr_ui_intro_sequence","order":12,"path":"scripts/scr_ui_intro_sequence/scr_ui_intro_sequence.yy",},
     {"name":"scr_UI_visibility","order":7,"path":"scripts/scr_UI_visibility/scr_UI_visibility.yy",},
+    {"name":"shd_black_key","order":2,"path":"shaders/shd_black_key/shd_black_key.yy",},
     {"name":"shd_shadow_tint","order":1,"path":"shaders/shd_shadow_tint/shd_shadow_tint.yy",},
     {"name":"snd_appear","order":2,"path":"sounds/snd_appear/snd_appear.yy",},
     {"name":"snd_attack","order":39,"path":"sounds/snd_attack/snd_attack.yy",},

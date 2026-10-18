@@ -7,14 +7,14 @@ global.cutscene_lock = true;
 with (obj_knight_finale) instance_destroy();
 
 // --- tuning (all relative to wherever King actually is) ---
-lancer_start_dx = -150;           // coming up from below the screen
-queen_start_dx  = -240;
+lancer_start_dx = -90;           // coming up from below the screen
+queen_start_dx  = -170;
 arrive_dy       = 30;             // their feet vs. King's when they stop
-enter_speed     = 2;
+enter_speed     = 3;
 lancer_rush_speed = 3;
 lancer_by_king_dx = -70;   lancer_by_king_dy = 0;    // where Lancer stops next to him
-door_x = 420;  door_y = 120;      // the castle door (Lancer runs in)
-door_fade       = 60;             // px from the door he fades out over
+door_x = 420;  door_y = 60;       // where Susie and Ralsei went through the door in the finale (just past its bottom)
+door_fade_speed = 0.08;           // he fades out there, same rate as them
 lancer_run_speed = 5;
 queen_walk_speed = 0.8;           // slowly
 queen_walk_anim  = 0.7;
