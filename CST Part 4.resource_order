@@ -285,6 +285,8 @@
     {"name":"obj_ralseicastle_front","order":17,"path":"objects/obj_ralseicastle_front/obj_ralseicastle_front.yy",},
     {"name":"obj_ralseicastle_queenroom","order":13,"path":"objects/obj_ralseicastle_queenroom/obj_ralseicastle_queenroom.yy",},
     {"name":"obj_rm_one_scene","order":1,"path":"objects/obj_rm_one_scene/obj_rm_one_scene.yy",},
+    {"name":"obj_rm_three_scene","order":3,"path":"objects/obj_rm_three_scene/obj_rm_three_scene.yy",},
+    {"name":"obj_rm_zero_ending","order":4,"path":"objects/obj_rm_zero_ending/obj_rm_zero_ending.yy",},
     {"name":"obj_rps_hand","order":1,"path":"objects/obj_rps_hand/obj_rps_hand.yy",},
     {"name":"obj_rps_squeeze_hand","order":2,"path":"objects/obj_rps_squeeze_hand/obj_rps_squeeze_hand.yy",},
     {"name":"obj_shadow_tint","order":16,"path":"objects/obj_shadow_tint/obj_shadow_tint.yy",},

@@ -158,6 +158,107 @@ function scr_game_text(_text_id)
 			scr_text("* Watch out!", "ralsei", 42);
 		break;
 		
+		// ---------------- after the Titan (rm_two)
+		case "self_4":
+			scr_text("* We...", "ralsei", 34);
+			scr_text("* We can't let...", "ralsei", 35);
+				// Susie gets up
+				scr_custom_call_after_textbox_delayed(function()
+				{
+				    if (!instance_exists(obj_susie)) return;
+				    with (obj_susie) { sprite_index = spr_susie_getup; image_index = 0; image_speed = 1; anim_loop = false; image_xscale = abs(image_xscale); }
+				    scr_call_on_anim_frame(obj_susie, spr_susie_getup, sprite_get_number(spr_susie_getup) - 1, function()
+				    {
+				        scr_call_after_frames(function()
+				        {
+				            with (obj_susie) { sprite_index = spr_susie_left_neutral; image_index = 0; image_speed = 0; anim_loop = true; }
+				        }, 10);
+				    });
+				}, 20);
+		break;
+
+		case "self_5":
+			scr_text("* We're not gonna let them hurt Castle Town.", "susie", 32);
+				scr_obj_sprite_on_page(obj_susie, spr_susie_walk_up, false);
+				scr_obj_sprite_on_page(obj_ralsei, spr_ralsei_walk_up, false);
+			scr_text("* We're...", "susie", 31);
+			scr_text("* ...", "susie", 31);
+			scr_text("* Where did they...", "susie", 31);
+			scr_text("* Never mind that!", "ralsei", 46);
+			scr_text("* We have to clear this Titan!", "ralsei", 45);
+			scr_text("* But without Kris...", "susie", 31);
+			scr_text("* We have to do our best.", "ralsei", 40);
+			scr_text("* ...", "susie", 31);
+				// Ralsei gets up
+				scr_custom_call_after_textbox_delayed(function()
+				{
+				    with (obj_ralsei) { sprite_index = spr_ralsei_right_neutral; image_index = 0; image_speed = 0; anim_loop = true; image_xscale = abs(image_xscale); }
+				}, 20);
+		break;
+
+		case "self_6":
+			global.cutscene_lock = true;   // the rest plays out on its own
+			scr_text("* How are we gonna get up there???", "susie", 39);
+			scr_text("* I...", "ralsei", 34);
+			scr_text("* ...", "ralsei", 45);
+			scr_text("* Wait!", "ralsei", 12);
+			scr_text("* Susie, do we still have the...", "ralsei", 35);
+			scr_text("* ...", "susie", 31);
+			scr_text("* Hell yeah we do.", "susie", 34);
+				scr_fade_warp_with_music(rm_three, 60, noone, 1, 1000, 1500);
+		break;
+
+		// ---------------- Lancer & Queen (rm_three, obj_rm_three_scene opens these)
+		case "rm3_1":
+			scr_text("* Do You Feel Better", "queen", 0);
+			scr_text("* I guess...", "lancer", 10);
+		break;
+
+		case "rm3_2":
+			scr_text("* ...", "lancer", 11);
+			scr_text("* Girldad?", "lancer", 6);
+			scr_text("* Yes Sweetie", "queen", 3);
+			scr_text("* What's... that...?", "lancer", 4);
+			scr_text("* Huh", "queen", 18);
+		break;
+
+		case "rm3_3":
+			scr_text("* What The Hell", "queen", 8);
+			scr_text("* We gotta go help them!", "lancer", 12);
+			scr_text("* ...", "queen", 5);
+		break;
+
+		// ---------------- the ending (rm_zero, obj_rm_zero_ending opens these)
+		case "rm0_1":
+			scr_text("* D-Dad!", "lancer", 12);
+		break;
+
+		case "rm0_2":
+			scr_text("* Dad, what happened? What's going on?", "lancer", 13);
+			scr_text("* It's... already over, my son...", "king", 11);
+			scr_text("* What Did You Do", "queen", 11);
+			scr_text("* A new world will arise amidst the darkness...", "king", 4);
+			scr_text("* We will...", "king", 11);
+			scr_text("* We will do what no other Darkener has ever dreamed of...", "king", 4);
+			scr_text("* ...", "lancer", 11);
+			scr_text("* You...", "lancer", 13);
+			scr_text("* You're a monster...", "lancer", 14);
+			scr_text("* ...", "king", 12);
+			scr_text("* My son...", "king", 12);
+			scr_text("* ...", "lancer", 14);
+		break;
+
+		case "rm0_3":
+			scr_text("* You're A Terrible Person", "queen", 19);
+			scr_text("* I Hope You Take That To Your Grave", "queen", 11);
+		break;
+
+		case "rm0_4":
+			scr_text("* ...", "king", 12);
+			scr_text("* Do what you want to d", "king", 11);
+				scr_text_cutoff_skip(string_length("* Do what you want to d"));   // cut off the moment it's typed
+				scr_obj_sprite_once_on_page(obj_queen, spr_queen_pie_throw);     // she throws while he's saying it
+		break;
 /*
 
 */

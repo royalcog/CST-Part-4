@@ -277,7 +277,12 @@ switch (state)
     break;
 
     case "done":
-        // next: whatever comes after
+        // Z opens the next self_ dialogue (self_4)
+        if (once("unlock"))
+        {
+            global.cutscene_lock = false;
+            global.dialogue_self = 3;
+        }
     break;
 }
 
