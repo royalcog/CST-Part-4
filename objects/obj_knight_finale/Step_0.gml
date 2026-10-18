@@ -756,6 +756,7 @@ switch (action)
                 if (_all_there)
                 {
                     // both gone through the door: quick fade out, into the next room, quick fade in
+                    room_persistent = true;   // keep the room exactly like this for when the story comes back here
                     var _fader = instance_create_depth(0, 0, -10004, obj_cutscenefade);
                     _fader.fade_target   = 1;
                     _fader.fade_step     = exit_fade_step;

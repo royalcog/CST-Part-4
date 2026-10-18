@@ -26,11 +26,10 @@ mini_src_x     = 770;   // the fountain's column at the top of town
 mini_src_base  = 130;   // where the tower comes up from behind the castle
 mini_src_hand  = 60;    // the hand's height
 mini_w         = 64;    // the tower's width, px
-mini_scale     = 0.45;  // the hand and its laser
-mini_beam_ang  = -35;   // same as the close-up: down and away from the hand
-mini_beam_len  = 700;   // px
-mini_hum       = snd_titan_blastloop;   // faint, while it's on screen (noone to skip)
-mini_hum_gain  = 0.3;
+mini_scale     = 0.45;  // the hand
+mini_look_ang  = 10;    // degrees it sways either way, looking around...
+mini_look_spd  = 0.02;  // ...this fast
+mini_bob       = 3;     // px it drifts up and down
 
 // where the top of town is: the camera never goes above it
 var _xs = (town != noone) ? town.image_xscale : 1, _ys = (town != noone) ? town.image_yscale : 1;

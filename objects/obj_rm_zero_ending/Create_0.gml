@@ -1,17 +1,15 @@
-// rm_zero after rm_three: King's still down where the fight ended. Lancer and Queen come up from below, Lancer runs
-// to him, finds out what he did and runs into the castle, Queen walks up next to King... and the pie
+// rm_zero after rm_three, exactly as the fight left it (the room's persistent): King's still down where he knelt.
+// Lancer and Queen come up from below, Lancer runs to him, finds out what he did and runs into the castle,
+// Queen walks up next to King... and the pie
 global.cutscene_lock = true;
 
-// the fight's people are placed in this room: none of them are here now
-with (obj_knight) instance_destroy();
-with (obj_susie)  instance_destroy();
-with (obj_ralsei) instance_destroy();
+// the finale's done: don't let it pick back up
+with (obj_knight_finale) instance_destroy();
 
-// --- tuning ---
-king_x = 560;  king_y = 400;      // King's feet, where he knelt at the end of the fight
-lancer_start_dx = -150;           // from King, coming up from below the screen
+// --- tuning (all relative to wherever King actually is) ---
+lancer_start_dx = -150;           // coming up from below the screen
 queen_start_dx  = -240;
-arrive_y        = king_y + 30;    // their feet when they stop
+arrive_dy       = 30;             // their feet vs. King's when they stop
 enter_speed     = 2;
 lancer_rush_speed = 3;
 lancer_by_king_dx = -70;   lancer_by_king_dy = 0;    // where Lancer stops next to him
@@ -54,6 +52,27 @@ move_feet = function(_o, _tx, _ty, _spd)
 }
 
 var _bottom = camera_get_view_y(view_camera[0]) + camera_get_view_height(view_camera[0]);
+
+// King, right where he was left
+king = instance_exists(obj_king) ? instance_find(obj_king, 0) : noone;
+if (king == noone)
+{
+    king = instance_create_depth(0, 0, -2000, obj_king);   // just in case
+    pose(king, spr_king_kneel_sad);
+    set_feet(king, 560, 400);
+}
+var _kf = scr_get_feet(king);
+king_x   = _kf.x;
+king_y   = _kf.y;
+arrive_y = king_y + arrive_dy;
+
+lancer = instance_create_depth(0, 0, -2000, obj_lancer);
+pose(lancer, spr_lancer_up);
+set_feet(lancer, king_x + lancer_start_dx, _bottom + 60);
+
+queen = instance_create_depth(0, 0, -3001, obj_queen);
+pose(queen, spr_queen_walk_up, 1);
+set_feet(queen, king_x + queen_start_dx, _bottom + 90);
 
 king = instance_exists(obj_king) ? instance_find(obj_king, 0) : instance_create_depth(0, 0, -2000, obj_king);
 pose(king, spr_king_kneel_sad);

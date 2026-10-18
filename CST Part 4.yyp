@@ -1169,13 +1169,13 @@
   "resourceVersion":"2.0",
   "RoomOrderNodes":[
     {"roomId":{"name":"rm_menu","path":"rooms/rm_menu/rm_menu.yy",},},
-    {"roomId":{"name":"rm_one","path":"rooms/rm_one/rm_one.yy",},},
     {"roomId":{"name":"rm_zero","path":"rooms/rm_zero/rm_zero.yy",},},
+    {"roomId":{"name":"rm_one","path":"rooms/rm_one/rm_one.yy",},},
     {"roomId":{"name":"rm_two","path":"rooms/rm_two/rm_two.yy",},},
+    {"roomId":{"name":"rm_three","path":"rooms/rm_three/rm_three.yy",},},
     {"roomId":{"name":"rm_four","path":"rooms/rm_four/rm_four.yy",},},
     {"roomId":{"name":"rm_five","path":"rooms/rm_five/rm_five.yy",},},
     {"roomId":{"name":"rm_empty","path":"rooms/rm_empty/rm_empty.yy",},},
-    {"roomId":{"name":"rm_three","path":"rooms/rm_three/rm_three.yy",},},
   ],
   "templateType":null,
   "TextureGroups":[
