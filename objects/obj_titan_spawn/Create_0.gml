@@ -73,6 +73,7 @@ beam_start_g     = 20;    // frames of spr_tower_titanbeam_start before it switc
 hand_loop_from   = 294;   // the hand loops its last 3 frames
 hum_at           = 3.0;   // seconds into the blast sound when the beam's loop fades in
 hum_fade         = 750;   // ms
+fountain_fade = 1.0;     // seconds: fade the fountain rip out over its end instead of letting it cut off
 
 // --- sounds (noone to skip) ---
 fountain_sound  = snd_titanfountain;

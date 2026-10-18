@@ -28,7 +28,7 @@
   ],
   "name":"spr_titanbeam_loop",
   "nineSlice":null,
-  "origin":7,
+  "origin":1,
   "parent":{
     "name":"Titan Spawning",
     "path":"folders/Sprites/Special Cutscenes/Titan Spawning.yy",
@@ -96,7 +96,7 @@
     "visibleRange":null,
     "volume":1.0,
     "xorigin":160,
-    "yorigin":420,
+    "yorigin":0,
   },
   "swatchColours":null,
   "swfPrecision":0.5,

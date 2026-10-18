@@ -4,6 +4,10 @@ var _cam = view_camera[0];
 // --- clocks ---
 t_all++;
 var _clock = snd_pos(snd_fountain, t_all);   // seconds into the scene's audio (frame-counted once it ends)
+// the rip ends while it's still loud: fade it over its last stretch
+if (snd_fountain >= 0 && audio_is_playing(snd_fountain)
+    && _clock >= audio_sound_length(snd_fountain) - fountain_fade && once("fountain_fade"))
+    audio_sound_gain(snd_fountain, 0, fountain_fade * 1000);
 var _g1 = (_clock - con1_at) * 30;           // Deltarune frames since con 1
 var _g2 = _g1 - petrify_g;                   // since it petrifies
 var _g3 = _g2 - petrify_len_g;               // since the petrifying's done

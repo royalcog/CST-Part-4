@@ -13,23 +13,6 @@ for (var i = 0; i < array_length(swords); i++)
     draw_sprite_ext(spr_roark_sword2, 0, _s.x, _s.y, sword_scale, sword_scale, 0, c_white, _s.alpha);
 }
 
-// the white streak they drop through: a slanted bar that shrinks away
-if (flash_t >= 0)
-{
-    var _k   = flash_t / flash_time;
-    var _cx  = (sword_x_from + sword_x_to) / 2;
-    var _hw  = flash_w * (1 - _k) / 2;
-    var _top = sword_y + flash_top;
-    var _bot = edge_y;
-    draw_set_color(c_white);
-    draw_primitive_begin(pr_trianglestrip);
-    draw_vertex(_cx - _hw - flash_skew, _top);
-    draw_vertex(_cx + _hw - flash_skew, _top);
-    draw_vertex(_cx - _hw + flash_skew, _bot);
-    draw_vertex(_cx + _hw + flash_skew, _bot);
-    draw_primitive_end();
-}
-
 // the glints next to the Knight while the swords hang
 if (snd_drop >= 0 && audio_is_playing(snd_drop))
 {
