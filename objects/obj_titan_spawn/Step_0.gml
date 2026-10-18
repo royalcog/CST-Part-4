@@ -149,7 +149,7 @@ if (_g3 >= 0)
     }
 
     if (_g3 >= pan_right_g && once("pan_right")) pan_x_from = get_cam_x();
-    if (_g3 >= pan_right_g)
+    if (_g3 >= pan_right_g && !wide)
     {
         var _k = clamp((_g3 - pan_right_g) / pan_right_len_g, 0, 1);
         set_cam_x(pan_x_from + pan_right * _k * _k * (3 - 2 * _k));
@@ -200,6 +200,35 @@ if (_g3 >= 0)
             if (_bg < beam_start_g) { beam_spr = spr_tower_titanbeam_start; beam_img = floor(_bg); }
             else                    { beam_spr = spr_titanbeam_loop;        beam_img = floor(_bg - beam_start_g) mod sprite_get_number(spr_titanbeam_loop); }
         }
+
+        // the game cuts back to the platform once the hand's looped a while
+        if (_hg >= cut_idx && once("cut")) start_wide(_g3);
+    }
+}
+
+// --- the wide shot: they dive apart and the beam slams down between them ---
+if (wide)
+{
+    cur_wg = _g3 - wide_g0;
+
+    if (cur_wg >= dodge_g)
+    {
+        if (once("dodge"))
+        {
+            if (instance_exists(obj_ralsei)) { ralsei_sx = obj_ralsei.x; ralsei_sy = obj_ralsei.y; }
+            if (instance_exists(obj_susie))  { susie_sx  = obj_susie.x;  susie_sy  = obj_susie.y;  }
+        }
+        var _k   = clamp((cur_wg - dodge_g) / dodge_len_g, 0, 1);
+        var _hop = sin(_k * pi) * dodge_hop;
+        if (instance_exists(obj_ralsei)) { obj_ralsei.x = ralsei_sx + ralsei_dodge * _k; obj_ralsei.y = ralsei_sy - _hop; }
+        if (instance_exists(obj_susie))  { obj_susie.x  = susie_sx  + susie_dodge  * _k; obj_susie.y  = susie_sy  - _hop; }
+    }
+
+    if (cur_wg >= slam_g && once("slam")) snd_laser = play_snd(laser_sound, false, 1, 1, slam_offset);
+
+    if (cur_wg >= talk_g && once("talk"))
+    {
+        // next: Susie's "Wh... what is that thing" dialogue goes here
     }
 }
 

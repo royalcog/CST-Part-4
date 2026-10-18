@@ -54,6 +54,17 @@ if (petrify_started)
     {
         draw_column(spr_titantower_piece,    0, base_bottom_y, max(_floor, _vt), min(base_bottom_y, _vb), tower_scale);
         draw_column(spr_titantower_gradient, 0, base_bottom_y, max(_floor, _vt), min(base_bottom_y, _vb), tower_scale);
+    // the tower darkens toward its base
+    if (tower_shade > 0)
+    {
+        var _hw2 = pillar_w / 2, _y0 = base_bottom_y - tower_shade_h;
+        draw_primitive_begin(pr_trianglestrip);
+        draw_vertex_colour(fx - _hw2, _y0,           c_black, 0);
+        draw_vertex_colour(fx + _hw2, _y0,           c_black, 0);
+        draw_vertex_colour(fx - _hw2, base_bottom_y, c_black, tower_shade);
+        draw_vertex_colour(fx + _hw2, base_bottom_y, c_black, tower_shade);
+        draw_primitive_end();
+    }
     }
 
     // the stone sections, building up the screen

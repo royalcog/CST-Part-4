@@ -794,6 +794,8 @@
     {"id":{"name":"spr_king_walk_right","path":"sprites/spr_king_walk_right/spr_king_walk_right.yy",},},
     {"id":{"name":"spr_kingjailcell_tiles","path":"sprites/spr_kingjailcell_tiles/spr_kingjailcell_tiles.yy",},},
     {"id":{"name":"spr_knight_attack","path":"sprites/spr_knight_attack/spr_knight_attack.yy",},},
+    {"id":{"name":"spr_knight_fly_transition","path":"sprites/spr_knight_fly_transition/spr_knight_fly_transition.yy",},},
+    {"id":{"name":"spr_knight_fly","path":"sprites/spr_knight_fly/spr_knight_fly.yy",},},
     {"id":{"name":"spr_kris_battle_idle","path":"sprites/spr_kris_battle_idle/spr_kris_battle_idle.yy",},},
     {"id":{"name":"spr_kris_battle_intro","path":"sprites/spr_kris_battle_intro/spr_kris_battle_intro.yy",},},
     {"id":{"name":"spr_kris_down","path":"sprites/spr_kris_down/spr_kris_down.yy",},},

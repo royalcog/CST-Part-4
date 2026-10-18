@@ -51,11 +51,12 @@ sword_max_speed    = 30;
 sword_fall_delay   = 18;                   // frames they're hidden in the white streak before they fall
 sword_trail        = 3;                    // afterimages behind each falling sword
 
-// the white streak they drop through
-flash_time         = 20;                   // frames
-flash_w            = 70;                   // px wide at the start, shrinking to nothing
-flash_skew         = 20;                   // px the top leans left / the bottom leans right
-flash_top          = -60;                  // px above sword_y
+// the white streak as they drop: a full-height slanted bar sweeping across, then fading
+flash_time         = 28;                   // frames, total
+flash_solid        = 14;                   // frames it's pure white before fading to grey
+flash_w            = 110;                  // px wide
+flash_skew         = 25;                   // px the top leans left / the bottom leans right
+flash_sweep        = 110;                  // px it travels each side of the swords' centre (left to right)
 
 // the little glints next to the Knight while they hang (seconds into the sound)
 glint_times        = [2.56, 3.06];

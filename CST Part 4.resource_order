@@ -642,6 +642,8 @@
     {"name":"spr_king_walk_right","order":7,"path":"sprites/spr_king_walk_right/spr_king_walk_right.yy",},
     {"name":"spr_kingjailcell_tiles","order":5,"path":"sprites/spr_kingjailcell_tiles/spr_kingjailcell_tiles.yy",},
     {"name":"spr_knight_attack","order":14,"path":"sprites/spr_knight_attack/spr_knight_attack.yy",},
+    {"name":"spr_knight_fly_transition","order":19,"path":"sprites/spr_knight_fly_transition/spr_knight_fly_transition.yy",},
+    {"name":"spr_knight_fly","order":20,"path":"sprites/spr_knight_fly/spr_knight_fly.yy",},
     {"name":"spr_kris_battle_idle","order":4,"path":"sprites/spr_kris_battle_idle/spr_kris_battle_idle.yy",},
     {"name":"spr_kris_battle_intro","order":5,"path":"sprites/spr_kris_battle_intro/spr_kris_battle_intro.yy",},
     {"name":"spr_kris_left","order":1,"path":"sprites/spr_kris_left/spr_kris_left.yy",},

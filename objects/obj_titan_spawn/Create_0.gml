@@ -73,7 +73,27 @@ beam_start_g     = 20;    // frames of spr_tower_titanbeam_start before it switc
 hand_loop_from   = 294;   // the hand loops its last 3 frames
 hum_at           = 3.0;   // seconds into the blast sound when the beam's loop fades in
 hum_fade         = 750;   // ms
-fountain_fade = 1.0;     // seconds: fade the fountain rip out over its end instead of letting it cut off
+fountain_fade = 0;     // seconds: fade the fountain rip out over its end instead of letting it cut off
+
+// --- the wide shot after the close-up (game frames from the cut) ---
+cut_idx          = 314;   // hand frame the game cuts back to the platform (its last 3 frames loop 10 times)
+dodge_g          = 32;    // Susie and Ralsei dive apart...
+dodge_len_g      = 6;     // ...over this many frames...
+dodge_hop        = 18;    // ...with a little hop (px)
+ralsei_dodge     = -130;  // px
+susie_dodge      = 150;   // px
+slam_g           = 38;    // the beam slams down through where they were
+slam_flash       = 0.75;  // white flash over the screen...
+slam_flash_g     = 9;     // ...fading over this many frames
+slam_hold_g      = 18;    // the beam stays full width this long...
+slam_thin_g      = 5;     // ...then thins to nothing over this many
+slam_x           = -6;    // px from the fountain's centre where it crosses the middle of the screen
+slam_angle       = -12;   // degrees: the top leans right, like the game
+slam_scale       = 2;
+slam_offset      = 1.4;   // snd_titan_petrify_blast plays from its hit
+talk_g           = 113;   // the dialogue starts here in the game
+tower_shade      = 0.85;  // the tower darkens toward its base...
+tower_shade_h    = 200;   // ...over this many px
 
 // --- sounds (noone to skip) ---
 fountain_sound  = snd_titanfountain;
@@ -136,6 +156,11 @@ beam_img = 0;
 beam_x = 0;
 beam_y = 0;
 laser_t = 0;
+wide = false;
+wide_g0 = 0;
+cur_wg = -1000;
+ralsei_sx = 0; ralsei_sy = 0;
+susie_sx  = 0; susie_sy  = 0;
 
 snd_fountain = -1;
 snd_laser    = -1;
@@ -222,6 +247,24 @@ draw_column = function(_spr, _img, _anchor, _top, _bottom, _sc = scale, _col = c
         draw_sprite_part_ext(_spr, _img, 0, (_vt - _tt) / _sc, _w, (_vb - _vt) / _sc,
                              _left, _vt, _sc, _sc, _col, _alpha);
     }
+}
+
+/// hard cut back to the platform, like the game
+start_wide = function(_g)
+{
+    wide    = true;
+    wide_g0 = _g;
+    show_hand  = false;
+    show_beam  = false;
+    handburst  = noone;
+    foreground = noone;
+    cracks     = [];
+    debris     = [];
+    if (snd_laser >= 0) { audio_stop_sound(snd_laser); snd_laser = -1; }
+    laser_t = 0;
+    set_cam_x(pan_x_from);
+    set_cam_y(cam_home_y);
+    if (instance_exists(scene) && instance_exists(scene.knight)) scene.knight.visible = false; // he's gone in the game
 }
 
 cam_home_y = get_cam_y();
