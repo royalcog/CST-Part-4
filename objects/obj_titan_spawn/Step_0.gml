@@ -3,15 +3,10 @@ var _cam = view_camera[0];
 
 // --- clocks ---
 t_all++;
-var _clock = snd_pos(snd_fountain, t_all);   // seconds into the fountain sound
-if (fizzled) fz_t++;
-// seconds since the game's "con 1"; frame-counted from the fizzle on,
-// since the fountain sound's pitch slide would slow its own clock down
-var _c1 = fizzled ? (fizzle_c1 + fz_t / _fps) : (_clock - (fizzle_at - fizzle_c1));
-var _g1 = _c1 * 30;              // Deltarune frames since con 1
-var _g2 = _g1 - petrify_g;       // since it petrifies
-var _g3 = _g2 - petrify_len_g;   // since the petrifying's done
-cur_g1 = _g1;
+var _clock = snd_pos(snd_fountain, t_all);   // seconds into the scene's audio (frame-counted once it ends)
+var _g1 = (_clock - con1_at) * 30;           // Deltarune frames since con 1
+var _g2 = _g1 - petrify_g;                   // since it petrifies
+var _g3 = _g2 - petrify_len_g;               // since the petrifying's done
 cur_g2 = _g2;
 cur_g3 = _g3;
 
@@ -34,7 +29,7 @@ if (knight_moving)
 }
 
 // --- the camera rising up the geyser ---
-if (!pan_done && _clock >= pan_at && !fizzled)
+if (!pan_done && _clock >= pan_at)
 {
     var _k = clamp((_clock - pan_at) / pan_time, 0, 1);
     set_cam_y(cam_home_y - pan_dist * _k * _k * (3 - 2 * _k));
@@ -55,7 +50,7 @@ switch (state)
     break;
 
     case "burst":
-        frame = (_clock - burst_at) * sprite_get_speed(spr_titan_fountain_burst);
+        frame = (sprite_get_number(spr_titan_fountain_burst) - 1) * (_clock - burst_at) / (column_at - burst_at);
         if (frame >= sprite_get_number(spr_titan_fountain_burst) - 1) // its last frame is the full column
         {
             if (instance_exists(obj_dark_fountain)) obj_dark_fountain.visible = false;
@@ -67,8 +62,8 @@ switch (state)
     break;
 }
 
-// --- the dark column behind the geyser (con 1, from frame 60): bright teal-white, darkening to grey ---
-if (_g1 >= 60) dark_visible = true;
+// --- the dark column behind the geyser: bright teal-white, darkening ---
+if (_g1 >= dark_g) dark_visible = true;
 if (dark_visible)
 {
     var _t = petrify_started ? 0.2 : 1 - clamp((_g1 - 120) / 84, 0, 0.8);
@@ -80,29 +75,22 @@ if (dark_visible)
     dark_scroll2 += _spd * 1.6;
 }
 
-// --- the geyser fizzles out ---
-if (!fizzled && show_geyser && _c1 >= fizzle_c1)
+// --- the geyser fizzles out (the pitch drop is already in the audio) ---
+if (_g1 >= fizzle_g && once("fizzle"))
 {
-    fizzled = true;
-    fz_t = 0;
     show_geyser = false;
     show_fizzle = true;
 }
-if (fizzled)
+if (show_fizzle)
 {
-    var _fg = fz_t / _fps * 30;
-    fizzle_frame = min(floor(_fg * fizzle_speed), sprite_get_number(spr_tower_fizzleout) - 1);
-    if (_fg >= fizzle_len_g) { show_fizzle = false; show_pool = false; }
-
-    if (!petrify_started && snd_fountain >= 0 && audio_is_playing(snd_fountain))
-        audio_sound_pitch(snd_fountain, lerp(1, fizzle_pitch, clamp(_fg / fizzle_pitch_g, 0, 1)));
+    fizzle_frame = anim_frame(spr_tower_fizzleout, _g1, fizzle_g, fizzle_speed);
+    if (_g1 - fizzle_g >= fizzle_len_g) { show_fizzle = false; show_pool = false; }
 }
 
 // --- it petrifies: sections of stone build from the bottom of the screen up ---
 if (_g2 >= 0 && once("petrify"))
 {
     petrify_started = true;
-    if (snd_fountain >= 0) audio_sound_gain(snd_fountain, 0, 5 / 30 * 1000);
     play_snd(petrify_sound, false, 0.8, 0.5);
     cam_bottom = camera_get_view_y(_cam) + camera_get_view_height(_cam);
 }

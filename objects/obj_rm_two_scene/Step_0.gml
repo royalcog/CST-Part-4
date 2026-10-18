@@ -42,7 +42,7 @@ if (swords_spawned)
         hold_t++;
         var _ready = (snd_drop >= 0 && audio_is_playing(snd_drop))
                    ? audio_sound_get_track_position(snd_drop) >= sword_throw_at
-                   : hold_t >= sword_hold;   // no sound: the old fixed hold
+                   : hold_t >= sword_hold;   // no sound: just a fixed hold
         if (_ready)
         {
             firing = true;
@@ -192,7 +192,7 @@ switch (state)
             }
             swords_spawned = true;
 
-            // the fountain sound starts as they appear
+            // the scene's audio starts as they form
             if (sword_drop_sound != noone) snd_drop = audio_play_sound(sword_drop_sound, 1, false, 1, sword_drop_offset);
         }
         // hold his arm up until the throws start

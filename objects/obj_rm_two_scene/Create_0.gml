@@ -42,18 +42,21 @@ sword_y            = 20;                   // where they appear (above his head)
 sword_scale        = 2;                    // positive = facing right
 sword_spawn_frame  = 14;                   // throw frame where they start appearing (arm up)
 sword_hold_frame   = 16;                   // he holds this frame (arm still up) until they're thrown
-sword_stagger      = 3;                    // frames between each one appearing, left to right
-sword_fade_in      = 6;
+sword_stagger      = 12;                   // frames between each one appearing, left to right
+sword_fade_in      = 24;
 sword_hold         = 60;                   // once they're all in: wait this long before throwing
 sword_fire_gap     = 5;                    // frames between each throw (one at a time, left to right)
 sword_accel        = 1.5;
 sword_max_speed    = 26;
 sword_appear_sound = noone;                // was snd_spear_appear (snd_empty has a click in it)
-sword_drop_sound   = snd_titanfountain;    // starts as the swords appear; obj_titan_spawn keeps reading it as its clock
-sword_drop_offset  = 0.0;                  // seconds into the sound it starts from when they appear (raise it to make the sound "earlier")
-sword_throw_at     = 1.5;                  // he throws when the sound reaches this; the first sword lands ~0.37s later, on the hiss cutting out
+sword_drop_sound   = snd_titanfountain;    // a rip of the game's audio for the whole scene: it starts as the swords form
+sword_drop_offset  = 0.15;                 // the rip starts a hair before they form
+sword_throw_at     = 3.65;                 // he throws when the sound gets here; the first sword lands ~0.37s later, on the impact
 sword_throw_sound  = noone;                // optional extra sound on every throw (was snd_heavyswing)
 snd_drop           = -1;
+drop_t             = 0;
+wingshut_sound     = snd_titan_wingshut;   // plays as he starts the throw
+wingshut_gain      = 0.65;
 // the swords draw from here: in front of the fountain (350), behind the floor tiles (300) and everyone else
 depth = 320;
 

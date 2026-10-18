@@ -1,8 +1,8 @@
 // the Titan rising out of the fountain, after the Knight's swords go under the platform.
 // lives on the "Titan" layer (345): in front of the dark fountain (350), behind the floor tiles (300).
-// timing:
-//  - pool -> burst -> geyser runs off snd_titanfountain (started by obj_rm_two_scene on the throw)
-//  - from the geyser fizzling on, it follows Deltarune's own cutscene (30fps frames, "g" below)
+// timing is measured off the real cutscene:
+//  - up to the column, it runs off snd_titanfountain (a rip of the game's audio, started as the swords form)
+//  - from the game's "con 1" on (as the column finishes), it follows Deltarune's code (30fps frames, "g" below)
 
 if (instance_exists(obj_shadow_tint)) array_push(obj_shadow_tint.skip_layers, layer_get_name(layer));
 
@@ -15,20 +15,22 @@ tower_scale   = pillar_w / sprite_get_width(spr_titantower_piece);
 base_bottom_y = 384;    // room y of the pool's bottom edge (the platform edge is 364)
 
 // --- the fountain part: seconds into snd_titanfountain ---
-burst_at       = 2.5;   // splash starts; its last frame (the full column) lands on the sound's hit at 4.25
-knight_move_at = 4.25;  // the Knight gets out of the way as the column hits
-pan_at         = 6.0;   // camera rises up the geyser
-pan_time       = 2.0;
-pan_dist       = 560;   // px
-fizzle_at      = 11.0;  // the geyser fizzles out
+impact_at       = 4.1;   // the swords land (only used if the sound isn't playing)
+pool_flash_fade = 0.8;   // the white pool fading to black
+burst_at        = 6.45;  // the splash starts...
+column_at       = 8.76;  // ...and the full column is up here
+knight_move_at  = 8.76;  // the Knight gets out of the way as the column goes up
+pan_at          = 10.0;  // camera rises up the geyser
+pan_time        = 1.0;
+pan_dist        = 560;   // px
+con1_at         = 8.87;  // the game's "con 1" starts here: everything below counts game frames from it
 
-// --- after that, Deltarune's timings (game frames at 30fps) ---
-fizzle_c1      = 6.0;   // the fizzle is 180 frames into the game's "con 1" (the dark column starts drawing at 60)
+// --- Deltarune's timings (game frames at 30fps, from con 1) ---
+dark_g         = 60;    // the dark column starts drawing behind the geyser
+fizzle_g       = 180;   // the geyser fizzles out
 fizzle_speed   = 0.4;   // spr_tower_fizzleout's image_speed
 fizzle_len_g   = 28;    // the fizzle's hidden 28 frames in
-fizzle_pitch   = 0.19;  // the fountain sound slides down to this pitch...
-fizzle_pitch_g = 52;    // ...over this many frames
-petrify_g      = 313;   // it petrifies at con 1 frame 313
+petrify_g      = 313;   // it petrifies
 petrify_len_g  = 60;    // the petrifying takes 60 frames
 seg_gap_g      = 6;     // one section every 6 frames...
 seg_count      = 9;     // ...9 of them...
@@ -88,7 +90,6 @@ knight_move_time = 50;   // frames
 
 // --- looks ---
 dark_scroll_spd = 0.6;   // the dark column's texture, once it's dark
-pool_flash_fade = 2.0;   // seconds for the white pool to fade to black
 
 // --- sprite facts ---
 pool_bottom_px = 858;    // bottom of the pool ellipse in the 900-tall fountain sprites
@@ -96,10 +97,7 @@ pool_bottom_px = 858;    // bottom of the pool ellipse in the 900-tall fountain 
 // --- state ---
 state = "pool";
 t_all = 0;
-fizzled = false;
-fz_t = 0;
 fired = {};
-cur_g1 = -1000;
 cur_g2 = -1000;
 cur_g3 = -1000;
 loop_frame = 0;
@@ -149,9 +147,9 @@ knight_t       = 0;
 knight_from_x  = 0;
 knight_from_y0 = 0;
 
-play_snd = function(_s, _loop = false, _gain = 1, _pitch = 1)
+play_snd = function(_s, _loop = false, _gain = 1, _pitch = 1, _offset = 0)
 {
-    return (_s != noone) ? audio_play_sound(_s, 1, _loop, _gain, 0, _pitch) : -1;
+    return (_s != noone) ? audio_play_sound(_s, 1, _loop, _gain, _offset, _pitch) : -1;
 }
 
 /// seconds into a playing sound; if it isn't playing, _fallback_t frames turned into seconds
@@ -227,11 +225,13 @@ draw_column = function(_spr, _img, _anchor, _top, _bottom, _sc = scale, _col = c
 
 cam_home_y = get_cam_y();
 
-// pick up the fountain sound the sword throw already started, and run the fountain part off it
+// pick up the scene's audio the swords already started, and run the fountain part off it
 if (instance_exists(scene) && variable_instance_exists(scene, "snd_drop") && scene.snd_drop >= 0 && audio_is_playing(scene.snd_drop))
     snd_fountain = scene.snd_drop;
 else
-    snd_fountain = play_snd(fountain_sound);
+    snd_fountain = play_snd(fountain_sound, false, 1, 1, impact_at);
 
-t_all = round(snd_pos(snd_fountain, 0) * game_get_speed(gamespeed_fps));
+// the fallback clock (once the sound ends) carries on from wherever it is
+t_all = (snd_fountain >= 0) ? round(snd_pos(snd_fountain, 0) * game_get_speed(gamespeed_fps))
+                            : round(impact_at * game_get_speed(gamespeed_fps));
 pool_flash_start = snd_pos(snd_fountain, t_all);
