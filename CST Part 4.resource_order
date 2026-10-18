@@ -311,6 +311,7 @@
     {"name":"obj_tennabg","order":3,"path":"objects/obj_tennabg/obj_tennabg.yy",},
     {"name":"obj_textbox","order":1,"path":"objects/obj_textbox/obj_textbox.yy",},
     {"name":"obj_tile_warning","order":2,"path":"objects/obj_tile_warning/obj_tile_warning.yy",},
+    {"name":"obj_titan_block","order":2,"path":"objects/obj_titan_block/obj_titan_block.yy",},
     {"name":"obj_titan_spawn","order":1,"path":"objects/obj_titan_spawn/obj_titan_spawn.yy",},
     {"name":"obj_trees_1","order":7,"path":"objects/obj_trees_1/obj_trees_1.yy",},
     {"name":"obj_trees","order":6,"path":"objects/obj_trees/obj_trees.yy",},

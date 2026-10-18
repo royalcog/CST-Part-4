@@ -206,32 +206,6 @@ if (_g3 >= 0)
     }
 }
 
-// --- the wide shot: they dive apart and the beam slams down between them ---
-if (wide)
-{
-    cur_wg = _g3 - wide_g0;
-
-    if (cur_wg >= dodge_g)
-    {
-        if (once("dodge"))
-        {
-            if (instance_exists(obj_ralsei)) { ralsei_sx = obj_ralsei.x; ralsei_sy = obj_ralsei.y; }
-            if (instance_exists(obj_susie))  { susie_sx  = obj_susie.x;  susie_sy  = obj_susie.y;  }
-        }
-        var _k   = clamp((cur_wg - dodge_g) / dodge_len_g, 0, 1);
-        var _hop = sin(_k * pi) * dodge_hop;
-        if (instance_exists(obj_ralsei)) { obj_ralsei.x = ralsei_sx + ralsei_dodge * _k; obj_ralsei.y = ralsei_sy - _hop; }
-        if (instance_exists(obj_susie))  { obj_susie.x  = susie_sx  + susie_dodge  * _k; obj_susie.y  = susie_sy  - _hop; }
-    }
-
-    if (cur_wg >= slam_g && once("slam")) snd_laser = play_snd(laser_sound, false, 1, 1, slam_offset);
-
-    if (cur_wg >= talk_g && once("talk"))
-    {
-        // next: Susie's "Wh... what is that thing" dialogue goes here
-    }
-}
-
 // --- the beam's loop fades in under the blast's tail ---
 if (snd_laser >= 0 || laser_t > 0)
 {

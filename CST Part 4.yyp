@@ -402,6 +402,7 @@
     {"id":{"name":"obj_tennabg","path":"objects/obj_tennabg/obj_tennabg.yy",},},
     {"id":{"name":"obj_textbox","path":"objects/obj_textbox/obj_textbox.yy",},},
     {"id":{"name":"obj_tile_warning","path":"objects/obj_tile_warning/obj_tile_warning.yy",},},
+    {"id":{"name":"obj_titan_block","path":"objects/obj_titan_block/obj_titan_block.yy",},},
     {"id":{"name":"obj_titan_spawn","path":"objects/obj_titan_spawn/obj_titan_spawn.yy",},},
     {"id":{"name":"obj_trees_1","path":"objects/obj_trees_1/obj_trees_1.yy",},},
     {"id":{"name":"obj_trees","path":"objects/obj_trees/obj_trees.yy",},},

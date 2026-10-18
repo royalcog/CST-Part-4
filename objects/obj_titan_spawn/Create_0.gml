@@ -75,26 +75,6 @@ hum_at           = 3.0;   // seconds into the blast sound when the beam's loop f
 hum_fade         = 750;   // ms
 fountain_fade = 0;     // seconds: fade the fountain rip out over its end instead of letting it cut off
 
-// --- the wide shot after the close-up (game frames from the cut) ---
-cut_idx          = 314;   // hand frame the game cuts back to the platform (its last 3 frames loop 10 times)
-dodge_g          = 32;    // Susie and Ralsei dive apart...
-dodge_len_g      = 6;     // ...over this many frames...
-dodge_hop        = 18;    // ...with a little hop (px)
-ralsei_dodge     = -130;  // px
-susie_dodge      = 150;   // px
-slam_g           = 38;    // the beam slams down through where they were
-slam_flash       = 0.75;  // white flash over the screen...
-slam_flash_g     = 9;     // ...fading over this many frames
-slam_hold_g      = 18;    // the beam stays full width this long...
-slam_thin_g      = 5;     // ...then thins to nothing over this many
-slam_x           = -6;    // px from the fountain's centre where it crosses the middle of the screen
-slam_angle       = -12;   // degrees: the top leans right, like the game
-slam_scale       = 2;
-slam_offset      = 1.4;   // snd_titan_petrify_blast plays from its hit
-talk_g           = 113;   // the dialogue starts here in the game
-tower_shade      = 0.85;  // the tower darkens toward its base...
-tower_shade_h    = 200;   // ...over this many px
-
 // --- sounds (noone to skip) ---
 fountain_sound  = snd_titanfountain;
 petrify_sound   = snd_petrify;
@@ -264,7 +244,8 @@ start_wide = function(_g)
     laser_t = 0;
     set_cam_x(pan_x_from);
     set_cam_y(cam_home_y);
-    if (instance_exists(scene) && instance_exists(scene.knight)) scene.knight.visible = false; // he's gone in the game
+    // the rest of the wide shot (shield, Knight, the jump) is its own object
+    if (!instance_exists(obj_titan_block)) instance_create_depth(0, 0, -2000, obj_titan_block);
 }
 
 cam_home_y = get_cam_y();
