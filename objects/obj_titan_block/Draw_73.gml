@@ -2,21 +2,61 @@ var _cam = view_camera[0];
 var _vx = camera_get_view_x(_cam), _vy = camera_get_view_y(_cam);
 var _vw = camera_get_view_width(_cam), _vh = camera_get_view_height(_cam);
 
-// the beam, from off the top of the screen down to the shield (or past the floor once it breaks)
+// the beam
 if (beam_on && beam_w > 0)
 {
     var _sy = _vy - 60;
-    draw_beam(line_x(_sy), _sy, beam_ex, beam_ey, beam_w);
 
-    // where it meets the shield
     if (shield.on)
     {
+        // drawn all the way down onto a surface, then everything under the top of the shield is
+        // cut away, so its end follows the dome's curve
+        if (!surface_exists(beam_surf) || surface_get_width(beam_surf) != _vw || surface_get_height(beam_surf) != _vh)
+        {
+            if (surface_exists(beam_surf)) surface_free(beam_surf);
+            beam_surf = surface_create(_vw, _vh);
+        }
+        surface_set_target(beam_surf);
+        draw_clear_alpha(c_black, 0);
+
+        var _by = _vy + _vh + 40;
+        draw_beam(line_x(_sy) - _vx, _sy - _vy, line_x(_by) - _vx, _by - _vy, beam_w);
+
+        // cut away everything below the shield's top surface
+        gpu_set_blendmode_ext(bm_zero, bm_zero);
+        var _n   = 40;
+        var _bot = _vh + 50;
+        var _pl  = shield_point(-shield_arc, shield_th / 2);
+        var _pr  = shield_point( shield_arc, shield_th / 2);
+        draw_primitive_begin(pr_trianglestrip);
+        draw_vertex(_pr.x - _vx + 80, _pr.y - _vy);   // past its right end
+        draw_vertex(_pr.x - _vx + 80, _bot);
+        for (var i = 0; i <= _n; i++)
+        {
+            var _q = shield_point(lerp(shield_arc, -shield_arc, i / _n), shield_th / 2);
+            draw_vertex(_q.x - _vx, _q.y - _vy);
+            draw_vertex(_q.x - _vx, _bot);
+        }
+        draw_vertex(_pl.x - _vx - 80, _pl.y - _vy);   // past its left end
+        draw_vertex(_pl.x - _vx - 80, _bot);
+        draw_primitive_end();
+        gpu_set_blendmode(bm_normal);
+
+        surface_reset_target();
+        draw_surface(beam_surf, _vx, _vy);
+
+        // where it meets the shield
         gpu_set_blendmode(bm_add);
         draw_set_color(c_white);
         draw_set_alpha(0.7 + 0.3 * sin(beam_t * 0.5));
         draw_ellipse(beam_ex - 40, beam_ey - 12, beam_ex + 40, beam_ey + 12, false);
         gpu_set_blendmode(bm_normal);
         draw_set_alpha(1);
+    }
+    else
+    {
+        // the shield's gone: straight down past the floor
+        draw_beam(line_x(_sy), _sy, beam_ex, beam_ey, beam_w);
     }
 }
 
@@ -25,7 +65,7 @@ if (shield.on)
 {
     var _g  = 1 - power(1 - shield.grow, 3);
     var _ha = shield_arc * _g;   // grows out from its top
-    var _p  = 0.75 + 0.25 * sin(shield.t * 0.2);
+    var _p  = (0.75 + 0.25 * sin(shield.t * 0.2)) * shield.vis;
     var _n  = 32;
     var _th = shield_th;
 
@@ -85,7 +125,7 @@ if (shield.on)
 
     // cracks
     draw_set_color(c_white);
-    draw_set_alpha(0.9);
+    draw_set_alpha(0.9 * shield.vis);
     for (var k = 0; k < array_length(shield.cracks); k++)
     {
         var _pts = shield.cracks[k];

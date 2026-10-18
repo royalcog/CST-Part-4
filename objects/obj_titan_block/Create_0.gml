@@ -1,8 +1,8 @@
-// the wide shot after the Titan's hand (changed from the game): the beam comes down on them, Ralsei throws up
-// a huge shield that holds it back while it's shoved down, the Knight comes down to their level, turns into his
-// flying form and zooms through them (they spin, then reel), Susie yells "Watch out!", and they jump clear as the
-// shield breaks and the beam hits where they were standing. made by obj_titan_spawn at the cut.
-// everything it draws is in Draw End: in front of everyone, and the shadow tint leaves it alone
+// the wide shot after the Titan's hand (changed from the game): the beam comes down on them and Ralsei throws a
+// shield up right over their heads that holds it back. the Knight comes down to their level, turns into his flying
+// form and zooms through them, smashing into Ralsei and knocking him over, so the shield starts giving way. Ralsei
+// yells "Watch out!", and Susie jumps clear as it breaks and the beam hits where they were.
+// made by obj_titan_spawn at the cut. everything it draws is in Draw End: in front of everyone, and untinted
 
 scene = instance_exists(obj_rm_two_scene) ? instance_find(obj_rm_two_scene, 0) : noone;
 fps_  = game_get_speed(gamespeed_fps);
@@ -11,6 +11,7 @@ fps_  = game_get_speed(gamespeed_fps);
 beam_x     = (instance_exists(obj_dark_fountain) ? obj_dark_fountain.x : room_width / 2) - 6;  // where it crosses the middle of the screen
 beam_angle = -12;    // degrees: the top leans right, like the game
 beam_scale = 2;
+beam_strip = 4;      // px (sprite) per strip when it's wrapping onto the shield: smaller = smoother curve
 beam_after = 1.2;    // seconds it keeps firing after the shield breaks...
 beam_thin  = 0.15;   // ...then thins out over this long
 flash_amt  = 0.75;   // white flash when it hits the shield, and when the shield breaks
@@ -19,27 +20,22 @@ flash_time = 0.3;    // seconds to fade
 beam_cy = camera_get_view_y(view_camera[0]) + camera_get_view_height(view_camera[0]) / 2;
 bdx = lengthdir_x(1, 270 + beam_angle);   // straight down the beam
 bdy = lengthdir_y(1, 270 + beam_angle);
-beam_ex = 0;   // where it ends (the shield, then past the bottom of the screen)
-beam_ey = 0;
 
-/// the beam's x at height _y
-line_x = function(_y) { return beam_x + (_y - beam_cy) * bdx / bdy; }
-
-// --- Ralsei's shield: a huge dome of light over both of them (seconds after the cut) ---
+// --- Ralsei's shield: a dome right over their heads (seconds after the cut) ---
 react_at     = 0.55;   // he sees it coming...
 cast_at      = 0.8;    // ...casts...
 shield_at    = 1.05;   // ...the shield's up...
-slam_at      = 1.25;   // ...and the beam hits it (when it'd have hit them in the game)
-shield_gap   = 50;     // px from the top of the taller one's head to the top of the dome
-shield_r     = 260;    // the dome's radius
-shield_arc   = 42;     // half its angle (bigger = wider)
+slam_at      = 1.25;   // ...and the beam hits it
+shield_gap   = 36;     // px from the top of the taller one's head to the top of the dome
+shield_r     = 200;    // the dome's radius (smaller = rounder)
+shield_arc   = 34;     // half its angle: wide enough to cover both of them
 shield_th    = 14;     // thickness
 shield_grow  = 0.25;   // seconds to grow in
 shield_color = make_color_rgb(1, 255, 0);   // Ralsei's colour, same as the finale's barrier
-push_speed   = 9;      // px per second the beam shoves it down...
-push_max     = 34;     // ...up to this far
-push_jitter  = 1.5;    // px it shudders while it's shoved
-crack_every  = 0.45;   // seconds between new cracks
+push_speed   = 6;      // px per second the beam shoves it down onto them...
+push_max     = 14;     // ...up to this far
+push_jitter  = 1.5;    // px it shudders while it's shoved (double once it's giving way)
+crack_every  = 0.45;   // seconds between cracks while he's holding it
 spark_rate   = 3;      // sparks per frame where the beam meets it
 shard_count  = 36;
 
@@ -51,30 +47,34 @@ knight_transform_gap = 0.4;   // ...a beat, then turns into his flying form, fac
 knight_fly_gap       = 0.15;  // ...then zooms through them
 knight_fly_speed     = 26;    // px per frame
 knight_trail_every   = 2;     // frames between afterimages
+knight_hit_pad       = 10;    // he hits Ralsei when his middle gets this close to Ralsei's
 
-// --- them spinning, then reeling ---
-spin_time     = 0.9;   // seconds
-spin_turns    = 2.5;   // full turns (fast, slowing down)
-dizzy_time    = 0.8;
-dizzy_sway    = 2;     // px
-watchout_wait = 0.3;   // after they've both stopped, before Susie yells
-watchout_text = "rm2_susie_watchout";
+// --- Ralsei getting smashed over ---
+knock_dist         = 220;     // px he's sent flying (clear of the beam)
+knock_time         = 0.3;     // seconds
+knock_hop          = 14;      // px
+ralsei_fall_sprite = spr_ralsei_fall_wince;
+ralsei_fall_native = 1;      // which way that sprite faces as drawn (-1 left, 1 right)
+ralsei_fall_face   = 1;       // which way he ends up facing (1 = back toward the beam)
+hit_sounds         = [snd_impact, snd_hurt];
 
-// --- jumping clear (away from the beam) ---
-jump_time   = 0.4;     // seconds in the air
-jump_h      = 40;      // px
-ralsei_jump = 150;     // px
-susie_jump  = 160;     // px
+// --- the shield giving way once he's down ---
+give_crack_every = 0.07;      // seconds between cracks...
+give_crack_max   = 14;        // ...until it's this cracked, then it just flickers on the brink
+give_flicker     = 0.5;       // how much it flickers (0-1)
 
-// --- sprites ---
-susie_dirs  = [spr_susie_walk_down, spr_susie_walk_left, spr_susie_walk_up, spr_susie_walk_right];          // the spin
-ralsei_dirs = [spr_ralsei_walk_down, spr_ralsei_walk_left_neutral, spr_ralsei_walk_up, spr_ralsei_walk_right];
-susie_air   = spr_susie_shocked;
-ralsei_air  = spr_ralsei_shocked;
-susie_land  = spr_susie_landed;
-ralsei_land = spr_ralsei_fall_wince;   // stand-in: no proper landed sprite for him yet
-susie_land_native  = -1;               // which way each landed sprite faces as drawn (-1 left, 1 right)
-ralsei_land_native = -1;
+// --- "Watch out!" and Susie jumping clear ---
+watchout_delay    = 0.35;     // after he's hit
+watchout_text     = "rm2_ralsei_watchout";
+susie_flinch      = spr_susie_shocked;   // as the Knight zips past her (noone to skip)
+susie_air         = spr_susie_shocked;
+susie_land        = spr_susie_landed;
+susie_land_native = -1;       // which way the landed sprite faces as drawn (-1 left, 1 right)
+jump_time         = 0.4;      // seconds in the air
+jump_h            = 40;       // px
+susie_jump        = 160;      // px, away from the beam
+
+// --- Ralsei's cast ---
 ralsei_react_sprite = spr_ralsei_shocked;
 ralsei_cast_sprite  = spr_ralsei_spell;
 
@@ -94,23 +94,31 @@ break_sound     = snd_glassbreak;
 // --- state ---
 t       = 0;        // frames since the cut
 st      = 0;        // frames in the current state
-state   = "wait";   // "wait" (for them to stop reeling) -> "talk" -> "beam_out" -> "done"
+state   = "hold";   // "hold" -> "giving" -> "talk" -> "beam_out" -> "done"
 fired   = {};
 flash   = 0;
 beam_on = false;
+beam_ex = 0;        // where the beam ends (the shield, then past the bottom of the screen)
+beam_ey = 0;
 beam_w  = 1;
 beam_t  = 0;
+beam_surf = -1;
 snd_hum = -1;
 crack_t = 0;
-dazed_t = 0;
-shield  = { on: false, grow: 0, cx: 0, cy: 0, push: 0, jx: 0, jy: 0, flash: 0, t: 0, cracks: [] };
+give_n  = 0;
+shield  = { on: false, grow: 0, cx: 0, cy: 0, push: 0, jx: 0, jy: 0, flash: 0, t: 0, vis: 1, cracks: [] };
 shards  = [];
 sparks  = [];
 kstate  = "";
 kt      = 0;
-knight_x0 = 0;
+knight_x0     = 0;
 knight_from_y = 0;
 knight_to_y   = 0;
+
+ralsei  = instance_exists(obj_ralsei) ? obj_ralsei.id : noone;
+susie   = instance_exists(obj_susie)  ? obj_susie.id  : noone;
+r_phase = "stand"; r_t = 0; r_fx = 0; r_fy = 0;
+s_phase = "stand"; s_t = 0; s_fx = 0; s_fy = 0; s_jdir = 1;
 
 play = function(_s, _gain = 1, _offset = 0, _pitch = 1, _loop = false)
 {
@@ -132,18 +140,14 @@ set_feet = function(_o, _x, _y)
     _o.y += _y - _f.y;
 }
 
-// --- them ---
-heroes = [];
-if (instance_exists(obj_ralsei))
-    array_push(heroes, { o: obj_ralsei.id, dirs: ralsei_dirs, air: ralsei_air, land: ralsei_land, native: ralsei_land_native,
-                         jdist: ralsei_jump, jdir: -1, phase: "stand", t: 0, fx: 0, fy: 0 });
-if (instance_exists(obj_susie))
-    array_push(heroes, { o: obj_susie.id, dirs: susie_dirs, air: susie_air, land: susie_land, native: susie_land_native,
-                         jdist: susie_jump, jdir: 1, phase: "stand", t: 0, fx: 0, fy: 0 });
-
 party_feet_y = 0;
-for (var i = 0; i < array_length(heroes); i++) party_feet_y += scr_get_feet(heroes[i].o).y;
-party_feet_y = (array_length(heroes) > 0) ? party_feet_y / array_length(heroes) : 394;
+var _n = 0;
+if (instance_exists(ralsei)) { party_feet_y += scr_get_feet(ralsei).y; _n++; }
+if (instance_exists(susie))  { party_feet_y += scr_get_feet(susie).y;  _n++; }
+party_feet_y = (_n > 0) ? party_feet_y / _n : 394;
+
+/// the beam's x at height _y
+line_x = function(_y) { return beam_x + (_y - beam_cy) * bdx / bdy; }
 
 // --- the Knight: placed by his sprite's middle, so the sprites' origins don't matter ---
 knight_center = function()
@@ -159,29 +163,52 @@ knight_place = function(_cx, _cy)
     scene.knight_y0 = _cy - (sprite_get_height(_s) / 2 - sprite_get_yoffset(_s)) * _k.image_yscale;
 }
 
-// --- the shield: a slice of a circle facing up the beam, its top right where the beam lands ---
+// --- the shield: an upright slice of a circle, centred over the two of them ---
 shield_build = function()
 {
-    var _top = 100000;
-    with (obj_susie)  _top = min(_top, bbox_top);
-    with (obj_ralsei) _top = min(_top, bbox_top);
-    if (_top > 99999) _top = 300;
-    var _ay = _top - shield_gap;            // its top, on the beam
-    shield.cx = line_x(_ay) + bdx * shield_r;
-    shield.cy = _ay + bdy * shield_r;
+    var _top = 100000, _l = 100000, _r = -100000;
+    with (obj_susie)  { _top = min(_top, bbox_top); _l = min(_l, bbox_left); _r = max(_r, bbox_right); }
+    with (obj_ralsei) { _top = min(_top, bbox_top); _l = min(_l, bbox_left); _r = max(_r, bbox_right); }
+    if (_top > 99999) { _top = 300; _l = beam_x - 80; _r = beam_x + 80; }
+    shield.cx = (_l + _r) / 2;
+    shield.cy = _top - shield_gap + shield_r;
+	// aim the beam at the dome's top (it keeps its lean)
+    beam_x += shield.cx - line_x(shield.cy - shield_r);
     shield.on = true;
     shield.grow = 0;
     shield.push = 0;
     shield.cracks = [];
 }
 
-/// a point on the shield at angle _a (0 = its top, facing the beam), _off px out from its centre line.
-/// the beam shoves the whole thing back along itself
+/// a point on the shield at angle _a (0 = its top), _off px out from its centre line
 shield_point = function(_a, _off)
 {
-    var _d = 90 + beam_angle + _a;
-    return { x: shield.cx + bdx * shield.push + shield.jx + lengthdir_x(shield_r + _off, _d),
-             y: shield.cy + bdy * shield.push + shield.jy + lengthdir_y(shield_r + _off, _d) };
+    return { x: shield.cx + shield.jx + lengthdir_x(shield_r + _off, 90 + _a),
+             y: shield.cy + shield.push + shield.jy + lengthdir_y(shield_r + _off, 90 + _a) };
+}
+
+/// where the beam, coming down from (_sx,_sy), first meets the top of the shield
+beam_hit_shield = function(_sx, _sy)
+{
+    var _cx = shield.cx + shield.jx, _cy = shield.cy + shield.push + shield.jy;
+    var _R  = shield_r + shield_th / 2;
+    var _ox = _sx - _cx, _oy = _sy - _cy;
+    var _b  = bdx * _ox + bdy * _oy;
+    var _c  = _ox * _ox + _oy * _oy - _R * _R;
+    var _disc = _b * _b - _c;
+    if (_disc < 0) return undefined;
+    var _s = -_b - sqrt(_disc);
+    return { x: _sx + bdx * _s, y: _sy + bdy * _s };
+}
+
+shield_crack = function()
+{
+    var _a = random_range(-shield_arc * 0.85, shield_arc * 0.85);
+    var _pts = [[_a, -shield_th / 2]];
+    for (var k = 1; k <= 3; k++) array_push(_pts, [_a + random_range(-4, 4), -shield_th / 2 + shield_th * k / 3]);
+    array_push(shield.cracks, _pts);
+    shield.flash = max(shield.flash, 0.6);
+    play(crack_sound, 0.6, 0, random_range(0.9, 1.15));
 }
 
 shield_shatter = function()
@@ -199,8 +226,7 @@ shield_shatter = function()
     }
 }
 
-/// the beam from (_sx,_sy) to (_ex,_ey) along its lean, _ws = how wide (1 = full).
-/// the midsection is tiled along it, the last piece cut off exactly at the end
+/// the beam from (_sx,_sy) to (_ex,_ey) along its lean, _ws = how wide (1 = full)
 draw_beam = function(_sx, _sy, _ex, _ey, _ws)
 {
     var _spr = spr_titanbeam_midsection;
@@ -219,14 +245,3 @@ draw_beam = function(_sx, _sy, _ex, _ey, _ws)
                             c_white, c_white, c_white, c_white, 1);
     }
 }
-
-shield_crack = function()
-{
-    var _a = random_range(-shield_arc * 0.85, shield_arc * 0.85);
-    var _pts = [[_a, -shield_th / 2]];
-    for (var k = 1; k <= 3; k++) array_push(_pts, [_a + random_range(-4, 4), -shield_th / 2 + shield_th * k / 3]);
-    array_push(shield.cracks, _pts);
-    shield.flash = max(shield.flash, 0.6);
-    play(crack_sound, 0.6, 0, random_range(0.9, 1.15));
-}
-

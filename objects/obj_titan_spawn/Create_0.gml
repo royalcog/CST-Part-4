@@ -30,6 +30,9 @@ dark_g         = 60;    // the dark column starts drawing behind the geyser
 fizzle_g       = 180;   // the geyser fizzles out
 fizzle_speed   = 0.4;   // spr_tower_fizzleout's image_speed
 fizzle_len_g   = 28;    // the fizzle's hidden 28 frames in
+cut_idx          = 314;   // hand frame the game cuts back to the platform (its last 3 frames loop 10 times)
+tower_shade      = 0.85;  // the tower darkens toward its base...
+tower_shade_h    = 200;   // ...over this many px
 petrify_g      = 313;   // it petrifies
 petrify_len_g  = 60;    // the petrifying takes 60 frames
 seg_gap_g      = 6;     // one section every 6 frames...
@@ -141,6 +144,7 @@ wide_g0 = 0;
 cur_wg = -1000;
 ralsei_sx = 0; ralsei_sy = 0;
 susie_sx  = 0; susie_sy  = 0;
+
 
 snd_fountain = -1;
 snd_laser    = -1;

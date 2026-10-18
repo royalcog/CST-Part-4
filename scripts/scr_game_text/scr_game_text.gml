@@ -154,8 +154,8 @@ function scr_game_text(_text_id)
 				scr_text_shake(1, 99);
 		break;
 		
-		case "rm2_susie_watchout":
-			scr_text("* Watch out!", "susie", 18);
+		case "rm2_ralsei_watchout":
+			scr_text("* Watch out!", "ralsei", 42);
 		break;
 		
 /*

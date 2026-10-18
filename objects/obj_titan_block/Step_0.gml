@@ -4,23 +4,24 @@ var _cam = view_camera[0];
 var _vx  = camera_get_view_x(_cam);
 var _vy  = camera_get_view_y(_cam);
 var _vh  = camera_get_view_height(_cam);
+var _sy  = _vy - 60;   // where the beam starts, off the top of the screen
 
 flash = max(0, flash - 1 / (flash_time * fps_));
 if (beam_on) beam_t++;
 
 // ---------------------------------------------------------------- the shield goes up, the beam hits it
-if (_sec >= react_at && once("react") && instance_exists(obj_ralsei))
+if (_sec >= react_at && once("react") && instance_exists(ralsei))
 {
-    obj_ralsei.sprite_index = ralsei_react_sprite;
-    obj_ralsei.image_index  = 0;
-    obj_ralsei.image_speed  = 0;
+    ralsei.sprite_index = ralsei_react_sprite;
+    ralsei.image_index  = 0;
+    ralsei.image_speed  = 0;
 }
-if (_sec >= cast_at && once("cast") && instance_exists(obj_ralsei))
+if (_sec >= cast_at && once("cast") && instance_exists(ralsei))
 {
-    obj_ralsei.sprite_index = ralsei_cast_sprite;
-    obj_ralsei.image_index  = 0;
-    obj_ralsei.image_speed  = 1;
-    obj_ralsei.anim_loop    = false;   // holds the spell up on its last frame
+    ralsei.sprite_index = ralsei_cast_sprite;
+    ralsei.image_index  = 0;
+    ralsei.image_speed  = 1;
+    ralsei.anim_loop    = false;   // holds the spell up on its last frame
     play(cast_sound);
 }
 if (_sec >= shield_at && once("shield"))
@@ -41,26 +42,45 @@ if (_sec >= slam_at + hum_delay && once("hum"))
     if (snd_hum >= 0) audio_sound_gain(snd_hum, hum_gain, 500);
 }
 
-// the shield holding the beam back, getting shoved down
+// the shield holding the beam back, shoved down onto them
 if (shield.on)
 {
     shield.t++;
     shield.grow  = min(1, shield.grow + 1 / (shield_grow * fps_));
     shield.flash = max(0, shield.flash - 0.08);
+    var _giving  = (r_phase != "stand");
+    shield.vis   = _giving ? random_range(1 - give_flicker, 1) : 1;
+
     if (beam_on)
     {
         shield.push = min(push_max, shield.push + push_speed / fps_);
-        shield.jx = random_range(-push_jitter, push_jitter);
-        shield.jy = random_range(-push_jitter, push_jitter);
-        if (++crack_t >= crack_every * fps_) { crack_t = 0; shield_crack(); }
+        var _j = push_jitter * (_giving ? 2 : 1);
+        shield.jx = random_range(-_j, _j);
+        shield.jy = random_range(-_j, _j);
 
-        var _top = shield_point(0, shield_th / 2);
-        beam_ex = _top.x;
-        beam_ey = _top.y;
-        repeat (spark_rate)
-            array_push(sparks, { x: _top.x + random_range(-24, 24), y: _top.y,
-                                 vx: choose(-1, 1) * random_range(2, 6), vy: random_range(-4, -0.5),
-                                 t: 0, life: irandom_range(12, 24) });
+        // cracks: now and then while he holds it, fast once he's down
+        crack_t++;
+        if (!_giving)
+        {
+            if (crack_t >= crack_every * fps_) { crack_t = 0; shield_crack(); }
+        }
+        else if (give_n < give_crack_max && crack_t >= give_crack_every * fps_)
+        {
+            crack_t = 0;
+            give_n++;
+            shield_crack();
+        }
+
+        var _hit = beam_hit_shield(line_x(_sy), _sy);
+        if (!is_undefined(_hit))
+        {
+            beam_ex = _hit.x;
+            beam_ey = _hit.y;
+            repeat (spark_rate)
+                array_push(sparks, { x: beam_ex + random_range(-24, 24), y: beam_ey,
+                                     vx: choose(-1, 1) * random_range(2, 6), vy: random_range(-4, -0.5),
+                                     t: 0, life: irandom_range(12, 24) });
+        }
     }
 }
 
@@ -135,126 +155,111 @@ if (instance_exists(scene) && instance_exists(scene.knight))
             if (kt mod knight_trail_every == 0)
             {
                 var _sh = instance_create_layer(_k.x, _k.y, "Instances", obj_shadow);
-                _sh.spr = _k.sprite_index;  _sh.frame = _k.image_index;
+                _sh.spr = _k.sprite_index;    _sh.frame = _k.image_index;
                 _sh.xscale = _k.image_xscale; _sh.yscale = _k.image_yscale;
-                _sh.angle = _k.image_angle; _sh.alpha = 0.6;
-                _sh.depth = _k.depth + 1;   _sh.drift_x = 0; _sh.drift_y = 0;
+                _sh.angle = _k.image_angle;   _sh.alpha = 0.6;
+                _sh.depth = _k.depth + 1;     _sh.drift_x = 0; _sh.drift_y = 0;
             }
-            // whoever he's just passed spins
             var _c = knight_center();
-            for (var i = 0; i < array_length(heroes); i++)
+
+            // Susie flinches as he zips past her
+            if (s_phase == "stand" && instance_exists(susie) && _c.x <= scr_get_feet(susie).x)
             {
-                var _h = heroes[i];
-                if (_h.phase != "stand" || !instance_exists(_h.o)) continue;
-                var _f = scr_get_feet(_h.o);
-                if (_c.x <= _f.x)
-                {
-                    _h.phase = "spin";
-                    _h.t  = 0;
-                    _h.fx = _f.x;
-                    _h.fy = _f.y;
-                }
+                s_phase = "flinch";
+                if (susie_flinch != noone) { susie.sprite_index = susie_flinch; susie.image_index = 0; susie.image_speed = 0; }
             }
+
+            // ...and he smashes right into Ralsei
+            if (r_phase == "stand" && instance_exists(ralsei) && _c.x <= scr_get_feet(ralsei).x + knight_hit_pad)
+            {
+                var _f = scr_get_feet(ralsei);
+                r_fx = _f.x;
+                r_fy = _f.y;
+                r_phase = "knock";
+                r_t = 0;
+                ralsei.sprite_index = ralsei_fall_sprite;
+                ralsei.image_index  = 0;
+                ralsei.image_speed  = 0;
+                ralsei.image_xscale = abs(ralsei.image_xscale) * ralsei_fall_face * ralsei_fall_native;
+                for (var i = 0; i < array_length(hit_sounds); i++) play(hit_sounds[i]);
+                shield.flash = 1;
+                crack_t = 0;
+                state = "giving";
+                st = 0;
+            }
+
             if (_c.x < _vx - 150) { _k.visible = false; kstate = "gone"; }
         }
         break;
     }
 }
 
-// ---------------------------------------------------------------- them
-for (var i = 0; i < array_length(heroes); i++)
+// ---------------------------------------------------------------- Ralsei knocked over
+if (instance_exists(ralsei))
 {
-    var _h = heroes[i];
-    if (!instance_exists(_h.o)) continue;
-    var _o = _h.o;
-
-    switch (_h.phase)
+    if (r_phase == "knock")
     {
-        case "spin":   // fast, slowing down
-        {
-            _h.t++;
-            var _e = clamp(_h.t / (spin_time * fps_), 0, 1);
-            var _p = spin_turns * (1 - (1 - _e) * (1 - _e));
-            var _spr = _h.dirs[floor(_p * 4) mod 4];
-            if (_o.sprite_index != _spr) { _o.sprite_index = _spr; _o.image_index = 0; _o.image_speed = 0; }
-            set_feet(_o, _h.fx, _h.fy);
-            if (_e >= 1)
-            {
-                _o.sprite_index = _h.dirs[0];
-                _h.phase = "dizzy";
-                _h.t = 0;
-            }
-        }
-        break;
-
-        case "dizzy":   // reeling
-            _h.t++;
-            set_feet(_o, _h.fx + sin(_h.t * 0.35) * dizzy_sway * (1 - _h.t / (dizzy_time * fps_)), _h.fy);
-            if (_h.t >= dizzy_time * fps_) { set_feet(_o, _h.fx, _h.fy); _h.phase = "dazed"; }
-        break;
-
-        case "jump":   // away from the beam
-        {
-            _h.t++;
-            var _e = clamp(_h.t / (jump_time * fps_), 0, 1);
-            set_feet(_o, _h.fx + _h.jdir * _h.jdist * _e, _h.fy - sin(_e * pi) * jump_h);
-            if (_e >= 1)
-            {
-                _o.sprite_index = _h.land;
-                _o.image_index  = 0;
-                _o.image_speed  = 0;
-                _o.image_xscale = abs(_o.image_xscale) * (-_h.jdir) * _h.native;   // facing the beam
-                _h.phase = "landed";
-            }
-        }
-        break;
-
-        case "landed":
-            set_feet(_o, _h.fx + _h.jdir * _h.jdist, _h.fy);
-        break;
+        r_t++;
+        var _e = clamp(r_t / (knock_time * fps_), 0, 1);
+        var _ease = 1 - (1 - _e) * (1 - _e);
+        set_feet(ralsei, r_fx - knock_dist * _ease, r_fy - sin(_e * pi) * knock_hop);
+        if (_e >= 1) r_phase = "down";
     }
+    else if (r_phase == "down") set_feet(ralsei, r_fx - knock_dist, r_fy);
 }
 
-// ---------------------------------------------------------------- "Watch out!" and the jump
+// ---------------------------------------------------------------- Susie jumping clear
+if (instance_exists(susie))
+{
+    if (s_phase == "jump")
+    {
+        s_t++;
+        var _e = clamp(s_t / (jump_time * fps_), 0, 1);
+        set_feet(susie, s_fx + s_jdir * susie_jump * _e, s_fy - sin(_e * pi) * jump_h);
+        if (_e >= 1)
+        {
+            susie.sprite_index = susie_land;
+            susie.image_index  = 0;
+            susie.image_speed  = 0;
+            susie.image_xscale = abs(susie.image_xscale) * (-s_jdir) * susie_land_native;   // facing the beam
+            s_phase = "landed";
+        }
+    }
+    else if (s_phase == "landed") set_feet(susie, s_fx + s_jdir * susie_jump, s_fy);
+}
+
+// ---------------------------------------------------------------- "Watch out!", the break
 switch (state)
 {
-    case "wait":   // until they've both stopped reeling
-    {
-        var _ready = (array_length(heroes) > 0);
-        for (var i = 0; i < array_length(heroes); i++)
-            if (instance_exists(heroes[i].o) && heroes[i].phase != "dazed") _ready = false;
-        if (_ready && once("dazed")) dazed_t = t;
-        if (_ready && t - dazed_t >= watchout_wait * fps_)
+    case "giving":   // he's down, it's giving way
+        if (++st >= watchout_delay * fps_)
         {
             create_textbox(watchout_text);
             state = "talk";
         }
-    }
     break;
 
     case "talk":
         if (!instance_exists(obj_textbox))
         {
-            // they jump clear, the shield breaks and the beam hits where they were
+            // it breaks: Susie jumps clear and the beam hits where they were
             shield_shatter();
             beam_ey = _vy + _vh + 40;
             beam_ex = line_x(beam_ey);
             flash = flash_amt;
             play(break_sound);
             play(blast_sound, 1, blast_offset);
-            for (var i = 0; i < array_length(heroes); i++)
+            if (instance_exists(susie))
             {
-                var _h = heroes[i];
-                if (!instance_exists(_h.o)) continue;
-                var _f = scr_get_feet(_h.o);
-                _h.fx = _f.x;
-                _h.fy = _f.y;
-                _h.jdir = (_f.x < line_x(_f.y)) ? -1 : 1;   // away from the beam where it hits their level
-                _h.o.sprite_index = _h.air;
-                _h.o.image_index  = 0;
-                _h.o.image_speed  = 0;
-                _h.phase = "jump";
-                _h.t = 0;
+                var _f = scr_get_feet(susie);
+                s_fx = _f.x;
+                s_fy = _f.y;
+                s_jdir = (_f.x < line_x(_f.y)) ? -1 : 1;   // away from the beam where it hits her level
+                susie.sprite_index = susie_air;
+                susie.image_index  = 0;
+                susie.image_speed  = 0;
+                s_phase = "jump";
+                s_t = 0;
             }
             state = "beam_out";
             st = 0;
@@ -272,7 +277,7 @@ switch (state)
     break;
 
     case "done":
-        // next: whatever comes after (the party's dialogue in the game)
+        // next: whatever comes after
     break;
 }
 
