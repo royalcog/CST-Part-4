@@ -5,6 +5,9 @@ if (instance_exists(knight))
     knight.y = knight_y0 + sin(bob) * bob_amp;
 }
 
+// the white streak
+if (flash_t >= 0 && ++flash_t > flash_time) flash_t = -1;
+
 // the swords
 if (swords_spawned)
 {
@@ -27,6 +30,7 @@ if (swords_spawned)
 
         if (_s.thrown)
         {
+            if (_s.wait > 0) { _s.wait--; continue; }   // still inside the streak
             _s.vy = min(sword_max_speed, _s.vy + sword_accel);
             _s.y += _s.vy;
             // fully under the platform edge (the floor tiles cover it), so it's gone
@@ -48,6 +52,7 @@ if (swords_spawned)
             firing = true;
             fire_i = 0;
             fire_t = 0;
+            flash_t = 0;
             if (instance_exists(knight)) knight.image_speed = throw_anim; // finish the swing
         }
     }
@@ -56,6 +61,7 @@ if (swords_spawned)
         if (fire_t <= 0)
         {
             swords[fire_i].thrown = true;
+            swords[fire_i].wait   = sword_fall_delay;
             if (sword_throw_sound != noone) audio_play_sound(sword_throw_sound, 1, false);
             fire_i++;
             fire_t = sword_fire_gap;
@@ -162,7 +168,6 @@ switch (state)
             knight_pose(spr_roark_throw_sword, knight_beckon_head, knight_throw_head);
             knight.image_speed = throw_anim;
             knight.anim_loop   = false; // obj_knight holds the last frame
-            if (wingshut_sound != noone) audio_play_sound(wingshut_sound, 1, false, wingshut_gain);
 			
             // they both go shocked
             if (ralsei_shock_sprite != noone && instance_exists(obj_ralsei) && obj_ralsei.sprite_index == spr_ralsei_walk_up)
@@ -175,6 +180,10 @@ switch (state)
     break;
 
     case "throw":
+        // the scene's audio starts partway into his swing
+        if (snd_drop < 0 && sword_drop_sound != noone && knight.image_index >= sword_spawn_frame - (sword_spawn_frame - sword_sound_frame))
+            snd_drop = audio_play_sound(sword_drop_sound, 1, false);
+
         // arm up: the swords appear over his head, one by one left to right
         if (!swords_spawned && knight.image_index >= sword_spawn_frame)
         {
@@ -187,13 +196,11 @@ switch (state)
                     vy: 0,
                     delay: 1 + i * sword_stagger,
                     thrown: false,
+                    wait: 0,
                     gone: false
                 });
             }
             swords_spawned = true;
-
-            // the scene's audio starts as they form
-            if (sword_drop_sound != noone) snd_drop = audio_play_sound(sword_drop_sound, 1, false, 1, sword_drop_offset);
         }
         // hold his arm up until the throws start
         if (!firing && knight.image_index >= sword_hold_frame)

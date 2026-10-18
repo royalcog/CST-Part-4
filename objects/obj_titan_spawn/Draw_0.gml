@@ -38,11 +38,12 @@ if (show_geyser)
     draw_pool(spr_titan_fountain_loop_rings, _li mod sprite_get_number(spr_titan_fountain_loop_rings), 1);
 }
 
-// ...fizzling out
+// ...fizzling out: one copy with its top at the top of the screen, like the game
 if (show_fizzle)
 {
-    draw_pool(spr_titan_fountain_loop_base, 0, 1);
-    draw_column(spr_tower_fizzleout, fizzle_frame, base_bottom_y, _vt, _vb);
+    var _vy = camera_get_view_y(view_camera[0]);
+    draw_sprite_ext(spr_tower_fizzleout, fizzle_frame, fx, _vy + sprite_get_yoffset(spr_tower_fizzleout) * scale,
+                    scale, scale, 0, c_white, 1);
 }
 
 if (petrify_started)

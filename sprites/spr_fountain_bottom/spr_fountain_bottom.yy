@@ -26,7 +26,7 @@
   "origin":4,
   "parent":{
     "name":"Dark Fountain",
-    "path":"folders/Sprites/Special Cutscene/Dark Fountain.yy",
+    "path":"folders/Sprites/Special Cutscenes/Dark Fountain.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

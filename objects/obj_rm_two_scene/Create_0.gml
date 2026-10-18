@@ -43,20 +43,33 @@ sword_scale        = 2;                    // positive = facing right
 sword_spawn_frame  = 14;                   // throw frame where they start appearing (arm up)
 sword_hold_frame   = 16;                   // he holds this frame (arm still up) until they're thrown
 sword_stagger      = 12;                   // frames between each one appearing, left to right
-sword_fade_in      = 24;
-sword_hold         = 60;                   // once they're all in: wait this long before throwing
-sword_fire_gap     = 5;                    // frames between each throw (one at a time, left to right)
-sword_accel        = 1.5;
-sword_max_speed    = 26;
+sword_fade_in      = 24;                   // (so they finish forming ~1.2s after they start, like the game)
+sword_hold         = 60;                   // only used if there's no sound
+sword_fire_gap     = 0;                    // they all drop together
+sword_accel        = 0.65;                 // slow enough that they land on the impact, ~0.55s after leaving the streak
+sword_max_speed    = 30;
+sword_fall_delay   = 18;                   // frames they're hidden in the white streak before they fall
+sword_trail        = 3;                    // afterimages behind each falling sword
+
+// the white streak they drop through
+flash_time         = 20;                   // frames
+flash_w            = 70;                   // px wide at the start, shrinking to nothing
+flash_skew         = 20;                   // px the top leans left / the bottom leans right
+flash_top          = -60;                  // px above sword_y
+
+// the little glints next to the Knight while they hang (seconds into the sound)
+glint_times        = [2.56, 3.06];
+glint_dx           = 45;                   // px right of his head
+glint_life         = 0.35;                 // seconds
+
+// --- sounds ---
 sword_appear_sound = noone;                // was snd_spear_appear (snd_empty has a click in it)
-sword_drop_sound   = snd_titanfountain;    // a rip of the game's audio for the whole scene: it starts as the swords form
-sword_drop_offset  = 0.15;                 // the rip starts a hair before they form
-sword_throw_at     = 3.65;                 // he throws when the sound gets here; the first sword lands ~0.37s later, on the impact
-sword_throw_sound  = noone;                // optional extra sound on every throw (was snd_heavyswing)
+sword_drop_sound   = snd_titanfountain;    // a rip of the game's audio for the whole scene (the wingshut's already in it)
+sword_sound_frame  = 8;                    // throw frame it starts on: its whoosh lands on his swing, the swords form at ~0.6s
+sword_throw_at     = 3.26;                 // they drop when the sound gets here (the white streak)
+sword_throw_sound  = noone;                // optional extra sound on the drop
 snd_drop           = -1;
-drop_t             = 0;
-wingshut_sound     = snd_titan_wingshut;   // plays as he starts the throw
-wingshut_gain      = 0.65;
+flash_t            = -1;
 // the swords draw from here: in front of the fountain (350), behind the floor tiles (300) and everyone else
 depth = 320;
 

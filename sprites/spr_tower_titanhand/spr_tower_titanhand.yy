@@ -322,7 +322,7 @@
   "origin":3,
   "parent":{
     "name":"Titan Spawning",
-    "path":"folders/Sprites/Special Cutscene/Titan Spawning.yy",
+    "path":"folders/Sprites/Special Cutscenes/Titan Spawning.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

@@ -20,8 +20,8 @@ pool_flash_fade = 0.8;   // the white pool fading to black
 burst_at        = 6.45;  // the splash starts...
 column_at       = 8.76;  // ...and the full column is up here
 knight_move_at  = 8.76;  // the Knight gets out of the way as the column goes up
-pan_at          = 10.0;  // camera rises up the geyser
-pan_time        = 1.0;
+pan_at          = 10.5;  // camera rises up the geyser...
+pan_time        = 0.6;   // ...quickly, like the game
 pan_dist        = 560;   // px
 con1_at         = 8.87;  // the game's "con 1" starts here: everything below counts game frames from it
 
@@ -81,7 +81,7 @@ gravel_sound    = snd_petrify_gravel;
 thunder_sound   = snd_petrify_gravel_thunder;
 wallblast_sound = snd_petrify_wallblast;
 laser_sound     = snd_titan_petrify_blast;
-hum_sound       = snd_titan_blastloop;
+hum_sound       = noone;  // snd_titan_blastloop belongs to the wide shot after this, not the close-up
 
 // --- the Knight getting out of the way ---
 knight_aside_x   = 760;
