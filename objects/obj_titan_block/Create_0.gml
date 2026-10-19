@@ -77,6 +77,8 @@ susie_jump        = 160;      // px, away from the beam
 // --- Ralsei's cast ---
 ralsei_react_sprite = spr_ralsei_shocked;
 ralsei_cast_sprite  = spr_ralsei_spell;
+ralsei_hold_from    = 3;     // once the cast gets here (arm up, summoning)...
+ralsei_hold_to      = 8;     // ...it loops back between these frames while he holds the shield, instead of lowering his arm
 
 // --- sounds (noone to skip) ---
 cast_sound      = snd_spell_pacify;

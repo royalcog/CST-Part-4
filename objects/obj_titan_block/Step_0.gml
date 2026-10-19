@@ -21,8 +21,15 @@ if (_sec >= cast_at && once("cast") && instance_exists(ralsei))
     ralsei.sprite_index = ralsei_cast_sprite;
     ralsei.image_index  = 0;
     ralsei.image_speed  = 1;
-    ralsei.anim_loop    = false;   // holds the spell up on its last frame
+    ralsei.anim_loop    = true;    // this object does the looping (below), so obj_ralsei doesn't freeze him on the last frame
     play(cast_sound);
+}
+
+// he holds the summon up (the sparkles loop) until the Knight smashes into him
+if (r_phase == "stand" && instance_exists(ralsei) && ralsei.sprite_index == ralsei_cast_sprite
+    && ralsei.image_index >= ralsei_hold_to + 1)
+{
+    ralsei.image_index = ralsei_hold_from + frac(ralsei.image_index);
 }
 if (_sec >= shield_at && once("shield"))
 {
