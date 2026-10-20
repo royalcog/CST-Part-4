@@ -380,6 +380,7 @@ switch (action)
         {
             case "start":
                 if (!instance_exists(obj_knight)) { finish(); break; }
+                obj_knight.exit_dir = sign(obj_knight.image_xscale); // keep facing the way he is: no turning around before he flies off
                 scr_knight_to_ball();
                 go("reverse");
             break;
@@ -483,7 +484,7 @@ switch (action)
                 saved.walked += getup_walk_speed;
                 if (saved.walked >= getup_walk_dist)
                 {
-                    pose(obj_susie, spr_susie_walk_down, true);
+                    pose(obj_susie, spr_susie_walk_down_neutral, true);
                     obj_susie.image_speed = getup_anim_speed;
                     saved.walked = 0;
                     go("down");
@@ -681,7 +682,7 @@ switch (action)
         {
             case "start":
                 runners = [
-                    { obj: obj_susie,  spr_l: spr_susie_walk_left,          spr_r: spr_susie_walk_right,  spr_up: spr_susie_walk_up,
+                    { obj: obj_susie,  spr_l: spr_susie_walk_left_neutral,  spr_r: spr_susie_walk_right_neutral,  spr_up: spr_susie_walk_up,
                       off: 10,  wait: 0,               phase: "wait", dir: 1 },
                     { obj: obj_ralsei, spr_l: spr_ralsei_walk_left_neutral, spr_r: spr_ralsei_walk_right, spr_up: spr_ralsei_walk_up,
                       off: -14, wait: ralsei_run_wait, phase: "wait", dir: 1 }

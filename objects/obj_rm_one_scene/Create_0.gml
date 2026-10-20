@@ -162,7 +162,7 @@ step_runner = function(_r)
 susie_runner = function(_pts, _speed, _anim, _wait, _fade)
 {
     return { obj: obj_susie, pts: _pts, i: 0, speed: _speed, anim: _anim, wait: _wait, fade: _fade,
-             l: spr_susie_walk_left, r: spr_susie_walk_right, up: spr_susie_walk_up, down: spr_susie_walk_down };
+             l: spr_susie_walk_left_neutral, r: spr_susie_walk_right_neutral, up: spr_susie_walk_up, down: spr_susie_walk_down_neutral };
 }
 ralsei_runner = function(_pts, _speed, _anim, _wait, _fade)
 {

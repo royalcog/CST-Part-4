@@ -2,6 +2,11 @@
 // Ralsei pleads, then the Knight summons 5 swords over his head and throws them down one at a time
 global.cutscene_lock = true;
 
+// sng_knightappear while they walk up, until the Knight throws the swords (the Titan scene has its own audio)
+appear_fade_in  = 2000;   // ms
+appear_fade_out = 1000;   // ms
+start_knight_appear_music(appear_fade_in);
+
 // --- tuning: Susie & Ralsei ---
 edge_y     = 364;              // top edge of the floor
 stand_y    = edge_y + 30;      // where their feet stop

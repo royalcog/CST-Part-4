@@ -73,7 +73,6 @@ switch (state)
             _f.fade_alpha    = 0;
             _f.target_room   = rm_zero;
             _f.wait_duration = 240;
-            _f.fade_step     = 1 / 240;   // frames to fade out (and the same back in)
             _f.spawn_list    = [ scr_make_warp_spawn(obj_rm_zero_ending, 0, 0, "Instances") ];
         }
     break;

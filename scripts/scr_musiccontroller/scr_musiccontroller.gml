@@ -51,6 +51,28 @@ function start_knight_battle_music(_fade_ms = 0)
     global.song_start = current_time;
 }
 
+/// sng_knightappear, fading in and looping (the lead-up before the battle, and in rm_two before the Titan)
+function start_knight_appear_music(_fade_ms = 2000)
+{
+    if (variable_global_exists("song") && is_struct(global.song) && global.song.sound == sng_knightappear) exit;
+    global.song = { sound: sng_knightappear, beats: 9999 };
+    global.music = scr_audio_fade_in(sng_knightappear, _fade_ms, 1, true);
+    global.song_start = current_time;
+}
+
+/// fades sng_knightappear out (and stops it) if it's what's playing
+function stop_knight_appear_music(_fade_ms = 1000)
+{
+    if (!variable_global_exists("song") || !is_struct(global.song) || global.song.sound != sng_knightappear) exit;
+    var _inst = global.music;
+    global.song  = noone;
+    global.music = noone;
+    if (_inst == noone) exit;
+    if (_fade_ms <= 0) { audio_stop_sound(_inst); exit; }
+    audio_sound_gain(_inst, 0, _fade_ms);
+    scr_call_after_frames(method({ inst: _inst }, function() { audio_stop_sound(inst); }), ceil(_fade_ms / 1000 * game_get_speed(gamespeed_fps)));
+}
+
 function scr_ui_reverse(_resume_sound, _resume_pitch = 1, _sprite_obj = noone, _sprite = noone, _sprite_loop = false, _sprite_image = 0)
 {
     if (instance_exists(obj_UI))

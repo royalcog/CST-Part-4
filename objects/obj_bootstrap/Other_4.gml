@@ -3,13 +3,13 @@ display_set_gui_size(camera_get_view_width(view_camera[0]), camera_get_view_heig
 if (!variable_global_exists("wasd_on")) scr_controls_set(true);
 
 // --- TESTING: which Knight round the fight starts on. 1 = normal, 13 = the last attack, 14 = straight to the ending
-/* if (!variable_global_exists("knight_start_round")) global.knight_start_round = 13;
+ if (!variable_global_exists("knight_start_round")) global.knight_start_round = 13;
 
 // 1. Initialize Globals FIRST before using them anywhere
 
 // Testing Globals
 
-if (!variable_global_exists("dialogue_self"))
+/* if (!variable_global_exists("dialogue_self"))
 {
     variable_global_set("dialogue_self", 0);
 }
@@ -135,6 +135,8 @@ if (!instance_exists(obj_camera_controller))
 
 if (!instance_exists(obj_lighting))
     instance_create_depth(0, 0, 0, obj_lighting);
+	
+	
 
 /*
 // 3. Variables & Spawning Fighters Safely
@@ -156,9 +158,19 @@ if (instance_exists(_gerson))
     _gerson.lantern_on = true;
     _gerson.light_on = true;
 }
+
 */
 
 // 4. Room music
+
+// sng_knightappear from the very start, until the battle starts (only the first time: rm_zero's revisited for the ending)
+if (room == rm_zero && !variable_global_exists("knight_appear_started"))
+{
+    global.knight_appear_started = true;
+    with (obj_cutscenefade) old_music_faded = true; // the room's opening fader would otherwise fade it right back out
+    start_knight_appear_music(2000);
+}
+
 /* Lancer's song in the cafe
 if (room == rm_zero && !audio_is_playing(sng_LCP))
 {

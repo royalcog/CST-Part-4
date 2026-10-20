@@ -165,6 +165,7 @@ switch (state)
     case "throw_wait":
         if (++t >= throw_wait)
         {
+            stop_knight_appear_music(appear_fade_out);
             knight_pose(spr_roark_throw_sword, knight_beckon_head, knight_throw_head);
             knight.image_speed = throw_anim;
             knight.anim_loop   = false; // obj_knight holds the last frame

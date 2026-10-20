@@ -552,6 +552,7 @@ function scr_party_round(_party, _changes)
 function scr_start_knight_battle()
 {
     global.susie_soul = false; // turns on when she absorbs the soul (attack 4)
+    stop_knight_appear_music(500);
     start_knight_battle_music();
 
     with (obj_king_turn_sequencer) instance_destroy();
