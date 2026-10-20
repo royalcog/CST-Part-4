@@ -241,7 +241,7 @@ function scr_game_text(_text_id)
 			scr_text("* Susie, do we still have the...", "ralsei", 35);
 			scr_text("* ...", "susie", 31);
 			scr_text("* Hell yeah we do.", "susie", 34);
-				scr_fade_warp_with_music(rm_three, 60, noone, 1, 1000, 1500, 0, [], 240);
+				scr_fade_warp_with_music(rm_three, 240, noone, 1, 1000, 1500);
 		break;
 
 		// ---------------- Lancer & Queen (rm_three, obj_rm_three_scene opens these)
